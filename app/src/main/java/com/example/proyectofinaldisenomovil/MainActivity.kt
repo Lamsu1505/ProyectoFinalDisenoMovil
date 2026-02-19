@@ -45,3 +45,10 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+
+
+@Preview
+@Composable
+fun prueba(){
+    Text("Hola")
+}
