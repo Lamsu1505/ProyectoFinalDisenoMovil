@@ -6,5 +6,6 @@ data class Notificacion(
     val titulo: String,
     val mensaje: String,
     val leida: Boolean = false,
-    val fecha: Long
+    val fecha: Long,
+    val maxCaracteres : Int = 100
 )

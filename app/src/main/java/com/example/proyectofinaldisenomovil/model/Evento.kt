@@ -14,11 +14,9 @@ data class Evento(
     val fechaInicio: Long,
     val fechaFin: Long,
     val cupoMaximo: Int?,
-//    var asistentesConfirmados: Int = 0,
     val motivoRechazo: String?,
     var verificado: Boolean = false,
     var estado: EstadoEvento = EstadoEvento.ACTIVO,
-//    var votosImportante: Int = 0
 
 
 

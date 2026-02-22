@@ -5,5 +5,6 @@ data class Comentario(
     val eventoId: String,
     val autorId: String,
     val contenido: String,
-    val fecha: Long
+    val fecha: Long,
+    val maxCaracteres: Int = 200
 )
