@@ -1,6 +1,6 @@
 package com.example.proyectofinaldisenomovil.data
 
-import com.example.proyectofinaldisenomovil.model.Evento
+import com.example.proyectofinaldisenomovil.data.model.Evento
 
 interface EventoRepository {
 
