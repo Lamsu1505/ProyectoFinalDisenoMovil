@@ -1,4 +1,4 @@
-package com.example.proyectofinaldisenomovil.data.model
+package com.example.proyectofinaldisenomovil.data.model.Event
 
 /**
  * Available categories for a community event.

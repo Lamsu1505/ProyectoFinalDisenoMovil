@@ -1,8 +1,7 @@
-package com.example.proyectofinaldisenomovil.data.model
+package com.example.proyectofinaldisenomovil.data.model.Event
 
-import com.google.firebase.Timestamp
-import com.vivetuzona.data.model.EventCategory
-import com.vivetuzona.data.model.EventStatus
+//import com.google.firebase.Timestamp
+
 import java.security.Timestamp
 
 /**

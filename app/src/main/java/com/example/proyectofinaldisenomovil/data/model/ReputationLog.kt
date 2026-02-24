@@ -1,7 +1,6 @@
 package com.example.proyectofinaldisenomovil.data.model
 
-import com.google.firebase.Timestamp
-import com.vivetuzona.data.model.ReputationReason
+//import com.google.firebase.Timestamp
 import java.security.Timestamp
 
 /**
@@ -10,7 +9,7 @@ import java.security.Timestamp
  * Firestore collection : "reputationLogs"
  * Document ID          : auto-generated
  *
- * [User.reputationPoints] is the running total; this collection provides
+ * [com.example.proyectofinaldisenomovil.data.model.User.User.reputationPoints] is the running total; this collection provides
  * a transparent history the user can inspect.
  */
 data class ReputationLog(

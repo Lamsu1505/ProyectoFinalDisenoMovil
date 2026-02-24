@@ -1,6 +1,6 @@
 package com.example.proyectofinaldisenomovil.data.model
 
-import com.google.firebase.Timestamp
+//import com.google.firebase.Timestamp
 import java.security.Timestamp
 
 /**
@@ -9,7 +9,7 @@ import java.security.Timestamp
  * Firestore collection : "events/{eventId}/comments"  (sub-collection)
  * Document ID          : auto-generated
  *
- * When a comment is created, a push notification must be sent to [Event.authorUid].
+ * When a comment is created, a push notification must be sent to [com.example.proyectofinaldisenomovil.data.model.Event.Event.authorUid].
  */
 data class Comment(
     val id: String = "",

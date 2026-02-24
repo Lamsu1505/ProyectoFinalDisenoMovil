@@ -11,7 +11,9 @@ package com.example.proyectofinaldisenomovil.data.model
  */
 enum class NotificationType {
     NEW_EVENT_NEARBY,
-    COMMENT_ON_MY_EVENT,
-    EVENT_VERIFIED,
-    EVENT_REJECTED,
+    NEW_EVENT,
+    COMMENT,
+    VERIFIED,
+    REJECTED,
+    FINALIZED
 }

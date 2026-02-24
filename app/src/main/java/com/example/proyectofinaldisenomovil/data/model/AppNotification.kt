@@ -1,7 +1,7 @@
 package com.example.proyectofinaldisenomovil.data.model
 
-import com.google.firebase.Timestamp
-import com.vivetuzona.data.model.NotificationType
+//import com.google.firebase.Timestamp
+//import com.vivetuzona.data.model.NotificationType
 import java.security.Timestamp
 
 /**

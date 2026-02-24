@@ -3,7 +3,7 @@ package com.example.proyectofinaldisenomovil.data.model
 /**
  * Defines every action that awards or deducts reputation points.
  *
- * @property points Point delta applied to [User.reputationPoints].
+ * @property points Point delta applied to [com.example.proyectofinaldisenomovil.data.model.User.User.reputationPoints].
  *                  Positive = reward, negative = penalty.
  * @property label  Human-readable Spanish description for the history screen.
  */

@@ -1,9 +1,9 @@
 package com.example.proyectofinaldisenomovil.domain.repository
 
 import com.example.proyectofinaldisenomovil.data.model.BadgeType
-import com.vivetuzona.data.model.ReputationLog
-import com.vivetuzona.data.model.ReputationReason
-import com.vivetuzona.data.model.UserLevel
+import com.example.proyectofinaldisenomovil.data.model.ReputationLog
+import com.example.proyectofinaldisenomovil.data.model.ReputationReason
+import com.example.proyectofinaldisenomovil.data.model.User.UserLevel
 import kotlinx.coroutines.flow.Flow
 
 /**

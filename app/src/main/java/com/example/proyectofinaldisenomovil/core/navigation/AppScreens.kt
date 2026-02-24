@@ -1,4 +1,4 @@
-package com.example.proyectofinaldisenomovil.ui.navigation
+package com.example.proyectofinaldisenomovil.core.navigation
 
 sealed class  AppScreens (val route: String) {
     object FirstScreen : AppScreens("pantalla1")

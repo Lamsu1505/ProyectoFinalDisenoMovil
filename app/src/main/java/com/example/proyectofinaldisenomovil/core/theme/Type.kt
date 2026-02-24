@@ -1,4 +1,4 @@
-package com.example.proyectofinaldisenomovil.ui.theme
+package com.example.proyectofinaldisenomovil.core.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

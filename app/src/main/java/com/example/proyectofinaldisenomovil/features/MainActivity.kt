@@ -1,14 +1,13 @@
-package com.example.proyectofinaldisenomovil.ui
+package com.example.proyectofinaldisenomovil.features
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.proyectofinaldisenomovil.ui.navigation.AppNavigation
-import com.example.proyectofinaldisenomovil.ui.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.core.navigation.AppNavigation
+import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

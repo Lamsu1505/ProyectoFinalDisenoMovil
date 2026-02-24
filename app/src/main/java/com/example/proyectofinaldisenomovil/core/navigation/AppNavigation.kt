@@ -1,13 +1,11 @@
-package com.example.proyectofinaldisenomovil.ui.navigation
+package com.example.proyectofinaldisenomovil.core.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.proyectofinaldisenomovil.ui.screens.FirstScreen
-import com.example.proyectofinaldisenomovil.ui.screens.SecondScreen
+import com.example.proyectofinaldisenomovil.features.screens.FirstScreen
+import com.example.proyectofinaldisenomovil.features.screens.SecondScreen
 
 
 //Se encarga de orquestar la navegacion de la app

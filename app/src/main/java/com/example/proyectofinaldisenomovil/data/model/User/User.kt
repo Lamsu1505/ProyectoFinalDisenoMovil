@@ -1,8 +1,9 @@
-package com.example.proyectofinaldisenomovil.data.model
+package com.example.proyectofinaldisenomovil.data.model.User
 
-import com.google.firebase.Timestamp
-import com.vivetuzona.data.model.UserLevel
-import com.vivetuzona.data.model.UserRole
+//import com.google.firebase.Timestamp
+//import com.vivetuzona.data.model.UserLevel
+//import com.vivetuzona.data.model.UserRole
+import com.example.proyectofinaldisenomovil.data.model.BadgeType
 import java.security.Timestamp
 
 /**

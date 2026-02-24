@@ -1,6 +1,6 @@
 package com.vivetuzona.domain.repository
 
-import com.vivetuzona.data.model.User
+import com.example.proyectofinaldisenomovil.data.model.User.User
 import kotlinx.coroutines.flow.Flow
 
 /**
