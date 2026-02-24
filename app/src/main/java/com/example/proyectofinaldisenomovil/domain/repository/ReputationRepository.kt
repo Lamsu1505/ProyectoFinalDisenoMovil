@@ -1,6 +1,6 @@
-package com.vivetuzona.domain.repository
+package com.example.proyectofinaldisenomovil.domain.repository
 
-import com.vivetuzona.data.model.BadgeType
+import com.example.proyectofinaldisenomovil.data.model.BadgeType
 import com.vivetuzona.data.model.ReputationLog
 import com.vivetuzona.data.model.ReputationReason
 import com.vivetuzona.data.model.UserLevel

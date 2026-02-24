@@ -1,6 +1,6 @@
-package com.vivetuzona.domain.repository
+package com.example.proyectofinaldisenomovil.domain.repository
 
-import com.vivetuzona.data.model.Attendance
+import com.example.proyectofinaldisenomovil.data.model.Attendance
 import kotlinx.coroutines.flow.Flow
 
 /**

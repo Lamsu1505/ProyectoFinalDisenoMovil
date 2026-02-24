@@ -1,7 +1,7 @@
-package com.vivetuzona.domain.repository
+package com.example.proyectofinaldisenomovil.domain.repository
 
-import com.vivetuzona.data.model.Event
-import com.vivetuzona.data.model.EventCategory
+import com.example.proyectofinaldisenomovil.data.model.Event
+import com.example.proyectofinaldisenomovil.data.model.EventCategory
 import kotlinx.coroutines.flow.Flow
 
 /**

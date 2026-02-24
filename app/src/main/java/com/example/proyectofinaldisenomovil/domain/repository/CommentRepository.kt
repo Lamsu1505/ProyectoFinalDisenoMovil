@@ -1,6 +1,6 @@
-package com.vivetuzona.domain.repository
+package com.example.proyectofinaldisenomovil.domain.repository
 
-import com.vivetuzona.data.model.Comment
+import com.example.proyectofinaldisenomovil.data.model.Comment
 import kotlinx.coroutines.flow.Flow
 
 /**
