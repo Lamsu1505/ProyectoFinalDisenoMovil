@@ -60,7 +60,7 @@ fun BodyContent(
 
         Button(
             onClick = {
-                navController.navigate(AppScreens.SecondScreen.route)
+                navController.navigate(AppScreens.LoginScreen.route)
             }
         ) {
             Text("Presioname")
