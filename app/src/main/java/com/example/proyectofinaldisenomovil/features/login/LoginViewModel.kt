@@ -1,18 +1,26 @@
 package com.example.proyectofinaldisenomovil.features.login
 
+import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginViewModel : ViewModel() {
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     var email by  mutableStateOf("")
     var password by  mutableStateOf("")
     var emailError by  mutableStateOf("")
 
     var passwordError by  mutableStateOf("")
+
+    private val _loginResult = MutableLiveData<Boolean>()
+    val loginResult: LiveData<Boolean> = _loginResult
 
     fun onEmailChange(newEmail: String) {
         this.email = newEmail
@@ -33,7 +41,6 @@ class LoginViewModel : ViewModel() {
             }
     }
 
-
     fun validatePassword(password : String) {
         if (password.length > 0 && password.length < 8 ) {
             passwordError = "La contraseña debe tener al menos 8 caracteres"
@@ -49,11 +56,17 @@ class LoginViewModel : ViewModel() {
         return false
     }
 
-    fun login(): Boolean{
-        return email=="a@g.com" && password=="12345678"
+    fun login(onResult: (Boolean) -> Unit) {
+        auth.signInWithEmailAndPassword(this.email, this.password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("LOGIN", "Login correcto")
+                    onResult(true)
+                } else {
+                    Log.e("LOGIN", "Error: ${task.exception?.message}")
+                    onResult(false)
+                }
+            }
     }
-
-
-
 
 }

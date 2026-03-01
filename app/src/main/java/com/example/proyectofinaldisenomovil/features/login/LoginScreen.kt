@@ -1,15 +1,12 @@
 package com.example.proyectofinaldisenomovil.features.login
 
 import android.content.Context
-import android.util.Log
-import android.util.Patterns
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -33,25 +29,19 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.ProvidedValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -63,7 +53,6 @@ import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun LoginScreen(
@@ -250,33 +239,12 @@ fun LoginForm(
         Button(
             enabled = loginViewModel.validateForm(),
             onClick = {
-                if(loginViewModel.login()) {
-                    Toast.makeText(
-                        myContext,
-                        "Login Correcto",
-                        Toast.LENGTH_SHORT)
-                        .show()
-                    navController.navigate(AppScreens.FirstScreen .route)
-                }
-                else{
-                    val inflater = LayoutInflater.from(myContext)
-                    val layout = inflater.inflate(R.layout.custom_toast, null)
-
-                    val text = layout.findViewById<TextView>(R.id.toast_text)
-                    val icon = layout.findViewById<ImageView>(R.id.toast_icon)
-
-                    if (loginViewModel.login()) {
-                        text.text = "Login Correcto"
-                        icon.setImageResource(R.drawable.logo)
+                loginViewModel.login { success ->
+                    if (success) {
+                        navController.navigate(AppScreens.FirstScreen.route)
                     } else {
-                        text.text = "Login Incorrecto"
-                        icon.setImageResource(R.drawable.logo)
+                        Toast.makeText(myContext, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
                     }
-
-                    val toast = Toast(myContext)
-                    toast.duration = Toast.LENGTH_SHORT
-                    toast.view = layout
-                    toast.show()
                 }
             },
             modifier = Modifier.height(50.dp),
