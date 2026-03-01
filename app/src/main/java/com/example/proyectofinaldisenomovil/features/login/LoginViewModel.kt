@@ -15,43 +15,42 @@ class LoginViewModel : ViewModel() {
     var passwordError by  mutableStateOf("")
 
     fun onEmailChange(newEmail: String) {
-        validateEmail(email)
         this.email = newEmail
+        validateEmail(email)
     }
 
     fun onPasswordChange(newPassword: String) {
-        validatePassword(password)
         this.password = newPassword
+        validatePassword(password)
     }
 
-    fun validateEmail(email : String) {
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            emailError = "Error de email"
-        }
-        else{
-            emailError = ""
-        }
+    fun validateEmail(email: String) {
+        emailError =
+            if (email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                "Email mal escrito"
+            } else {
+                ""
+            }
     }
 
 
     fun validatePassword(password : String) {
-        if(password.length < 8){
-            passwordError = "Error de password"
-        }
-        else{
+        if (password.length > 0 && password.length < 8 ) {
+            passwordError = "La contraseña debe tener al menos 8 caracteres"
+        } else {
             passwordError = ""
         }
-
     }
 
-    fun validatePassword(): Boolean{
-        //TODO
+    fun validateForm() : Boolean{
+        if(emailError.isEmpty() && passwordError.isEmpty() && email.isNotEmpty() && password.isNotEmpty()){
+            return true
+        }
         return false
     }
 
-
     fun login(): Boolean{
-        return email=="perezmartinezandres0@gmail.com" && password=="123"
+        return email=="a@g.com" && password=="12345678"
     }
 
 

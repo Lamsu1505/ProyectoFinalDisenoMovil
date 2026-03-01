@@ -1,6 +1,12 @@
 package com.example.proyectofinaldisenomovil.features.login
 
+import android.content.Context
+import android.util.Log
 import android.util.Patterns
+import android.view.LayoutInflater
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,9 +32,16 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.ProvidedValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
@@ -47,7 +60,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.R
+import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun LoginScreen(
@@ -55,209 +70,62 @@ fun LoginScreen(
         loginViewModel : LoginViewModel = viewModel()
         ) {
 
-    val Mycontext = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
+    val myContext = LocalContext.current
 
-    Box(
-        modifier = Modifier.
-            fillMaxSize().
-            background(MaterialTheme.colorScheme.background)
-    ){
-        LoginHeaderSection()
+    Scaffold(
+    ) {
+        paddingValues ->
 
-        val cardShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
-        Card(
-            shape = cardShape,
-            modifier = Modifier.fillMaxWidth().
-                align(Alignment.TopCenter)
-                .padding(5.dp)
-                .offset(y = 308.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.background
-            )
+        //Caja principal
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(paddingValues)
         ) {
-            Column(
+
+            LoginHeaderSection(navController, loginViewModel)
+
+            val cardShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+            Card(
+                shape = cardShape,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 35.dp, vertical = 40.dp)
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(50.dp, Alignment.CenterVertically)
-            ) {
-                Text(
-                    text = "Inicia Sesion",
-                    fontSize = 40.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    .align(Alignment.TopCenter)
+                    .padding(5.dp)
+                    .offset(y = 308.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.background
                 )
+            ) {
 
                 Column(
-                    verticalArrangement = Arrangement.spacedBy( 15.dp , Alignment.CenterVertically),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                )
-                {
-
-                    OutlinedTextField(
-                        singleLine = true,
-                        maxLines = 1,
-                        shape = RoundedCornerShape(15.dp),
-                        value = loginViewModel.email,
-                        modifier = Modifier.fillMaxWidth(),
-                        onValueChange = {
-                            loginViewModel.onEmailChange(it)
-                        },
-                        label = { Text ("Usuario o Email") },
-                        isError = loginViewModel.emailError.isNotEmpty(),
-                        supportingText = {
-                            if(loginViewModel.emailError.isNotEmpty()){
-                                Text ("Escribe tu email")
-                            }
-                        }
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 35.dp, vertical = 40.dp)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(50.dp)
+                ) {
+                    LoginForm(
+                        navController,
+                        loginViewModel,
+                        myContext
                     )
-
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-
-                        OutlinedTextField(
-                            singleLine = true,
-                            shape = RoundedCornerShape(15.dp),
-                            value = loginViewModel.password,
-                            visualTransformation = PasswordVisualTransformation(),
-                            modifier = Modifier.fillMaxWidth(),
-                            onValueChange = {
-                                loginViewModel.onPasswordChange(it)
-                            },
-                            label = { Text("Contraseña") },
-                            isError = loginViewModel.passwordError.isNotEmpty()
-                        )
-
-                        if (loginViewModel.passwordError.isNotEmpty()) {
-                            Text(
-                                text = "La contraseña debe tener al menos 8 caracteres",
-                                color = MaterialTheme.colorScheme.error,
-                                fontSize = 12.sp
-                            )
-                        }
-
-                        Text(
-                            text = "¿Olvidaste tu contraseña?",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.secondary,
-                            textDecoration = TextDecoration.Underline,
-                            modifier = Modifier.align(Alignment.End)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(15.dp))
-
-                    Button(
-                        onClick = {},
-                        modifier = Modifier
-                            .height(50.dp),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondary
-                        )
-
-                    ) {
-                        Text(
-                            text ="Iniciar Sesión",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = MaterialTheme.colorScheme.background
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Row(
-
-                    )
-                    {
-                        Text(
-                            text= "No tienes cuenta? ",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                        Text(
-                            text= "Creala Aqui",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.secondary,
-                            textDecoration = TextDecoration.Underline
-                        )
-
-                    }
-
-
-
                 }
-
-
-
-
             }
-
         }
-
     }
-//    Column(
-//        modifier = Modifier.fillMaxSize(),
-//        verticalArrangement = Arrangement.spacedBy( 16.dp , Alignment.CenterVertically),
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//        OutlinedTextField(
-//            value = loginViewModel.email,
-//            onValueChange = {
-//                if(!Patterns.EMAIL_ADDRESS.matcher(it).matches()){
-//                    loginViewModel.emailError = "Error"
-//                }
-//                else{
-//                    loginViewModel.emailError = ""
-//                }
-//                loginViewModel.email = it
-//            },
-//            label = { Text("Email") },
-//            isError = loginViewModel.emailError.isNotEmpty(),
-//            supportingText = {
-//                if(loginViewModel.emailError.isNotEmpty()){
-//                    Text ("Email mal escrito")
-//                }
-//            }
-//
-//        )
-//
-//        OutlinedTextField(
-//            value = loginViewModel.password,
-//            visualTransformation = PasswordVisualTransformation(),
-//            onValueChange = {
-//                loginViewModel.password = it
-//             },
-//            label = { Text("Contraseña") },
-//        )
-//
-//        Button(
-//            onClick = {
-//                if(loginViewModel.login()){
-//                    Toast.makeText(
-//                        Mycontext,
-//                        "Login Correcto",
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                    navController.navigate(AppScreens.FirstScreen.route)
-//                }
-//
-//            }
-//        ) {
-//            Text("Iniciar Sesión")
-//        }
-//    }
 }
 
 @Composable
-fun LoginHeaderSection() {
+fun LoginHeaderSection(
+    navController: NavController,
+    loginViewModel: LoginViewModel
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -285,6 +153,160 @@ fun LoginHeaderSection() {
             )
         }
     }
+}
+
+@Composable
+fun LoginForm(
+    navController: NavController,
+    loginViewModel: LoginViewModel,
+    myContext : Context
+){
+
+    Text(
+        text = "Inicia Sesion",
+        fontSize = 40.sp,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary
+    )
+
+    //Formulario de login
+    Column(
+        verticalArrangement = Arrangement.spacedBy(13.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        // ---------------- EMAIL ----------------
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+
+            OutlinedTextField(
+                singleLine = true,
+                shape = RoundedCornerShape(15.dp),
+                value = loginViewModel.email,
+                modifier = Modifier.fillMaxWidth(),
+                onValueChange = {
+                    loginViewModel.onEmailChange(it)
+                },
+                label = { Text("Email") },
+                isError = loginViewModel.emailError.isNotEmpty()
+            )
+
+            Box(modifier = Modifier.height(15.dp)) {
+                if (loginViewModel.emailError.isNotEmpty()) {
+                    Text(
+                        text = "Email mal escrito, revisa el formato",
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+        }
+
+        // ---------------- PASSWORD ----------------
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+
+            OutlinedTextField(
+                singleLine = true,
+                shape = RoundedCornerShape(15.dp),
+                value = loginViewModel.password,
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth(),
+                onValueChange = {
+                    loginViewModel.onPasswordChange(it)
+                },
+                label = { Text("Contraseña") },
+                isError = loginViewModel.passwordError.isNotEmpty()
+            )
+
+            Box(modifier = Modifier.height(17.dp)) {
+                if (loginViewModel.passwordError.isNotEmpty()) {
+                    Text(
+                        text = loginViewModel.passwordError,
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+
+            Text(
+                text = "¿Olvidaste tu contraseña?",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.secondary,
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier.align(Alignment.End)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(15.dp))
+
+        Button(
+            enabled = loginViewModel.validateForm(),
+            onClick = {
+                if(loginViewModel.login()) {
+                    Toast.makeText(
+                        myContext,
+                        "Login Correcto",
+                        Toast.LENGTH_SHORT)
+                        .show()
+                    navController.navigate(AppScreens.FirstScreen .route)
+                }
+                else{
+                    val inflater = LayoutInflater.from(myContext)
+                    val layout = inflater.inflate(R.layout.custom_toast, null)
+
+                    val text = layout.findViewById<TextView>(R.id.toast_text)
+                    val icon = layout.findViewById<ImageView>(R.id.toast_icon)
+
+                    if (loginViewModel.login()) {
+                        text.text = "Login Correcto"
+                        icon.setImageResource(R.drawable.logo)
+                    } else {
+                        text.text = "Login Incorrecto"
+                        icon.setImageResource(R.drawable.logo)
+                    }
+
+                    val toast = Toast(myContext)
+                    toast.duration = Toast.LENGTH_SHORT
+                    toast.view = layout
+                    toast.show()
+                }
+            },
+            modifier = Modifier.height(50.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                disabledContentColor = MaterialTheme.colorScheme.onSurface
+            )
+        ) {
+            Text(
+                text = "Iniciar Sesión",
+                fontSize = 20.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Row {
+            Text(
+                text = "No tienes cuenta? ",
+                fontSize = 15.sp
+            )
+            Text(
+                text = "Creala Aqui",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.secondary,
+                textDecoration = TextDecoration.Underline
+            )
+        }
+    }
+
 }
 
 

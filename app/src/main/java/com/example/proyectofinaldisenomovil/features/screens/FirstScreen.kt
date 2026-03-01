@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
 import androidx.compose.material3.*
+import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,9 +28,9 @@ fun FirstScreen(navController: NavController) {
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary),
+                    containerColor = MaterialTheme.colorScheme.secondary),
                 title = {
-                    Text("Primera pantalla")
+                    Text("A")
                 }
 
             )
@@ -72,6 +73,9 @@ fun BodyContent(
 @Composable
 fun FirstScreenPreview() {
 
-    val navController = rememberNavController()
-    FirstScreen(navController = navController)
+    ProyectoFinalDisenoMovilTheme() {
+        val navController = rememberNavController()
+        FirstScreen(navController = navController)
+    }
+
 }

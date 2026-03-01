@@ -3,8 +3,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -20,25 +18,6 @@ import androidx.navigation.compose.rememberNavController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecondScreen(navController : NavController){
-    Scaffold( topBar = {
-        TopAppBar(
-            navigationIcon = {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Arrow back",
-                    modifier = Modifier.clickable {
-                        navController.popBackStack()
-                    }
-                )
-            },
-            title = {
-                Text("Segunda pantalla")
-            }
-        )
-    })
-    { innerPadding ->
-        SecondBodyContent(navController , innerPadding)
-    }
 }
 
 @Composable
