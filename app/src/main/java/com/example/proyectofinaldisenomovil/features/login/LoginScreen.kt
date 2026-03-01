@@ -62,6 +62,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -70,6 +71,7 @@ fun LoginScreen(
         loginViewModel : LoginViewModel = viewModel()
         ) {
 
+    val db = FirebaseFirestore.getInstance()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -171,7 +173,7 @@ fun LoginForm(
 
     //Formulario de login
     Column(
-        verticalArrangement = Arrangement.spacedBy(13.dp),
+        verticalArrangement = Arrangement.spacedBy(15.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -193,7 +195,7 @@ fun LoginForm(
                 isError = loginViewModel.emailError.isNotEmpty()
             )
 
-            Box(modifier = Modifier.height(15.dp)) {
+            Box(modifier = Modifier.height(17.dp)) {
                 if (loginViewModel.emailError.isNotEmpty()) {
                     Text(
                         text = "Email mal escrito, revisa el formato",
