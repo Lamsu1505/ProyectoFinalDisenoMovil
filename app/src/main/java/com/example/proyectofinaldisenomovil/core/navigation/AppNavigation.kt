@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.proyectofinaldisenomovil.features.login.LoginFunction
+import com.example.proyectofinaldisenomovil.features.login.LoginScreen
 import com.example.proyectofinaldisenomovil.features.screens.FirstScreen
 import com.example.proyectofinaldisenomovil.features.screens.SecondScreen
 
@@ -22,7 +22,7 @@ fun AppNavigation(){
             SecondScreen(navController)
         }
         composable ( route = AppScreens.LoginScreen.route){
-            LoginFunction(navController)
+            LoginScreen(navController)
 
         }
 

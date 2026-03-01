@@ -2,10 +2,8 @@ package com.example.proyectofinaldisenomovil.core.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFFFEB3B)
-val PurpleGrey80 = Color(0xFF2196F3)
-val Pink80 = Color(0xFFEFB8C8)
-
-val Purple40 = Color(0xFFFFEB3B)
-val PurpleGrey40 = Color(0xFF270380)
-val Pink40 = Color(0xFF7D5260)
+val whiteBackground = Color(0xFFFFFBF0)
+val green = Color(0xFF4E8C64)
+val orange = Color(0xFFC05621)
+val red = Color(0xFFC02121)
+val blue = Color(0xFF2A7AD9)
