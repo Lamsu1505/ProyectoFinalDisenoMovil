@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.features.login
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.widget.ImageView
@@ -7,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +48,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -56,13 +59,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun LoginScreen(
-        navController : NavController ,
-        loginViewModel : LoginViewModel = viewModel()
+        navController: NavController,
+        loginViewModel: LoginViewModel = viewModel()
         ) {
-
-    val db = FirebaseFirestore.getInstance()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
     val myContext = LocalContext.current
 
@@ -130,7 +129,7 @@ fun LoginHeaderSection(
         {
 
             Image(
-                painter = painterResource(id = R.drawable.logo),
+                painter = painterResource(id = R.mipmap.logo),
                 contentDescription = "Logo de vive tu zona",
                 modifier = Modifier.size(200.dp)
             )
@@ -241,7 +240,7 @@ fun LoginForm(
             onClick = {
                 loginViewModel.login { success ->
                     if (success) {
-                        navController.navigate(AppScreens.FirstScreen.route)
+                        //navController.navigate(AppScreens.RegisterScreen.route)
                     } else {
                         Toast.makeText(myContext, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
                     }
@@ -272,7 +271,10 @@ fun LoginForm(
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.secondary,
-                textDecoration = TextDecoration.Underline
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier.clickable {
+                    navController.navigate(AppScreens.RegisterScreen.route)
+                }
             )
         }
     }
@@ -283,9 +285,8 @@ fun LoginForm(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    val navController = rememberNavController()
-    ProyectoFinalDisenoMovilTheme() {
-        LoginScreen(navController = navController)
+    ProyectoFinalDisenoMovilTheme {
+        LoginScreen(
+            navController = rememberNavController())
     }
-
 }
