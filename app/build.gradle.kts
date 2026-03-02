@@ -69,5 +69,6 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("androidx.navigation:navigation-compose:2.9.7")
     implementation("com.cloudinary:cloudinary-android:2.3.1")
+    implementation("androidx.compose.material:material-icons-extended")
 
 }

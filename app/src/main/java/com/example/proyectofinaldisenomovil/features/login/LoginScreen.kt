@@ -53,6 +53,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.R
+import com.example.proyectofinaldisenomovil.core.component.login.LoginHeaderSection
 import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.google.firebase.firestore.FirebaseFirestore
@@ -77,7 +78,8 @@ fun LoginScreen(
                 .padding(paddingValues)
         ) {
 
-            LoginHeaderSection(navController, loginViewModel)
+            //Componente de core
+            LoginHeaderSection(navController , loginViewModel)
 
             val cardShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
             Card(
@@ -111,39 +113,6 @@ fun LoginScreen(
     }
 }
 
-@Composable
-fun LoginHeaderSection(
-    navController: NavController,
-    loginViewModel: LoginViewModel
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.40f)
-            .background(MaterialTheme.colorScheme.primary),
-        contentAlignment = Alignment.Center
-    ) {
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally)
-        {
-
-            Image(
-                painter = painterResource(id = R.mipmap.logo),
-                contentDescription = "Logo de vive tu zona",
-                modifier = Modifier.size(200.dp)
-            )
-
-
-            Text(
-                text = "ViveTuZona",
-                fontSize = 60.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-            )
-        }
-    }
-}
 
 @Composable
 fun LoginForm(
