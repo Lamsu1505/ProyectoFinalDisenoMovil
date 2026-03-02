@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "17635030667",
+    "project_id": "vivetuzona-9b6f5",
+    "storage_bucket": "vivetuzona-9b6f5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17635030667:android:4a8ac7204db45c40acc68e",
+        "android_client_info": {
+          "package_name": "com.example.proyectofinaldisenomovil"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlg74BWrD4AHsx443pWG2h4jmxU-4vtKQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
