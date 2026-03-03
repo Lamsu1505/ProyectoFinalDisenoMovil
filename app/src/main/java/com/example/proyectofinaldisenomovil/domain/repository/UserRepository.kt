@@ -1,4 +1,4 @@
-package com.vivetuzona.domain.repository
+package com.example.proyectofinaldisenomovil.domain.repository
 
 import com.example.proyectofinaldisenomovil.data.model.User.User
 import kotlinx.coroutines.flow.Flow
