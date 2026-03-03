@@ -58,8 +58,6 @@ import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.login.RegisterHeaderSection
 import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
-import com.example.proyectofinaldisenomovil.features.login.LoginScreen
-import com.example.proyectofinaldisenomovil.features.login.LoginViewModel
 import com.example.proyectofinaldisenomovil.features.login.RegisterViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import androidx.compose.material.icons.Icons
@@ -70,12 +68,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import com.example.proyectofinaldisenomovil.core.component.login.TopBarRegister
+import kotlin.Result.Companion.success
 
 @Composable
 fun RegisterScreen (
     navController: NavController,
     registerViewModel: RegisterViewModel = viewModel()
 ){
+    val myContext = LocalContext.current
+
     Scaffold(
         topBar = {
             TopBarRegister(navController)
@@ -87,69 +90,197 @@ fun RegisterScreen (
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            RegisterHeaderSection2(navController, registerViewModel)
-        }
-    }
-}
+            RegisterHeaderSection(navController, registerViewModel)
 
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
-@Composable
-fun TopBarRegister(navController: NavController) {
-
-    TopAppBar(
-        title = {
-            Text(
-                text = "Volver",
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = {
-                navController.popBackStack()
-            }) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Volver"
+            val cardShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+            Card(
+                shape = cardShape,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter)
+                    .padding(5.dp)
+                    .offset(y = 130.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.background
                 )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 25.dp, vertical = 40.dp)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(50.dp)
+                ) {
+                    RegisterForm(
+                        navController,
+                        registerViewModel,
+                        myContext
+                    )
+                }
             }
         }
-    )
+    }
 }
 
-
 @Composable
-fun RegisterHeaderSection2(
-    navController: NavController,
-    registerViewModel: RegisterViewModel
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.25f)
-            .background(MaterialTheme.colorScheme.primary)
+fun RegisterForm(navController: NavController, registerViewModel: RegisterViewModel, myContext : Context) {
+
+    Text(
+        text = "Registrarse",
+        fontSize = 40.sp,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary
+    )
+
+    //Formulario de registro
+    Column(
+        verticalArrangement = Arrangement.spacedBy(25.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        Row(
-            modifier = Modifier.align(Alignment.Center),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+        // ---------------- Nombre Apellido ----------------
+        Column(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Image(
-                painter = painterResource(id = R.mipmap.logo),
-                contentDescription = "Logo de vive tu zona",
-                modifier = Modifier.size(100.dp)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
+            ) {
+
+                OutlinedTextField(
+                    singleLine = true,
+                    shape = RoundedCornerShape(15.dp),
+                    value = registerViewModel.name,
+                    modifier = Modifier.weight(1f),
+                    onValueChange = {
+                        registerViewModel.onNameChange(it)
+                    },
+                    label = { Text("Nombre(s)") },
+                )
+
+                OutlinedTextField(
+                    singleLine = true,
+                    shape = RoundedCornerShape(15.dp),
+                    value = registerViewModel.lastName,
+                    modifier = Modifier.weight(1f),
+                    onValueChange = {
+                        registerViewModel.onLastNameChange(it)
+                    },
+                    label = { Text("Apellido(s)") },
+                )
+            }
+
+
+        }
+
+        // ---------------- Correo ----------------
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+
+            OutlinedTextField(
+                singleLine = true,
+                shape = RoundedCornerShape(15.dp),
+                value = registerViewModel.email,
+                modifier = Modifier.fillMaxWidth(),
+                onValueChange = {
+                    registerViewModel.onEmailChange(it)
+                },
+                label = { Text("Correo electronico") },
+                isError = registerViewModel.emailError.isNotEmpty()
             )
 
-            Spacer(modifier = Modifier.width(8.dp))
+            if (registerViewModel.emailError.isNotEmpty()){
+                Box(modifier = Modifier.height(17.dp)) {
+                    Text(
+                        text = "Email mal escrito, revisa el formato",
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+        }
 
+
+        //------------ Contraseñas --------------
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+
+            OutlinedTextField(
+                singleLine = true,
+                shape = RoundedCornerShape(15.dp),
+                value = registerViewModel.password,
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(),
+                onValueChange = {
+                    registerViewModel.onPasswordChange(it)
+                },
+                label = { Text("Contraseña secreta") },
+                isError = registerViewModel.passwordError.isNotEmpty()
+            )
+
+            Box(modifier = Modifier.height(17.dp)) {
+                if (registerViewModel.passwordError.isNotEmpty()) {
+                    Text(
+                        text = "La contraseña debe tener al menos 8 caracteres",
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+
+
+            OutlinedTextField(
+                singleLine = true,
+                shape = RoundedCornerShape(15.dp),
+                value = registerViewModel.passwordConfirmation,
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(),
+                onValueChange = {
+                    registerViewModel.onPasswordConfirmationChange(it)
+                },
+                label = { Text("Confirmar contraseña secreta") },
+                isError = registerViewModel.passwordError.isNotEmpty()
+            )
+
+            Box(modifier = Modifier.height(17.dp)) {
+                if (registerViewModel.passwordConfirmationError.isNotEmpty()) {
+                    Text(
+                        text = "Las contraseñas no coinciden",
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(5.dp))
+
+        Button(
+            enabled = registerViewModel.validateForm(),
+            onClick = {
+                registerViewModel.registerUser { success ->
+                    if (success) {
+                        navController.navigate(AppScreens.LoginScreen.route)
+                    }
+                }
+            },
+            modifier = Modifier.height(50.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                disabledContentColor = MaterialTheme.colorScheme.onSurface
+            )
+        ) {
             Text(
-                text = "ViveTuZona",
-                fontSize = 50.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
+                text = "Registrarse",
+                fontSize = 20.sp
             )
         }
     }
+
 }
 
 
