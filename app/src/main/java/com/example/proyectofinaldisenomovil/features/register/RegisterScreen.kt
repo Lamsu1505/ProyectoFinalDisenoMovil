@@ -55,7 +55,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.R
-import com.example.proyectofinaldisenomovil.core.component.login.RegisterHeaderSection
 import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.features.login.RegisterViewModel
@@ -70,6 +69,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
+import com.example.proyectofinaldisenomovil.core.component.login.HeaderSectionNonLogued
 import com.example.proyectofinaldisenomovil.core.component.login.TopBarRegister
 import kotlin.Result.Companion.success
 
@@ -91,7 +91,7 @@ fun RegisterScreen (
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            RegisterHeaderSection(navController, registerViewModel)
+            HeaderSectionNonLogued(navController)
 
             val cardShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
             Card(
