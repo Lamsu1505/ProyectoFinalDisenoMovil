@@ -68,5 +68,6 @@ fun drawableToFile(context: Context, drawableId: Int): File {
 }
 
 fun subirImagen(){
+    //TODO
 
 }

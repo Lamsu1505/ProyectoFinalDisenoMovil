@@ -2,6 +2,7 @@ package com.example.proyectofinaldisenomovil.core.component.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,13 +32,47 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.proyectofinaldisenomovil.R
+import com.example.proyectofinaldisenomovil.features.ForgotPassword.ForgotPasswordViewModel
 import com.example.proyectofinaldisenomovil.features.login.LoginViewModel
 import com.example.proyectofinaldisenomovil.features.login.RegisterViewModel
 
 @Composable
-fun RegisterHeaderSection(
+fun LoginHeaderSection(
     navController: NavController,
-    registerViewModel: RegisterViewModel
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.40f)
+            .background(MaterialTheme.colorScheme.primary),
+        contentAlignment = Alignment.Center
+    ) {
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally)
+        {
+
+            Image(
+                painter = painterResource(id = R.mipmap.logo),
+                contentDescription = "Logo de vive tu zona",
+                modifier = Modifier.size(200.dp)
+            )
+
+
+            Text(
+                text = "ViveTuZona",
+                fontSize = 60.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+            )
+        }
+    }
+}
+
+
+@Composable
+fun HeaderSectionNonLogued(
+    navController: NavController,
 ) {
     Box(
         modifier = Modifier
@@ -71,40 +106,6 @@ fun RegisterHeaderSection(
     }
 }
 
-@Composable
-fun LoginHeaderSection(
-    navController: NavController,
-    loginViewModel: LoginViewModel
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.40f)
-            .background(MaterialTheme.colorScheme.primary),
-        contentAlignment = Alignment.Center
-    ) {
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally)
-        {
-
-            Image(
-                painter = painterResource(id = R.mipmap.logo),
-                contentDescription = "Logo de vive tu zona",
-                modifier = Modifier.size(200.dp)
-            )
-
-
-            Text(
-                text = "ViveTuZona",
-                fontSize = 60.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-            )
-        }
-    }
-}
-
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -114,8 +115,11 @@ fun TopBarRegister(navController: NavController) {
         title = {
             Text(
                 text = "Volver",
-                fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.surface
+                fontSize = 25.sp,
+                color = MaterialTheme.colorScheme.surface,
+                modifier = Modifier.clickable(onClick = {
+                    navController.popBackStack()
+                })
             )
         },
         navigationIcon = {
