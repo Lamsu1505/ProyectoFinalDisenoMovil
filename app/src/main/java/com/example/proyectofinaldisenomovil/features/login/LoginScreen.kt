@@ -78,7 +78,7 @@ fun LoginScreen(
                 .padding(paddingValues)
         ) {
 
-            //Componente de core
+            //Componente de la carpeta core
             LoginHeaderSection(navController , loginViewModel)
 
             val cardShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
