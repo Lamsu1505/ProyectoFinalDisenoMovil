@@ -69,6 +69,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.login.TopBarRegister
 import kotlin.Result.Companion.success
 
@@ -280,6 +281,8 @@ fun RegisterForm(navController: NavController, registerViewModel: RegisterViewMo
             )
         }
     }
+
+
 
 }
 
