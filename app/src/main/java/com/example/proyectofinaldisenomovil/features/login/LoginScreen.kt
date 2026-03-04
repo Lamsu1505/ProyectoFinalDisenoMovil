@@ -236,7 +236,8 @@ fun LoginForm(
         Row {
             Text(
                 text = "No tienes cuenta? ",
-                fontSize = 15.sp
+                fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = "Creala Aqui",

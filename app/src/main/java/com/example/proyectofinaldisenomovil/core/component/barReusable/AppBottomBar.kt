@@ -1,6 +1,9 @@
 package com.example.proyectofinaldisenomovil.core.component.barReusable
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bookmark
@@ -16,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 @Composable
@@ -24,12 +28,15 @@ fun AppBottomBar(
     modifier: Modifier = Modifier
 ) {
 
+    val iconsActualSize = 30.dp
+
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
 
     NavigationBar(
         modifier = modifier,
-        tonalElevation = 8.dp
+        tonalElevation = 8.dp,
+        containerColor = MaterialTheme.colorScheme.onBackground
     ) {
 
         // 1️⃣ Inicio
@@ -40,7 +47,9 @@ fun AppBottomBar(
                     launchSingleTop = true
                 }
             },
-            icon = { Icon(Icons.Default.Home, contentDescription = "Inicio") },
+            icon = { Icon(Icons.Default.Home,
+                contentDescription = "Inicio",
+                modifier = Modifier.size(iconsActualSize)) },
             label = { Text("Inicio") }
         )
 
@@ -52,7 +61,9 @@ fun AppBottomBar(
                     launchSingleTop = true
                 }
             },
-            icon = { Icon(Icons.Default.Bookmark, contentDescription = "Iré") },
+            icon = { Icon(Icons.Default.Bookmark,
+                contentDescription = "Iré",
+                modifier = Modifier.size(iconsActualSize)) },
             label = { Text("Iré") }
         )
 
@@ -63,13 +74,16 @@ fun AppBottomBar(
             contentAlignment = Alignment.Center
         ) {
             FloatingActionButton(
+                containerColor = MaterialTheme.colorScheme.primary,
                 onClick = {
                     navController.navigate("add_route") {
                         launchSingleTop = true
                     }
                 }
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar")
+                Icon(Icons.Default.Add,
+                    contentDescription = "Agregar",
+                    modifier = Modifier.size(40.dp))
             }
         }
 
@@ -81,7 +95,9 @@ fun AppBottomBar(
                     launchSingleTop = true
                 }
             },
-            icon = { Icon(Icons.Default.Favorite, contentDescription = "Me gusta") },
+            icon = { Icon(Icons.Default.Favorite,
+                contentDescription = "Me gusta",
+                modifier = Modifier.size(iconsActualSize)) },
             label = { Text("Me gusta") }
         )
 
@@ -93,8 +109,19 @@ fun AppBottomBar(
                     launchSingleTop = true
                 }
             },
-            icon = { Icon(Icons.Default.Person, contentDescription = "Perfil") },
+            icon = { Icon(Icons.Default.Person,
+                contentDescription = "Perfil",
+                modifier = Modifier.size(iconsActualSize)) },
             label = { Text("Perfil") }
         )
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewAppBottomBar() {
+    ProyectoFinalDisenoMovilTheme() {
+        AppBottomBar(navController = rememberNavController())
     }
 }
