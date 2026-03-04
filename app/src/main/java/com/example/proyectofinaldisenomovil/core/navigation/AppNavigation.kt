@@ -18,7 +18,7 @@ import com.example.proyectofinaldisenomovil.features.register.RegisterScreen
 fun AppNavigation(){
 
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = AppScreens.LoginScreen.route)  {
+    NavHost(navController = navController, startDestination = AppScreens.HomeScreen.route)  {
         composable ( route = AppScreens.LoginScreen.route){
             LoginScreen(navController)
         }
