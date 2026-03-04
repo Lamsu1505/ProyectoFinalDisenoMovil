@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.core.component.barReusable
 
+import androidx.compose.foundation.background
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,7 +15,7 @@ fun AppTopBar(
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     TopAppBar(
-        modifier = modifier,
+        modifier = modifier.background(MaterialTheme.colorScheme.primary),
         title = { Text(text = title) },
         navigationIcon = {
             navigationIcon?.invoke()

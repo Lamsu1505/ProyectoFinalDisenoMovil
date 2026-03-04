@@ -8,7 +8,8 @@ package com.example.proyectofinaldisenomovil.data.model.Event
 enum class EventCategory(val label: String) {
     DEPORTES("Deportes"),
     CULTURA("Cultura"),
-    ACADEMICO("Académico"),
-    VOLUNTARIADO("Voluntariado"),
     SOCIAL("Social"),
+    VOLUNTARIADO("Voluntariado"),
+    DIVERSION("Diversión"),
+    OTRO("Otro"),
 }
