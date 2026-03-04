@@ -37,7 +37,7 @@ import com.example.proyectofinaldisenomovil.features.register.RegisterScreen
 @Composable
 fun HomeScreen(
     navController: NavController,
-    loginViewModel: LoginViewModel = viewModel()
+    homeViewModel: HomeViewModel = viewModel()
 ) {
     Scaffold(
         topBar = {

@@ -34,7 +34,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -210,13 +209,14 @@ fun LoginForm(
         Button(
             enabled = loginViewModel.validateForm(),
             onClick = {
-                loginViewModel.login { success ->
-                    if (success) {
-                        navController.navigate(AppScreens.HomeScreen.route)
-                    } else {
-                        Toast.makeText(myContext, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                navController.navigate(AppScreens.HomeScreen.route)
+//                loginViewModel.login { success ->
+//                    if (success) {
+//                        navController.navigate(AppScreens.HomeScreen.route)
+//                    } else {
+//                        Toast.makeText(myContext, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
             },
             modifier = Modifier.height(50.dp),
             shape = RoundedCornerShape(20.dp),

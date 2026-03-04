@@ -12,12 +12,7 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 class LoginViewModel : ViewModel() {
-    private val auth: FirebaseAuth? =
-        try {
-            FirebaseAuth.getInstance()
-        } catch (e: Exception) {
-            null
-        }
+
     var email by  mutableStateOf("")
     var password by  mutableStateOf("")
     var emailError by  mutableStateOf("")
@@ -63,22 +58,6 @@ class LoginViewModel : ViewModel() {
 
 
     fun login(onResult: (Boolean) -> Unit) {
-
-        if (auth == null) {
-            onResult(false)
-            return
-        }
-
-        auth.signInWithEmailAndPassword(this.email, this.password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.e("LOGIN", "Error: ${task.exception?.message}")
-                    onResult(true)
-                } else {
-                    Log.e("LOGIN", "Error: ${task.exception?.message}")
-                    onResult(false)
-                }
-            }
     }
 
 }

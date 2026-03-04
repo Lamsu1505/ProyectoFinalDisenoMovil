@@ -14,19 +14,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterViewModel : ViewModel() {
 
-    private val auth: FirebaseAuth? =
-        try {
-            FirebaseAuth.getInstance()
-        } catch (e: Exception) {
-            null
-        }
-
-    private val db : FirebaseFirestore? =
-        try {
-            FirebaseFirestore.getInstance()
-        } catch (e: Exception) {
-            null
-        }
 
     var name by mutableStateOf("")
     var passwordConfirmation by mutableStateOf("")
