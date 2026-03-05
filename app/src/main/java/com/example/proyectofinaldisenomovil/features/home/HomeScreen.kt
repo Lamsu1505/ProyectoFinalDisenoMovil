@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.R
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
@@ -113,7 +112,7 @@ fun HomeScreen(
 
             FiltersBar()
 
-            EventCard()
+            EventCard( navController)
         }
 
     }
@@ -303,12 +302,17 @@ fun DistanceComboBox() {
 
 
 @Composable
-fun EventCard() {
+fun EventCard(
+    navController: NavController
+) {
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp),
+            .padding(12.dp)
+            .clickable( onClick = {
+                navController.navigate(AppScreens.ViewEventScreen.route)
+            }),
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(8.dp)
     ) {

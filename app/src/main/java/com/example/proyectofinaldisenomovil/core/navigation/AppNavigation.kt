@@ -11,6 +11,7 @@ import com.example.proyectofinaldisenomovil.features.home.HomeScreen
 import com.example.proyectofinaldisenomovil.features.login.LoginScreen
 import com.example.proyectofinaldisenomovil.features.login.LoginViewModel
 import com.example.proyectofinaldisenomovil.features.register.RegisterScreen
+import com.example.proyectofinaldisenomovil.features.ViewEvent.ViewEventScreen
 
 
 //Se encarga de orquestar la navegacion de la app
@@ -33,6 +34,9 @@ fun AppNavigation(){
         }
         composable ( route = AppScreens.RecoverPasswordScreen.route){
             RecoverPasswordScreen(navController)
+        }
+        composable ( route = AppScreens.ViewEventScreen.route){
+            ViewEventScreen(navController)
         }
 
 
