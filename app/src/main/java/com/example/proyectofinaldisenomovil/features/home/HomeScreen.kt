@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.features.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,19 +10,26 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.R
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -47,6 +55,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -101,6 +112,8 @@ fun HomeScreen(
             Spacer( modifier = Modifier.size(7.dp))
 
             FiltersBar()
+
+            EventCard()
         }
 
     }
@@ -130,7 +143,7 @@ fun FiltersBar(){
                     color = MaterialTheme.colorScheme.onSurface,
 
                 )
-                SimpleDropdown()
+                OrderByComboBox()
             }
 
             Row(
@@ -144,7 +157,7 @@ fun FiltersBar(){
                 color = MaterialTheme.colorScheme.onSurface
                 )
 
-                SimpleDropdownDistance()
+                DistanceComboBox()
             }
         }
     }
@@ -152,8 +165,7 @@ fun FiltersBar(){
 
 
 @Composable
-fun SimpleDropdown() {
-
+fun OrderByComboBox() {
     val options = listOf("Nombre", "Fecha", "Popularidad")
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf(options[0]) }
@@ -220,9 +232,8 @@ fun SimpleDropdown() {
     }
 }
 
-
 @Composable
-fun SimpleDropdownDistance() {
+fun DistanceComboBox() {
 
     val options = listOf("1Km", "5Km", "10Km" , "30Km" , "50km" , "100Km" , "+150Km")
     var expanded by remember { mutableStateOf(false) }
@@ -290,6 +301,151 @@ fun SimpleDropdownDistance() {
     }
 }
 
+
+@Composable
+fun EventCard() {
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(8.dp)
+    ) {
+
+        Column(
+
+        ) {
+            Box {
+                Image(
+                    painter = painterResource(id = com.example.proyectofinaldisenomovil.R.mipmap.fut_img),
+                    contentDescription = "Evento",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(160.dp)
+                )
+
+                // Categoría
+                Box(
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .background(
+                            color = Color(0xFFE65100),
+                            shape = RoundedCornerShape(50)
+                        )
+                        .padding(horizontal = 16.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = "Deportes",
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+
+                Text(
+                    text = "Partido de la paz (R. Madrid vs Universidad)",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.DateRange,
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        "Jueves 19 de feb",
+                        color = Color.Gray,
+                        fontSize = 16.sp
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        Icons.Default.Groups,
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+
+                    Spacer(modifier = Modifier.width(6.dp))
+
+                    Text(
+                        "30.000",
+                        color = Color.Gray,
+                        fontSize = 16.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Timer,
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        "6:00 pm",
+                        color = Color.Gray,
+                        fontSize = 16.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Icon(
+                        Icons.Default.LocationOn,
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        "Estadio centenario (2 km)",
+                        color = Color.Gray,
+                        fontSize = 16.sp
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorito",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
