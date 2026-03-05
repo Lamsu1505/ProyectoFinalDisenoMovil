@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -22,6 +23,7 @@ import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppSnackbarHost
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SnackbarController
+import com.example.proyectofinaldisenomovil.core.component.recoverPassword.RecoverHeader
 import com.example.proyectofinaldisenomovil.core.component.login.TopBarRegister
 import com.example.proyectofinaldisenomovil.core.navigation.AppNavigation
 import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
@@ -51,64 +53,43 @@ fun RecoverPasswordScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopBarRegister(navController)
-
-        },
         snackbarHost = {
             AppSnackbarHost(snackbarHostState)
         },
-        containerColor = MaterialTheme.colorScheme.onBackground
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
 
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Spacer(modifier = Modifier.height(32.dp))
+            // HEADER VERDE
+            RecoverHeader(navController)
 
-            Image(
-                painter = painterResource(id = R.mipmap.logo),
-                contentDescription = "Logo",
-                modifier = Modifier.size(140.dp)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = "Cambia tu contraseña",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
+            // CARD DEL FORMULARIO
             Card(
-                shape = RoundedCornerShape(24.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .offset(y = 390.dp),
+                shape = RoundedCornerShape(28.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
-                )
+                ),
+                elevation = CardDefaults.cardElevation(8.dp)
             ) {
 
                 Column(
-                    modifier = Modifier
-                        .padding(24.dp)
+                    modifier = Modifier.padding(24.dp)
                 ) {
-
-
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = code,
                         onValueChange = { code = it },
-                        singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
-                        label = {Text("Código de verificación")}
+                        label = { Text("Código de verificación") }
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -116,26 +97,25 @@ fun RecoverPasswordScreen(
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        singleLine = true,
-                        visualTransformation = if (passwordVisible)
-                            VisualTransformation.None
-                        else
-                            PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("Contraseña") },
+                        visualTransformation =
+                            if (passwordVisible) VisualTransformation.None
+                            else PasswordVisualTransformation(),
                         trailingIcon = {
-                            IconButton(onClick = {
-                                passwordVisible = !passwordVisible
-                            }) {
+                            IconButton(
+                                onClick = { passwordVisible = !passwordVisible }
+                            ) {
                                 Icon(
-                                    imageVector = if (passwordVisible)
-                                        Icons.Default.Visibility
-                                    else
-                                        Icons.Default.VisibilityOff,
-                                    contentDescription = "Mostrar contraseña"
+                                    imageVector =
+                                        if (passwordVisible)
+                                            Icons.Default.Visibility
+                                        else
+                                            Icons.Default.VisibilityOff,
+                                    contentDescription = null
                                 )
                             }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = {Text("Contraseña")}
+                        }
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -143,29 +123,31 @@ fun RecoverPasswordScreen(
                     OutlinedTextField(
                         value = repeatPassword,
                         onValueChange = { repeatPassword = it },
-                        singleLine = true,
-                        visualTransformation = if (repeatPasswordVisible)
-                            VisualTransformation.None
-                        else
-                            PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("Repetir contraseña") },
+                        visualTransformation =
+                            if (repeatPasswordVisible) VisualTransformation.None
+                            else PasswordVisualTransformation(),
                         trailingIcon = {
-                            IconButton(onClick = {
-                                repeatPasswordVisible = !repeatPasswordVisible
-                            }) {
+                            IconButton(
+                                onClick = {
+                                    repeatPasswordVisible =
+                                        !repeatPasswordVisible
+                                }
+                            ) {
                                 Icon(
-                                    imageVector = if (repeatPasswordVisible)
-                                        Icons.Default.Visibility
-                                    else
-                                        Icons.Default.VisibilityOff,
-                                    contentDescription = "Mostrar contraseña"
+                                    imageVector =
+                                        if (repeatPasswordVisible)
+                                            Icons.Default.Visibility
+                                        else
+                                            Icons.Default.VisibilityOff,
+                                    contentDescription = null
                                 )
                             }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = {Text("Repetir Contraseña")}
+                        }
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(28.dp))
 
                     Button(
                         onClick = {
@@ -173,14 +155,13 @@ fun RecoverPasswordScreen(
                             if (password == repeatPassword && password.isNotEmpty()) {
 
                                 snackbarController.showMessage(
-                                    message = "La contraseña ha sido recuperada correctamente"
+                                    "La contraseña ha sido recuperada correctamente"
                                 )
 
-                                // TODO: Aquí irá la lógica real
-
                             } else {
+
                                 snackbarController.showMessage(
-                                    message = "Las contraseñas no coinciden"
+                                    "Las contraseñas no coinciden"
                                 )
                             }
                         },
@@ -193,6 +174,7 @@ fun RecoverPasswordScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     TextButton(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
                         onClick = {
                             navController.navigate(AppScreens.LoginScreen.route)
                         }
