@@ -2,6 +2,7 @@ package com.example.proyectofinaldisenomovil.core.component.barReusable
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.Box
@@ -86,7 +87,8 @@ fun CategorySelectorNotExpanded(
             .height(50.dp)
             .padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+
     ) {
 
         visibleCategories.forEach { category ->
