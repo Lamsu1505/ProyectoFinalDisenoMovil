@@ -2,9 +2,11 @@ package com.example.proyectofinaldisenomovil.features.ViewEvent
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,6 +32,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -41,14 +45,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,6 +67,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import kotlinx.coroutines.NonCancellable.key
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -128,9 +139,10 @@ fun ViewEventScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues)
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // ── Image Section ──
+            // ── Seccion de imagenes ──
             item {
                 EventImageSection(state)
             }
@@ -175,7 +187,7 @@ fun ViewEventScreen(
                 )
             }
 
-            // ── Comments header ──
+
             item {
                 Text(
                     text = "Comentarios",
@@ -183,7 +195,7 @@ fun ViewEventScreen(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(
-                        start = 20.dp, end = 20.dp,
+                        start = 0.dp, end = 20.dp,
                         top = 16.dp, bottom = 10.dp
                     )
                 )
@@ -205,15 +217,13 @@ fun ViewEventScreen(
     }
 }
 
-// ─────────────────────────────────────────────────
-// Image with category badge and page indicator
-// ─────────────────────────────────────────────────
+
 @Composable
 private fun EventImageSection(state: ViewEventUiState) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(220.dp)
+            .height(200.dp)
     ) {
         Image(
             painter = painterResource(id = state.imageRes),
@@ -222,22 +232,25 @@ private fun EventImageSection(state: ViewEventUiState) {
             modifier = Modifier.fillMaxSize()
         )
 
-        // Category badge
+        // Categoria
         Box(
             modifier = Modifier
-                .padding(14.dp)
+                .padding(10.dp)
                 .background(
                     color = MaterialTheme.colorScheme.secondary,
                     shape = RoundedCornerShape(50)
                 )
-                .padding(horizontal = 18.dp, vertical = 6.dp)
+                .padding(horizontal = 18.dp, vertical = 2.dp)
                 .align(Alignment.TopStart)
+                .width(90.dp),
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = state.category,
                 color = Color.White,
                 fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center
             )
         }
 
@@ -247,14 +260,14 @@ private fun EventImageSection(state: ViewEventUiState) {
                 .align(Alignment.BottomEnd)
                 .padding(14.dp)
                 .background(
-                    color = Color.Black.copy(alpha = 0.55f),
-                    shape = RoundedCornerShape(12.dp)
+                    color = Color.Black.copy(alpha = 0.70f),
+                    shape = RoundedCornerShape(7.dp)
                 )
                 .padding(horizontal = 10.dp, vertical = 4.dp)
         ) {
             Text(
                 text = "${state.currentImageIndex} / ${state.totalImages}",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.background,
                 fontSize = 13.sp
             )
         }
@@ -273,20 +286,26 @@ private fun EventInfoCard(
 ) {
     Column(
         modifier = Modifier
+            .width(400.dp)
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape( bottomEnd = 20.dp , bottomStart = 20.dp )
             )
-            .padding(horizontal = 20.dp, vertical = 18.dp)
+            .padding(horizontal = 10.dp, vertical = 18.dp)
+
     ) {
+
         // Title
         Text(
             text = state.title,
-            fontSize = 20.sp,
+            fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-            lineHeight = 26.sp
+            color = Color.White,
+            lineHeight = 26.sp,
+            maxLines = 2,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -300,7 +319,7 @@ private fun EventInfoCard(
         ) {
             // Left column – info rows
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(4f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 InfoRow(
@@ -313,7 +332,7 @@ private fun EventInfoCard(
                 )
                 InfoRow(
                     icon = Icons.Default.LocationOn,
-                    text = "${state.location} (${state.distance})"
+                    text = "${state.location}"
                 )
                 InfoRow(
                     icon = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
@@ -322,86 +341,105 @@ private fun EventInfoCard(
                 )
                 InfoRow(
                     icon = Icons.Default.Groups,
-                    text = "${numberFormat.format(state.currentAttendees)} / ${numberFormat.format(state.maxAttendees)}"
+                    text = "${numberFormat.format(state.currentAttendees)} / ${
+                        numberFormat.format(
+                            state.maxAttendees
+                        )
+                    }"
                 )
             }
 
             // Right column – creator + action buttons
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(3f),
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 // Creator info
-                Column(horizontalAlignment = Alignment.End) {
+                Column(horizontalAlignment = Alignment.Start)
+                {
                     Text(
                         text = "Creado por:",
                         fontSize = 13.sp,
-                        color = Color.Gray
+                        color = Color.White
                     )
                     Text(
                         text = state.creatorName,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = Color.White,
+                        maxLines = 1
                     )
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
 
                 // "Estoy interesado" button
-                OutlinedButton(
-                    modifier = Modifier.fillMaxWidth(),
+                Button(
+                    modifier = Modifier.fillMaxWidth().height(40.dp),
                     onClick = onInterestedClick,
+                    contentPadding = PaddingValues(8.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
                         containerColor = if (isInterested)
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                        else Color.Transparent
+                            MaterialTheme.colorScheme.secondary
+                        else MaterialTheme.colorScheme.surface,
+                        contentColor = if (isInterested)
+                            MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurface
                     ),
-                    border = ButtonDefaults.outlinedButtonBorder.copy(
-                        width = 1.dp
-                    )
                 ) {
-                    Icon(
-                        imageVector = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = null,
-                        tint = if (isInterested) Color.Red else Color.Gray,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "Estoy interesado",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = null,
+                            tint = if (isInterested) Color.Red else MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(18.dp).weight(1f)
+                        )
+                        Spacer(modifier = Modifier.width(2.dp))
+                        Text(
+                            modifier = Modifier.fillMaxWidth()
+                                .weight(5f),
+                            textAlign = TextAlign.Center,
+                            text = "Estoy interesado",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
                 }
 
                 // "Confirmar asistencia" button
-                OutlinedButton(
-                    onClick = {
-                        onConfirmedClick()
-                    },
+                Button(
+                    modifier = Modifier.fillMaxWidth().height(40.dp),
+                    onClick = onInterestedClick,
+                    contentPadding = PaddingValues(8.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = if (isConfirmed)
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                        else Color.Transparent
-                    ),
-                    border = ButtonDefaults.outlinedButtonBorder.copy(
-                        width = 1.dp
+                        containerColor = if (isInterested)
+                            MaterialTheme.colorScheme.secondary
+                        else MaterialTheme.colorScheme.surface,
+                        contentColor = if (isInterested)
+                            MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurface
                     )
                 ) {
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = null,
-                        tint = if (isConfirmed) MaterialTheme.colorScheme.primary else Color.Gray,
+                        tint = if (isConfirmed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(18.dp)
                     )
-                    Spacer(modifier = Modifier.width(5.dp))
+                    Spacer(modifier = Modifier.width(2.dp))
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = "Confirmar que iré",
+                        modifier = Modifier.fillMaxWidth()
+                            .weight(5f),
+                        textAlign = TextAlign.Center,
+                        text = "Confirmar asistencia",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -422,14 +460,16 @@ private fun InfoRow(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = iconTint,
+            tint = Color.White,
             modifier = Modifier.size(20.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = text,
             fontSize = 14.sp,
-            color = Color.Gray
+            color = Color.White,
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 2
         )
     }
 }
@@ -500,6 +540,9 @@ private fun EventLocationSection(imageRes: Int) {
 
 @Composable
 private fun CommentItem(comment: CommentUiModel) {
+    var isExpanded by remember { mutableStateOf(false) }
+    var isOverflowing by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -547,8 +590,41 @@ private fun CommentItem(comment: CommentUiModel) {
                 text = comment.text,
                 fontSize = 14.sp,
                 color = Color.DarkGray,
-                lineHeight = 20.sp
+                lineHeight = 20.sp,
+                maxLines = if (isExpanded) Int.MAX_VALUE else 3,
+                overflow = TextOverflow.Ellipsis,
+                onTextLayout = { result ->
+                    if (!isExpanded) {
+                        isOverflowing = result.hasVisualOverflow
+                    }
+                }
             )
+
+            if (isOverflowing && !isExpanded) {
+                Text(
+                    text = "Mostrar más",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .clickable { isExpanded = true }
+                        .padding(top = 2.dp)
+                )
+            }
+
+            if (isExpanded) {
+                Text(
+                    text = "Mostrar menos",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .clickable { isExpanded = false }
+                        .padding(top = 2.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp) )
         }
     }
 }

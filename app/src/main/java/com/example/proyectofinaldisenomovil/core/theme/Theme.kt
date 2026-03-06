@@ -23,11 +23,9 @@ private val LightColorScheme = lightColorScheme(
     primary = green,
     secondary = orange,
     tertiary = red,
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
     onSurface = darkGrey,
-    surfaceVariant = greyDisable
+    surfaceVariant = greyDisable,
+    surface = secondBackground
 )
 
 @Composable

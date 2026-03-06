@@ -19,15 +19,15 @@ data class ViewEventUiState(
     val category: String = "Deportes",
     val date: String = "Jueves 28 de febrero",
     val time: String = "6:00 pm",
-    val location: String = "Estadio centena...",
+    val location: String = "Estadio centenario Armenia.",
     val distance: String = "2 km",
     val likes: Int = 200,
     val currentAttendees: Int = 10500,
     val maxAttendees: Int = 30000,
-    val creatorName: String = "AndresZuniga05",
+    val creatorName: String = "AndresZuniga0fdefd fsf fd5",
     val description: String = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing",
     val imageRes: Int = R.mipmap.fut_img,
-    val totalImages: Int = 5,
+    val totalImages: Int = 8,
     val currentImageIndex: Int = 1,
     val comments: List<CommentUiModel> = listOf(
         CommentUiModel(
@@ -42,7 +42,7 @@ data class ViewEventUiState(
             authorName = "Natalia Tejada",
             initials = "NT",
             timeAgo = "Hace 1h",
-            text = "Es un evento no apto para mascotas, es muy lamentableeee."
+            text = "Es un evento no apto para mascotas, es muy lamentableeee. s un evento no apto para mascotas, es muy lamentableeee. s un evento no apto para mascotas, es muy lamentableeee. s un evento no apto para mascotas, es muy lamentableeee. s un evento no apto para mascotas, es muy lamentableeee. s un evento no apto para mascotas, es muy lamentableeee."
         ),
         CommentUiModel(
             id = "3",
