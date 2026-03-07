@@ -26,15 +26,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchTopBarApp(
+    navController: NavController,
     query: String,
-    onQueryChange: (String) -> Unit,
-    onNotificationClick: () -> Unit
+    onQueryChange: (String) -> Unit
 ) {
     CenterAlignedTopAppBar(
         modifier = Modifier
@@ -90,7 +91,10 @@ fun SearchTopBarApp(
                 modifier = Modifier.fillMaxHeight(),
                 contentAlignment = Alignment.Center
             ) {
-                IconButton(onClick = onNotificationClick) {
+                IconButton(
+                    onClick = {navController.navigate("notificationsScreen")}
+                )
+                {
                     Icon(
                         imageVector = Icons.Default.Notifications,
                         contentDescription = "Notificaciones",
@@ -109,9 +113,9 @@ fun SearchTopBarApp(
 fun PreviewSearchTopBar() {
     ProyectoFinalDisenoMovilTheme() {
         SearchTopBarApp(
+            navController = rememberNavController(),
             query = "",
-            onQueryChange = {},
-            onNotificationClick = {}
+            onQueryChange = {}
         )
     }
 }

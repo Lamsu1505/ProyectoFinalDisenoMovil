@@ -66,7 +66,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
-import com.example.proyectofinaldisenomovil.core.component.barReusable.CategorySelectorBar
+import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryEventsSelectorBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SearchTopBarApp
 import com.example.proyectofinaldisenomovil.core.component.login.LoginHeaderSection
 import com.example.proyectofinaldisenomovil.core.component.login.TopBarRegister
@@ -87,10 +87,9 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             SearchTopBarApp(
+                navController,
                 query = query,
-                onQueryChange = { query = it },
-                onNotificationClick = {
-                }
+                onQueryChange = { query = it }
             )
         },
         bottomBar = {
@@ -106,7 +105,7 @@ fun HomeScreen(
                 .padding(paddingValues)
         ) {
 
-            CategorySelectorBar( navController)
+            CategoryEventsSelectorBar( navController)
 
             Spacer( modifier = Modifier.size(7.dp))
 

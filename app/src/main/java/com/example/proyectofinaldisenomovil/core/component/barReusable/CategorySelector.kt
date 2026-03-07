@@ -4,7 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -34,8 +37,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,10 +55,12 @@ private val UnselectedGray = Color(0xFFE0E0E0)
 private val UnselectedTextGray = Color(0xFF6B6B6B)
 private val PlusButtonGray = Color(0xFFD6D6D6)
 
+
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun CategorySelectorBar(
-    navController: NavController
+fun CategoryEventsSelectorBar(
+    navController: NavController,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selected by remember { mutableStateOf<EventCategory?>(null) }
@@ -170,11 +177,84 @@ private fun CategoryChip(
     }
 }
 
+@Composable
+fun CategoryBarNotifications(
+    navController: NavController,
+    onCategorySelected: (String) -> Unit = {}
+) {
+    val categories = listOf("Todas", "No leidas", "Eventos", "Coments")
+    var selectedCategory by remember { mutableStateOf("Todas") }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 6.dp, vertical = 10.dp)
+            .clip(RoundedCornerShape(50))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .padding(1.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            categories.forEach { category ->
+                NotificationTab(
+                    label = category,
+                    isSelected = selectedCategory == category,
+                    onClick = {
+                        selectedCategory = category
+                        onCategorySelected(category)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    }
+}
+
+/**
+ * A single notification tab — green pill when selected, transparent when not.
+ */
+@Composable
+private fun NotificationTab(
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(50))
+            .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = label,
+            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+            fontSize = if (isSelected) 14.sp else 12.sp,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+            textAlign = TextAlign.Center,
+            maxLines = 1
+        )
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewCategorySelect() {
     ProyectoFinalDisenoMovilTheme {
-        CategorySelectorBar(navController = rememberNavController())
+        CategoryEventsSelectorBar(navController = rememberNavController())
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewCategoryNotification() {
+    ProyectoFinalDisenoMovilTheme {
+        CategoryBarNotifications(navController = rememberNavController())
     }
 }

@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.features.ForgotPassword.ForgotPasswordScreen
+import com.example.proyectofinaldisenomovil.features.Notifications.NotificationsScreen
 import com.example.proyectofinaldisenomovil.features.RecoverPassword.RecoverPasswordScreen
 import com.example.proyectofinaldisenomovil.features.home.HomeScreen
 import com.example.proyectofinaldisenomovil.features.login.LoginScreen
@@ -37,6 +38,9 @@ fun AppNavigation(){
         }
         composable ( route = AppScreens.ViewEventScreen.route){
             ViewEventScreen(navController)
+        }
+        composable ( route = AppScreens.NotificationsScreen.route){
+            NotificationsScreen(navController)
         }
 
 
