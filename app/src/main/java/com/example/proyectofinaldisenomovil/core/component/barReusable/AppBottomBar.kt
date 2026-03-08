@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 @Composable
@@ -39,13 +40,11 @@ fun AppBottomBar(
         containerColor = MaterialTheme.colorScheme.onBackground
     ) {
 
-        // 1️⃣ Inicio
+        //Inicio
         NavigationBarItem(
             selected = currentRoute == "home_route",
             onClick = {
-                navController.navigate("home_route") {
-                    launchSingleTop = true
-                }
+                navController.navigate(AppScreens.HomeScreen.route)
             },
             icon = { Icon(Icons.Default.Home,
                 contentDescription = "Inicio",
@@ -53,7 +52,7 @@ fun AppBottomBar(
             label = { Text("Inicio") }
         )
 
-        // 2️⃣ Iré
+        // Iré
         NavigationBarItem(
             selected = currentRoute == "going_route",
             onClick = {
@@ -67,7 +66,7 @@ fun AppBottomBar(
             label = { Text("Iré") }
         )
 
-        // 3️⃣ Espacio central para FAB
+        // Espacio central para FAB
         Box(
             modifier = Modifier
                 .weight(1f),
@@ -87,7 +86,7 @@ fun AppBottomBar(
             }
         }
 
-        // 4️⃣ Me gusta
+        // Me gusta
         NavigationBarItem(
             selected = currentRoute == "favorites_route",
             onClick = {
@@ -101,13 +100,11 @@ fun AppBottomBar(
             label = { Text("Me gusta") }
         )
 
-        // 5️⃣ Perfil
+        // Perfil
         NavigationBarItem(
             selected = currentRoute == "profile_route",
             onClick = {
-                navController.navigate("profile_route") {
-                    launchSingleTop = true
-                }
+                navController.navigate(AppScreens.ProfileScreen.route)
             },
             icon = { Icon(Icons.Default.Person,
                 contentDescription = "Perfil",

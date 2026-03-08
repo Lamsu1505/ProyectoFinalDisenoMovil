@@ -15,3 +15,6 @@ enum class ReputationReason(val points: Int, val label: String) {
     ATTENDANCE_CONFIRMED(3, "Asistencia a evento confirmada"),
     EVENT_REJECTED(-5,   "Evento rechazado por moderador"),
 }
+
+
+

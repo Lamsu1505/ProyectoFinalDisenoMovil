@@ -66,6 +66,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
+import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import kotlinx.coroutines.NonCancellable.key
 import java.text.NumberFormat
@@ -82,52 +83,9 @@ fun ViewEventScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
-                title = {
-                    Text(
-                        text = "Evento",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Volver",
-                            tint = Color.White,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-                },
-                actions = {
-                    BadgedBox(
-                        badge = {
-                            Badge(
-                                containerColor = Color.Red,
-                                contentColor = Color.White
-                            ) {
-                                Text("3", fontSize = 11.sp)
-                            }
-                        }
-                    ) {
-                        IconButton(onClick = { /* TODO */ }) {
-                            Icon(
-                                imageVector = Icons.Default.Notifications,
-                                contentDescription = "Notificaciones",
-                                tint = Color.White,
-                                modifier = Modifier.size(30.dp)
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
+            AppTopBar(
+                navController ,
+                title = "Evento"
             )
         },
         bottomBar = {

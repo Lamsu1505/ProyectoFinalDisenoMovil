@@ -1,6 +1,7 @@
 package com.example.proyectofinaldisenomovil.core.component.barReusable
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,22 +89,30 @@ fun SearchTopBarApp(
         },
 
         actions = {
-            Box(
-                modifier = Modifier.fillMaxHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                IconButton(
-                    onClick = {navController.navigate("notificationsScreen")}
-                )
-                {
-                    Icon(
-                        imageVector = Icons.Default.Notifications,
-                        contentDescription = "Notificaciones",
-                        tint = Color.White,
-                        modifier = Modifier.size(35.dp)
-                    )
+            BadgedBox(
+                modifier = Modifier
+                    .clickable(onClick = {
+                        navController.navigate(AppScreens.NotificationsScreen.route)
+                    }),
+                badge = {
+                    Badge(
+                        containerColor = Color.Red,
+                        contentColor = Color.White
+                    ) {
+                        //TODO cambiar a cantidad real
+                        Text("3", fontSize = 11.sp)
+                    }
                 }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = "Notificaciones",
+                    tint = Color.White,
+                    modifier = Modifier.size(35.dp)
+                )
+
             }
+            Spacer(modifier = Modifier.width(8.dp))
         }
     )
 }
