@@ -10,6 +10,7 @@ sealed class  AppScreens (val route: String) {
     object  ViewEventScreen : AppScreens("viewEventScreen")
     object  NotificationsScreen : AppScreens("notificationsScreen")
     object  ProfileScreen : AppScreens("profileScreen")
+    object  EditProfileScreen : AppScreens("editprofileScreen")
 
 
 

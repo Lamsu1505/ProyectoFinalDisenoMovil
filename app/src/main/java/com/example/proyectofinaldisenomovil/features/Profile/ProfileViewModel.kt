@@ -23,6 +23,5 @@ class ProfileViewModel : ViewModel() {
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     fun onLogout() {
-        // Implement logout logic
     }
 }
