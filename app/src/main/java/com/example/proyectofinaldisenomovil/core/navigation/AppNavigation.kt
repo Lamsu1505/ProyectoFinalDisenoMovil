@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.proyectofinaldisenomovil.features.CreateEvent.CreateEventScreen
 import com.example.proyectofinaldisenomovil.features.EditProfile.EditProfileScreen
 import com.example.proyectofinaldisenomovil.features.ForgotPassword.ForgotPasswordScreen
 import com.example.proyectofinaldisenomovil.features.Notifications.NotificationsScreen
@@ -49,6 +50,9 @@ fun AppNavigation(){
         }
         composable ( route = AppScreens.EditProfileScreen.route){
             EditProfileScreen(navController)
+        }
+        composable ( route = AppScreens.CreateEventScreen.route){
+            CreateEventScreen(navController)
         }
 
 

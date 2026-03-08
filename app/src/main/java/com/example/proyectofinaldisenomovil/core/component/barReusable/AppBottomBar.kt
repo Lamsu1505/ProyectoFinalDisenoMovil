@@ -75,9 +75,7 @@ fun AppBottomBar(
             FloatingActionButton(
                 containerColor = MaterialTheme.colorScheme.primary,
                 onClick = {
-                    navController.navigate("add_route") {
-                        launchSingleTop = true
-                    }
+                    navController.navigate(AppScreens.CreateEventScreen.route)
                 }
             ) {
                 Icon(Icons.Default.Add,
