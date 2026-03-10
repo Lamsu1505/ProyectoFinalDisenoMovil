@@ -1,23 +1,21 @@
 package com.example.proyectofinaldisenomovil.features.CreateEvent
 
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,11 +32,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.proyectofinaldisenomovil.core.component.AlertDialogs.ConfirmAlertDialog
-import com.example.proyectofinaldisenomovil.core.component.DatePickerModal
+import coil3.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
-import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
 import com.example.proyectofinaldisenomovil.core.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -47,7 +43,6 @@ fun CreateEventScreen(
     navController: NavController,
     viewModel: CreateEventViewModel = viewModel()
 ) {
-    //variable para manejar la informacion quemada
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
@@ -67,56 +62,49 @@ fun CreateEventScreen(
             contentPadding = PaddingValues(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Section: Información
             item {
                 CategoryBadge(icon = Icons.Default.PushPin, label = "Información")
-                infoSection(navController , uiState , viewModel)
+                infoSection(navController, uiState, viewModel)
                 Spacer(modifier = Modifier.height(5.dp))
             }
 
-            // Section: Imagenes
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryBadge(icon = Icons.Default.Image, label = "Imagenes")
-                imageSection(navController , uiState , viewModel)
+                imageSection(navController, uiState, viewModel)
                 Spacer(modifier = Modifier.height(5.dp))
             }
 
-            // Section: Ubicación
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryBadge(icon = Icons.Default.LocationOn, label = "Ubicación")
-                locationSection(navController , uiState , viewModel)
+                locationSection(navController, uiState, viewModel)
                 Spacer(modifier = Modifier.height(5.dp))
             }
 
-            // Section: Fecha y Hora
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryBadge(icon = Icons.Default.CalendarToday, label = "Fecha y Hora")
-                dateSection(navController , uiState , viewModel)
+                dateSection(navController, uiState, viewModel)
                 Spacer(modifier = Modifier.height(5.dp))
             }
 
-            // Create Event Button
             item {
                 Spacer(modifier = Modifier.height(24.dp))
-                ButtonsSection(navController , uiState , viewModel)
+                ButtonsSection(navController, uiState, viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }
 }
 
-
 @Composable
 fun infoSection(
     navController: NavController,
-    uiState : CreateEventUiState = CreateEventUiState(),
-    viewModel: CreateEventViewModel = viewModel()
-){
-
-    var colorLabels = MaterialTheme.colorScheme.onSurface
+    uiState: CreateEventUiState,
+    viewModel: CreateEventViewModel
+) {
+    val colorLabels = MaterialTheme.colorScheme.onSurface
     OutlinedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -125,17 +113,11 @@ fun infoSection(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text("Titulo del evento",
-                fontWeight = FontWeight.Bold, fontSize = 14.sp,
-                color = colorLabels
-            )
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Titulo del evento", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = colorLabels)
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = uiState.title,
-                maxLines = 2,
                 onValueChange = { viewModel.onTitleChange(it) },
                 placeholder = { Text("Agrega un titulo llamativo", color = MaterialTheme.colorScheme.outline) },
                 modifier = Modifier.fillMaxWidth(),
@@ -148,19 +130,13 @@ fun infoSection(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("Descripción",
-                fontWeight = FontWeight.Bold, fontSize = 14.sp,
-                color = colorLabels
-            )
+            Text("Descripción", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = colorLabels)
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = uiState.description,
-                maxLines = 10,
                 onValueChange = { viewModel.onDescriptionChange(it) },
                 placeholder = {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()
-                    ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                         Spacer(Modifier.height(10.dp))
                         Text("Describe de que se trata el evento", color = Color.Gray)
                         Text(
@@ -183,10 +159,7 @@ fun infoSection(
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1.5f)) {
-                    Text("Categoria",
-                        fontWeight = FontWeight.Bold, fontSize = 14.sp,
-                        color = colorLabels
-                    )
+                    Text("Categoria", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = colorLabels)
                     Spacer(modifier = Modifier.height(4.dp))
                     OutlinedTextField(
                         value = uiState.category,
@@ -204,11 +177,7 @@ fun infoSection(
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Capacidad",
-                        fontWeight = FontWeight.Bold,
-                        color = colorLabels,
-                        fontSize = 14.sp
-                    )
+                    Text("Capacidad", fontWeight = FontWeight.Bold, color = colorLabels, fontSize = 14.sp)
                     Spacer(modifier = Modifier.height(4.dp))
                     OutlinedTextField(
                         value = uiState.capacity,
@@ -227,20 +196,37 @@ fun infoSection(
     }
 }
 
-
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun imageSection(
     navController: NavController,
-    uiState : CreateEventUiState = CreateEventUiState(),
-    viewModel: CreateEventViewModel = viewModel()
-){
+    uiState: CreateEventUiState,
+    viewModel: CreateEventViewModel
+) {
+    var selectedImageForDelete by remember { mutableStateOf<Uri?>(null) }
+    
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri -> uri?.let { viewModel.addImage(it) } }
+    )
+
+    val labelInfo = if (uiState.images.isEmpty()) {
+        "Añade imagenes relevantes para el evento"
+    } else {
+        if (uiState.images.size == 1)
+            "${uiState.images.size} Imagen añadida"
+        else
+            "${uiState.images.size} Imagenes añadidas"
+    }
+
     Text(
-        "Añade imagenes relevantes para el evento",
+        text = labelInfo,
         color = Color.Gray,
         fontSize = 14.sp,
         modifier = Modifier.padding(vertical = 2.dp).fillMaxWidth(),
         textAlign = TextAlign.Center
     )
+
 
     OutlinedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -253,21 +239,59 @@ fun imageSection(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                maxItemsInEachRow = 3
+                maxItemsInEachRow = 3,
+                maxLines = 5
             ) {
-                repeat(5) {
-                    Box(
-                        modifier = Modifier
-                            .size(width = 100.dp, height = 60.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color.LightGray)
-                    ) {
-                        Image(
-                            painter = painterResource(id = android.R.drawable.ic_menu_gallery),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
+                if (uiState.images.isEmpty()) {
+                    repeat(2) {
+                        Box(
+                            modifier = Modifier
+                                .size(width = 100.dp, height = 60.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color.LightGray)
+                        ) {
+                            Image(
+                                painter = painterResource(id = android.R.drawable.ic_menu_gallery),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
+                } else {
+                    uiState.images.forEach { uri ->
+                        Box(
+                            modifier = Modifier
+                                .size(width = 110.dp, height = 60.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color.LightGray)
+                                .clickable {
+                                    selectedImageForDelete = if (selectedImageForDelete == uri) null else uri
+                                }
+                        ) {
+                            AsyncImage(
+                                model = uri,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                            
+                            if (selectedImageForDelete == uri) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.Black.copy(alpha = 0.4f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    IconButton(onClick = { 
+                                        viewModel.removeImage(uri)
+                                        selectedImageForDelete = null
+                                    }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.White)
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -275,11 +299,23 @@ fun imageSection(
                     modifier = Modifier
                         .size(width = 100.dp, height = 60.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color.White),
+                        .background(MaterialTheme.colorScheme.background),
                     contentAlignment = Alignment.Center
                 ) {
-                    IconButton(onClick = { /* Add image */ }) {
-                        Icon(Icons.Default.AddCircleOutline, contentDescription = "Add image", tint = orange, modifier = Modifier.size(40.dp))
+                    IconButton(
+                        onClick = {
+                        photoPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                        },
+                        modifier = Modifier.size(50.dp)
+
+                    ) {
+                        Icon(
+                            Icons.Default.AddCircleOutline,
+                            contentDescription = "Add image",
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(50.dp))
                     }
                 }
             }
@@ -287,13 +323,12 @@ fun imageSection(
     }
 }
 
-
 @Composable
 fun locationSection(
     navController: NavController,
-    uiState : CreateEventUiState = CreateEventUiState(),
-    viewModel: CreateEventViewModel = viewModel()
-){
+    uiState: CreateEventUiState,
+    viewModel: CreateEventViewModel
+) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
         shape = RoundedCornerShape(24.dp),
@@ -301,12 +336,12 @@ fun locationSection(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Dirección directa", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Text("Dirección directa", fontWeight = FontWeight.Bold, fontSize = 14.sp)
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = uiState.address,
                 onValueChange = { viewModel.onAddressChange(it) },
-                placeholder = { Text("Agrega la dirección Ejemplo: Cra 18#49-05", color = Color.Gray) },
+                placeholder = { Text("Agrega la dirección Ejemplo: Cra 18#49-05", color = Color.Gray) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -348,19 +383,14 @@ fun locationSection(
             }
         }
     }
-
 }
-
-
-
 
 @Composable
 fun dateSection(
     navController: NavController,
-    uiState : CreateEventUiState = CreateEventUiState(),
-    viewModel: CreateEventViewModel = viewModel()
-){
-
+    uiState: CreateEventUiState,
+    viewModel: CreateEventViewModel
+) {
     var showDatePicker by remember { mutableStateOf(false) }
 
     Card(
@@ -370,34 +400,23 @@ fun dateSection(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                "Inicio del evento",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                textDecoration = TextDecoration.Underline
-            )
+            Text("Inicio del evento", fontWeight = FontWeight.Bold, fontSize = 16.sp, textDecoration = TextDecoration.Underline)
             Spacer(modifier = Modifier.height(8.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        showDatePicker = true
-                    }
-            ) {
+            Box(modifier = Modifier.fillMaxWidth().clickable { showDatePicker = true }) {
                 OutlinedTextField(
-                    //TODO Castear la fecha a DD/MM/AA
-                    value = viewModel.eventDate?.toString() ?: "Selecciona una fecha"                    ,
+                    value = viewModel.eventDate?.toString() ?: "Selecciona una fecha",
                     onValueChange = { },
                     readOnly = true,
                     enabled = false,
                     modifier = Modifier.fillMaxWidth(),
-                    trailingIcon = {
-                        Icon(Icons.Default.ChevronRight, contentDescription = null)
-                    }
+                    trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null) }
                 )
             }
-                Spacer(modifier = Modifier.width(12.dp))
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text("Hora", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     Spacer(modifier = Modifier.height(4.dp))
@@ -416,152 +435,30 @@ fun dateSection(
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                "Fin del evento (Opcional)",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                textDecoration = TextDecoration.Underline
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.weight(1.5f)) {
-                    Text("Fecha", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    OutlinedTextField(
-                        value = uiState.endDate,
-                        onValueChange = { },
-                        readOnly = true,
-                        trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = Color.Black,
-                            focusedBorderColor = Color.Black,
-                            unfocusedTextColor = Color.Gray
-                        )
-                    )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("Hora", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    OutlinedTextField(
-                        value = uiState.endTime,
-                        onValueChange = { },
-                        readOnly = true,
-                        trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = Color.Black,
-                            focusedBorderColor = Color.Black,
-                            unfocusedTextColor = Color.Gray
-                        )
-                    )
-            }
         }
     }
-
-    if (showDatePicker) {
-        DatePickerModal(
-            onDateSelected = { selectedDate ->
-                viewModel.onDateChange(selectedDate)
-                showDatePicker = false
-            },
-            onDismiss = { showDatePicker = false }
-        )
-    }
 }
-
 
 @Composable
 fun ButtonsSection(
     navController: NavController,
-    uiState : CreateEventUiState = CreateEventUiState(),
-    viewModel: CreateEventViewModel = viewModel()
-){
-    var showConfirmDialog by remember { mutableStateOf(false) }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    uiState: CreateEventUiState,
+    viewModel: CreateEventViewModel
+) {
+    Button(
+        onClick = { viewModel.onCreateEvent() },
+        modifier = Modifier.fillMaxWidth().height(50.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = orange),
+        shape = RoundedCornerShape(20.dp)
     ) {
-        // Botón Cancelar
-        Button(
-            onClick = { navController.navigate(AppScreens.HomeScreen.route) },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-            shape = RoundedCornerShape(20.dp),
-            modifier = Modifier
-                .weight(1f)
-                .height(50.dp),
-            contentPadding = PaddingValues(horizontal = 8.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    Icons.Default.Cancel,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    "Cancelar",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1
-                )
-            }
-        }
-
-        //Boton de crear evento (dispara un dialogo)
-        Button(
-            onClick = {
-                showConfirmDialog = true
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-            shape = RoundedCornerShape(20.dp),
-            modifier = Modifier
-                .weight(1f)
-                .height(50.dp),
-            contentPadding = PaddingValues(horizontal = 8.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    Icons.Default.AddCircleOutline,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    "Crear Evento",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1
-                )
-            }
-            if (showConfirmDialog) {
-                ConfirmAlertDialog(
-                    titulo = "Crear evento",
-                    mensaje = "Estas seguro de crear el evento {Nombre del evento}?",
-                    onShowExitDialogChange = { showConfirmDialog = it },
-                    onConfirm = {
-                    }
-                )
-            }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Default.CreateNewFolder, contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Crear evento", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
+
 @Composable
 fun CategoryBadge(icon: ImageVector, label: String) {
     Row(
@@ -569,7 +466,7 @@ fun CategoryBadge(icon: ImageVector, label: String) {
         horizontalArrangement = Arrangement.Start
     ) {
         Surface(
-            color = MaterialTheme.colorScheme.primary,
+            color = green,
             shape = RoundedCornerShape(20.dp),
             modifier = Modifier.padding(vertical = 4.dp)
         ) {
@@ -592,6 +489,3 @@ fun CreateEventScreenPreview() {
         CreateEventScreen(navController = rememberNavController())
     }
 }
-
-
-
