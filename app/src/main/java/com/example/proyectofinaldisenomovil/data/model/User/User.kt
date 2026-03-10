@@ -4,14 +4,9 @@ package com.example.proyectofinaldisenomovil.data.model.User
 //import com.vivetuzona.data.model.UserLevel
 //import com.vivetuzona.data.model.UserRole
 import com.example.proyectofinaldisenomovil.data.model.BadgeType
+import com.example.proyectofinaldisenomovil.data.model.Location
 import java.security.Timestamp
 
-/**
- * Represents an authenticated app user (role USER or MODERATOR).
- *
- * Firestore collection : "users"
- * Document ID          : Firebase Auth UID
- */
 data class User(
     val uid: String = "",
     val firstName: String = "",
@@ -19,9 +14,7 @@ data class User(
     val email: String = "",
     val profileImageUrl: String? = null,
     /** Latitude of the user's home / reference location */
-    val latitude: Double? = null,
-    /** Longitude of the user's home / reference location */
-    val longitude: Double? = null,
+    val location : Location?,
     val city: String = "",
     val role: UserRole = UserRole.USER,
     val reputationPoints: Int = 0,

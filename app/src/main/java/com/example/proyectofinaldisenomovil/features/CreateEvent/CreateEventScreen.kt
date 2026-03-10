@@ -12,6 +12,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.proyectofinaldisenomovil.core.component.AlertDialogs.ConfirmAlertDialog
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
@@ -38,6 +42,7 @@ fun CreateEventScreen(
     navController: NavController,
     viewModel: CreateEventViewModel = viewModel()
 ) {
+    //variable para manejar la informacion quemada
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
@@ -60,96 +65,7 @@ fun CreateEventScreen(
             // Section: Información
             item {
                 CategoryBadge(icon = Icons.Default.PushPin, label = "Información")
-                
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Titulo del evento", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                        Spacer(modifier = Modifier.height(4.dp))
-                        OutlinedTextField(
-                            value = uiState.title,
-                            onValueChange = { viewModel.onTitleChange(it) },
-                            placeholder = { Text("Agrega un titulo llamativo", color = Color.Gray) },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedBorderColor = Color.Black,
-                                focusedBorderColor = Color.Black
-                            )
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Text("Descripción", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                        Spacer(modifier = Modifier.height(4.dp))
-                        OutlinedTextField(
-                            value = uiState.description,
-                            onValueChange = { viewModel.onDescriptionChange(it) },
-                            placeholder = { 
-                                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                                    Text("Describe de que se trata el evento", color = Color.Gray)
-                                    Text("Tambien lo de lenguaje inapropiado", color = Color.Black)
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth().height(120.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedBorderColor = Color.Black,
-                                focusedBorderColor = Color.Black
-                            )
-                        )
-                        Text(
-                            "Las descripciones detalladas reciben un 35% mas audiencia.",
-                            fontSize = 10.sp,
-                            color = Color.Gray,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Column(modifier = Modifier.weight(1.5f)) {
-                                Text("Categoria (IA sugiere)", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                Spacer(modifier = Modifier.height(4.dp))
-                                OutlinedTextField(
-                                    value = uiState.category,
-                                    onValueChange = { },
-                                    readOnly = true,
-                                    placeholder = { Text("Categoria", color = Color.Gray) },
-                                    trailingIcon = { Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = green) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = Color.Black,
-                                        focusedBorderColor = Color.Black
-                                    )
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text("Capacidad", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                Spacer(modifier = Modifier.height(4.dp))
-                                OutlinedTextField(
-                                    value = uiState.capacity,
-                                    onValueChange = { viewModel.onCapacityChange(it) },
-                                    placeholder = { Text("Ejm: 100", color = Color.Gray) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(11.dp),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = Color.Black,
-                                        focusedBorderColor = Color.Black
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
+                infoSection(navController , uiState , viewModel)
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -157,57 +73,7 @@ fun CreateEventScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryBadge(icon = Icons.Default.Image, label = "Imagenes")
-                
-                Text(
-                    "Añade imagenes relevantes para el evento", 
-                    color = Color.Gray, 
-                    fontSize = 14.sp, 
-                    modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth()
-                )
-                
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(1.dp, Color.LightGray)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        FlowRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            maxItemsInEachRow = 3
-                        ) {
-                            repeat(5) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(width = 100.dp, height = 60.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(Color.LightGray)
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = android.R.drawable.ic_menu_gallery),
-                                        contentDescription = null,
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                }
-                            }
-                            
-                            Box(
-                                modifier = Modifier
-                                    .size(width = 100.dp, height = 60.dp)
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(Color.White),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                IconButton(onClick = { /* Add image */ }) {
-                                    Icon(Icons.Default.AddCircleOutline, contentDescription = "Add image", tint = orange, modifier = Modifier.size(40.dp))
-                                }
-                            }
-                        }
-                    }
-                }
+                imageSection(navController , uiState , viewModel)
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -215,61 +81,7 @@ fun CreateEventScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryBadge(icon = Icons.Default.LocationOn, label = "Ubicación")
-                
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Dirección directa", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                        Spacer(modifier = Modifier.height(4.dp))
-                        OutlinedTextField(
-                            value = uiState.address,
-                            onValueChange = { viewModel.onAddressChange(it) },
-                            placeholder = { Text("Agrega la dirección Ejemplo: Cra 18#49-05", color = Color.Gray) },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedBorderColor = Color.Black,
-                                focusedBorderColor = Color.Black
-                            )
-                        )
-                        
-                        Spacer(modifier = Modifier.height(12.dp))
-                        
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(180.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(Color(0xFFE0E0E0)),
-                            contentAlignment = Alignment.BottomCenter
-                        ) {
-                            Image(
-                                painter = painterResource(id = android.R.drawable.ic_menu_mapmode),
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop,
-                                alpha = 0.5f
-                            )
-                            
-                            Button(
-                                onClick = { /* Map selection */ },
-                                colors = ButtonDefaults.buttonColors(containerColor = orange),
-                                shape = RoundedCornerShape(20.dp),
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.AdsClick, contentDescription = null, modifier = Modifier.size(18.dp))
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Seleccionar en el mapa", fontSize = 12.sp)
-                                }
-                            }
-                        }
-                    }
-                }
+                locationSection(navController , uiState , viewModel)
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -277,186 +89,437 @@ fun CreateEventScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryBadge(icon = Icons.Default.CalendarToday, label = "Fecha y Hora")
-                
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            "Inicio del evento", 
-                            fontWeight = FontWeight.Bold, 
-                            fontSize = 16.sp, 
-                            textDecoration = TextDecoration.Underline
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Column(modifier = Modifier.weight(1.5f)) {
-                                Text("Fecha", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                Spacer(modifier = Modifier.height(4.dp))
-                                OutlinedTextField(
-                                    value = uiState.startDate,
-                                    onValueChange = { },
-                                    readOnly = true,
-                                    trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = Color.Black,
-                                        focusedBorderColor = Color.Black,
-                                        unfocusedTextColor = Color.Gray
-                                    )
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text("Hora", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                Spacer(modifier = Modifier.height(4.dp))
-                                OutlinedTextField(
-                                    value = uiState.startTime,
-                                    onValueChange = { },
-                                    readOnly = true,
-                                    trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = Color.Black,
-                                        focusedBorderColor = Color.Black,
-                                        unfocusedTextColor = Color.Gray
-                                    )
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Text(
-                            "Fin del evento (Opcional)", 
-                            fontWeight = FontWeight.Bold, 
-                            fontSize = 16.sp, 
-                            textDecoration = TextDecoration.Underline
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Column(modifier = Modifier.weight(1.5f)) {
-                                Text("Fecha", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                Spacer(modifier = Modifier.height(4.dp))
-                                OutlinedTextField(
-                                    value = uiState.endDate,
-                                    onValueChange = { },
-                                    readOnly = true,
-                                    trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = Color.Black,
-                                        focusedBorderColor = Color.Black,
-                                        unfocusedTextColor = Color.Gray
-                                    )
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text("Hora", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                Spacer(modifier = Modifier.height(4.dp))
-                                OutlinedTextField(
-                                    value = uiState.endTime,
-                                    onValueChange = { },
-                                    readOnly = true,
-                                    trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = Color.Black,
-                                        focusedBorderColor = Color.Black,
-                                        unfocusedTextColor = Color.Gray
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
+                dateSection(navController , uiState , viewModel)
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
             // Create Event Button
             item {
                 Spacer(modifier = Modifier.height(24.dp))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp), // Un pequeño margen lateral para la fila completa
-                    horizontalArrangement = Arrangement.spacedBy(12.dp) // Espacio uniforme entre botones
-                ) {
-                    // Botón Cancelar
-                    Button(
-                        onClick = { navController.navigate(AppScreens.HomeScreen.route) },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                        shape = RoundedCornerShape(20.dp),
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(50.dp),
-                        contentPadding = PaddingValues(horizontal = 8.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                Icons.Default.Cancel,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                "Cancelar",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                maxLines = 1
-                            )
-                        }
-                    }
-
-                    // Botón Crear Evento
-                    Button(
-                        onClick = { /* //TODO Acción crear */ },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        shape = RoundedCornerShape(20.dp),
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(50.dp),
-                        contentPadding = PaddingValues(horizontal = 8.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                Icons.Default.AddCircleOutline,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                "Crear Evento",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                maxLines = 1
-                            )
-                        }
-                    }
-                }
+                ButtonsSection(navController , uiState , viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }
 }
 
+
+@Composable
+fun infoSection(
+    navController: NavController,
+    uiState : CreateEventUiState = CreateEventUiState(),
+    viewModel: CreateEventViewModel = viewModel()
+){
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Titulo del evento", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Spacer(modifier = Modifier.height(4.dp))
+            OutlinedTextField(
+                value = uiState.title,
+                onValueChange = { viewModel.onTitleChange(it) },
+                placeholder = { Text("Agrega un titulo llamativo", color = Color.Gray) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = Color.Black,
+                    focusedBorderColor = Color.Black
+                )
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text("Descripción", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Spacer(modifier = Modifier.height(4.dp))
+            OutlinedTextField(
+                value = uiState.description,
+                onValueChange = { viewModel.onDescriptionChange(it) },
+                placeholder = {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                        Text("Describe de que se trata el evento", color = Color.Gray)
+                        Text("Tambien lo de lenguaje inapropiado", color = Color.Black)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().height(120.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = Color.Black,
+                    focusedBorderColor = Color.Black
+                )
+            )
+            Text(
+                "Las descripciones detalladas reciben un 35% mas audiencia.",
+                fontSize = 10.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.weight(1.5f)) {
+                    Text("Categoria (IA sugiere)", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    OutlinedTextField(
+                        value = uiState.category,
+                        onValueChange = { },
+                        readOnly = true,
+                        placeholder = { Text("Categoria", color = Color.Gray) },
+                        trailingIcon = { Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = green) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = Color.Black,
+                            focusedBorderColor = Color.Black
+                        )
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Capacidad", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    OutlinedTextField(
+                        value = uiState.capacity,
+                        onValueChange = { viewModel.onCapacityChange(it) },
+                        placeholder = { Text("Ejm: 100", color = Color.Gray) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(11.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = Color.Black,
+                            focusedBorderColor = Color.Black
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun imageSection(
+    navController: NavController,
+    uiState : CreateEventUiState = CreateEventUiState(),
+    viewModel: CreateEventViewModel = viewModel()
+){
+    Text(
+        "Añade imagenes relevantes para el evento",
+        color = Color.Gray,
+        fontSize = 14.sp,
+        modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth()
+    )
+
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, Color.LightGray)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                maxItemsInEachRow = 3
+            ) {
+                repeat(5) {
+                    Box(
+                        modifier = Modifier
+                            .size(width = 100.dp, height = 60.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color.LightGray)
+                    ) {
+                        Image(
+                            painter = painterResource(id = android.R.drawable.ic_menu_gallery),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(width = 100.dp, height = 60.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(onClick = { /* Add image */ }) {
+                        Icon(Icons.Default.AddCircleOutline, contentDescription = "Add image", tint = orange, modifier = Modifier.size(40.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun locationSection(
+    navController: NavController,
+    uiState : CreateEventUiState = CreateEventUiState(),
+    viewModel: CreateEventViewModel = viewModel()
+){
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Dirección directa", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Spacer(modifier = Modifier.height(4.dp))
+            OutlinedTextField(
+                value = uiState.address,
+                onValueChange = { viewModel.onAddressChange(it) },
+                placeholder = { Text("Agrega la dirección Ejemplo: Cra 18#49-05", color = Color.Gray) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = Color.Black,
+                    focusedBorderColor = Color.Black
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(0xFFE0E0E0)),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Image(
+                    painter = painterResource(id = android.R.drawable.ic_menu_mapmode),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    alpha = 0.5f
+                )
+
+                Button(
+                    onClick = { /* Map selection */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = orange),
+                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.AdsClick, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Seleccionar en el mapa", fontSize = 12.sp)
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+
+@Composable
+fun dateSection(
+    navController: NavController,
+    uiState : CreateEventUiState = CreateEventUiState(),
+    viewModel: CreateEventViewModel = viewModel()
+){
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                "Inicio del evento",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                textDecoration = TextDecoration.Underline
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.weight(1.5f)) {
+                    Text("Fecha", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    OutlinedTextField(
+                        value = uiState.startDate,
+                        onValueChange = { },
+                        readOnly = true,
+                        trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = Color.Black,
+                            focusedBorderColor = Color.Black,
+                            unfocusedTextColor = Color.Gray
+                        )
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Hora", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    OutlinedTextField(
+                        value = uiState.startTime,
+                        onValueChange = { },
+                        readOnly = true,
+                        trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = Color.Black,
+                            focusedBorderColor = Color.Black,
+                            unfocusedTextColor = Color.Gray
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                "Fin del evento (Opcional)",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                textDecoration = TextDecoration.Underline
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.weight(1.5f)) {
+                    Text("Fecha", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    OutlinedTextField(
+                        value = uiState.endDate,
+                        onValueChange = { },
+                        readOnly = true,
+                        trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = Color.Black,
+                            focusedBorderColor = Color.Black,
+                            unfocusedTextColor = Color.Gray
+                        )
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Hora", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    OutlinedTextField(
+                        value = uiState.endTime,
+                        onValueChange = { },
+                        readOnly = true,
+                        trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = Color.Black,
+                            focusedBorderColor = Color.Black,
+                            unfocusedTextColor = Color.Gray
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun ButtonsSection(
+    navController: NavController,
+    uiState : CreateEventUiState = CreateEventUiState(),
+    viewModel: CreateEventViewModel = viewModel()
+){
+    var showConfirmDialog by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // Botón Cancelar
+        Button(
+            onClick = { navController.navigate(AppScreens.HomeScreen.route) },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+            shape = RoundedCornerShape(20.dp),
+            modifier = Modifier
+                .weight(1f)
+                .height(50.dp),
+            contentPadding = PaddingValues(horizontal = 8.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    Icons.Default.Cancel,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    "Cancelar",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+            }
+        }
+
+        //Boton de crear evento (dispara un dialogo)
+        Button(
+            onClick = {
+                showConfirmDialog = true
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+            shape = RoundedCornerShape(20.dp),
+            modifier = Modifier
+                .weight(1f)
+                .height(50.dp),
+            contentPadding = PaddingValues(horizontal = 8.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    Icons.Default.AddCircleOutline,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    "Crear Evento",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+            }
+            if (showConfirmDialog) {
+                ConfirmAlertDialog(
+                    titulo = "Crear evento",
+                    mensaje = "Estas seguro de crear el evento {Nombre del evento}?",
+                    onShowExitDialogChange = { showConfirmDialog = it },
+                    onConfirm = {
+                    }
+                )
+            }
+        }
+    }
+}
 @Composable
 fun CategoryBadge(icon: ImageVector, label: String) {
     Row(
