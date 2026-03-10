@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -70,7 +71,7 @@ fun CreateEventScreen(
             item {
                 CategoryBadge(icon = Icons.Default.PushPin, label = "Información")
                 infoSection(navController , uiState , viewModel)
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(5.dp))
             }
 
             // Section: Imagenes
@@ -78,7 +79,7 @@ fun CreateEventScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryBadge(icon = Icons.Default.Image, label = "Imagenes")
                 imageSection(navController , uiState , viewModel)
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(5.dp))
             }
 
             // Section: Ubicación
@@ -86,7 +87,7 @@ fun CreateEventScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryBadge(icon = Icons.Default.LocationOn, label = "Ubicación")
                 locationSection(navController , uiState , viewModel)
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(5.dp))
             }
 
             // Section: Fecha y Hora
@@ -94,7 +95,7 @@ fun CreateEventScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryBadge(icon = Icons.Default.CalendarToday, label = "Fecha y Hora")
                 dateSection(navController , uiState , viewModel)
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(5.dp))
             }
 
             // Create Event Button
@@ -114,21 +115,29 @@ fun infoSection(
     uiState : CreateEventUiState = CreateEventUiState(),
     viewModel: CreateEventViewModel = viewModel()
 ){
-    Card(
+
+    var colorLabels = MaterialTheme.colorScheme.onSurface
+    OutlinedCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Titulo del evento", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text("Titulo del evento",
+                fontWeight = FontWeight.Bold, fontSize = 14.sp,
+                color = colorLabels
+            )
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = uiState.title,
+                maxLines = 2,
                 onValueChange = { viewModel.onTitleChange(it) },
-                placeholder = { Text("Agrega un titulo llamativo", color = Color.Gray) },
+                placeholder = { Text("Agrega un titulo llamativo", color = MaterialTheme.colorScheme.outline) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -139,15 +148,27 @@ fun infoSection(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("Descripción", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Text("Descripción",
+                fontWeight = FontWeight.Bold, fontSize = 14.sp,
+                color = colorLabels
+            )
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = uiState.description,
+                maxLines = 10,
                 onValueChange = { viewModel.onDescriptionChange(it) },
                 placeholder = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Spacer(Modifier.height(10.dp))
                         Text("Describe de que se trata el evento", color = Color.Gray)
-                        Text("Tambien lo de lenguaje inapropiado", color = Color.Black)
+                        Text(
+                            "Las descripciones detalladas reciben un 35% mas audiencia.",
+                            fontSize = 10.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(120.dp),
@@ -157,18 +178,15 @@ fun infoSection(
                     focusedBorderColor = Color.Black
                 )
             )
-            Text(
-                "Las descripciones detalladas reciben un 35% mas audiencia.",
-                fontSize = 10.sp,
-                color = Color.Gray,
-                modifier = Modifier.padding(top = 4.dp)
-            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1.5f)) {
-                    Text("Categoria (IA sugiere)", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text("Categoria",
+                        fontWeight = FontWeight.Bold, fontSize = 14.sp,
+                        color = colorLabels
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
                     OutlinedTextField(
                         value = uiState.category,
@@ -186,7 +204,11 @@ fun infoSection(
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Capacidad", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text("Capacidad",
+                        fontWeight = FontWeight.Bold,
+                        color = colorLabels,
+                        fontSize = 14.sp
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
                     OutlinedTextField(
                         value = uiState.capacity,
@@ -216,13 +238,14 @@ fun imageSection(
         "Añade imagenes relevantes para el evento",
         color = Color.Gray,
         fontSize = 14.sp,
-        modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth()
+        modifier = Modifier.padding(vertical = 2.dp).fillMaxWidth(),
+        textAlign = TextAlign.Center
     )
 
-    Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+    OutlinedCard(
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
         border = BorderStroke(1.dp, Color.LightGray)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
