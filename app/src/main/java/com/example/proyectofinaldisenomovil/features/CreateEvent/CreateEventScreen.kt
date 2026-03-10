@@ -1,8 +1,11 @@
 package com.example.proyectofinaldisenomovil.features.CreateEvent
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,6 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.component.AlertDialogs.ConfirmAlertDialog
+import com.example.proyectofinaldisenomovil.core.component.DatePickerModal
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
@@ -325,12 +329,17 @@ fun locationSection(
 }
 
 
+
+
 @Composable
 fun dateSection(
     navController: NavController,
     uiState : CreateEventUiState = CreateEventUiState(),
     viewModel: CreateEventViewModel = viewModel()
 ){
+
+    var showDatePicker by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
         shape = RoundedCornerShape(24.dp),
@@ -346,24 +355,25 @@ fun dateSection(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.weight(1.5f)) {
-                    Text("Fecha", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    OutlinedTextField(
-                        value = uiState.startDate,
-                        onValueChange = { },
-                        readOnly = true,
-                        trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = Color.Black,
-                            focusedBorderColor = Color.Black,
-                            unfocusedTextColor = Color.Gray
-                        )
-                    )
-                }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        showDatePicker = true
+                    }
+            ) {
+                OutlinedTextField(
+                    //TODO Castear la fecha a DD/MM/AA
+                    value = viewModel.eventDate?.toString() ?: "Selecciona una fecha"                    ,
+                    onValueChange = { },
+                    readOnly = true,
+                    enabled = false,
+                    modifier = Modifier.fillMaxWidth(),
+                    trailingIcon = {
+                        Icon(Icons.Default.ChevronRight, contentDescription = null)
+                    }
+                )
+            }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text("Hora", fontWeight = FontWeight.Bold, fontSize = 14.sp)
@@ -429,9 +439,18 @@ fun dateSection(
                             unfocusedTextColor = Color.Gray
                         )
                     )
-                }
             }
         }
+    }
+
+    if (showDatePicker) {
+        DatePickerModal(
+            onDateSelected = { selectedDate ->
+                viewModel.onDateChange(selectedDate)
+                showDatePicker = false
+            },
+            onDismiss = { showDatePicker = false }
+        )
     }
 }
 
