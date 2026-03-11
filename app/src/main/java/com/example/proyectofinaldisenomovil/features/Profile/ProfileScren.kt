@@ -228,7 +228,10 @@ fun ProfileScreen(
                     MenuItem(Icons.Default.Description, "Terminos y condiciones") { /* Navigate */ }
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
-                    MenuItem(Icons.AutoMirrored.Filled.Logout, "Cerrar sesión", isLogout = true) { viewModel.onLogout() }
+                    MenuItem(Icons.AutoMirrored.Filled.Logout, "Cerrar sesión", isLogout = true) {
+                        navController.navigate(AppScreens.LoginScreen.route)
+                        viewModel.onLogout()
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))

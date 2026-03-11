@@ -63,10 +63,17 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.input.VisualTransformation
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.login.HeaderSectionNonLogued
 import com.example.proyectofinaldisenomovil.core.component.login.TopBarRegister
@@ -125,6 +132,9 @@ fun RegisterScreen (
 
 @Composable
 fun RegisterForm(navController: NavController, registerViewModel: RegisterViewModel, myContext : Context) {
+
+    var passwordVisible by remember { mutableStateOf(false) }
+    var repeatPasswordVisible by remember { mutableStateOf(false) }
 
     Text(
         text = "Registrarse",
@@ -213,12 +223,20 @@ fun RegisterForm(navController: NavController, registerViewModel: RegisterViewMo
                 shape = RoundedCornerShape(15.dp),
                 value = registerViewModel.password,
                 modifier = Modifier.fillMaxWidth(),
-                visualTransformation = PasswordVisualTransformation(),
                 onValueChange = {
                     registerViewModel.onPasswordChange(it)
                 },
                 label = { Text("Contraseña secreta") },
-                isError = registerViewModel.passwordError.isNotEmpty()
+                isError = registerViewModel.passwordError.isNotEmpty(),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                            contentDescription = null
+                        )
+                    }
+                }
             )
 
             Box(modifier = Modifier.height(17.dp)) {
@@ -237,12 +255,20 @@ fun RegisterForm(navController: NavController, registerViewModel: RegisterViewMo
                 shape = RoundedCornerShape(15.dp),
                 value = registerViewModel.passwordConfirmation,
                 modifier = Modifier.fillMaxWidth(),
-                visualTransformation = PasswordVisualTransformation(),
                 onValueChange = {
                     registerViewModel.onPasswordConfirmationChange(it)
                 },
                 label = { Text("Confirmar contraseña secreta") },
-                isError = registerViewModel.passwordError.isNotEmpty()
+                isError = registerViewModel.passwordError.isNotEmpty(),
+                visualTransformation = if (repeatPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { repeatPasswordVisible = !repeatPasswordVisible }) {
+                        Icon(
+                            imageVector = if (repeatPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                            contentDescription = null
+                        )
+                    }
+                }
             )
 
             Box(modifier = Modifier.height(17.dp)) {

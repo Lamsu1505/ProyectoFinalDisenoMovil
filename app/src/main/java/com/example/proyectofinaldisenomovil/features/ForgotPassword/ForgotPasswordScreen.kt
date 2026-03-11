@@ -166,6 +166,7 @@ fun ForgotPasswordForm(
         Button(
             enabled = forgotPasswordViewModel.validateForm(),
             onClick = {
+                navController.navigate(AppScreens.RecoverPasswordScreen.route)
 //                loginViewModel.login { success ->
 //                    if (success) {
 //                        navController.navigate(AppScreens.HomeScreen.route)

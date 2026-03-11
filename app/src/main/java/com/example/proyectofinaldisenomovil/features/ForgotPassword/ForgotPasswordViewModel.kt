@@ -36,7 +36,13 @@ class ForgotPasswordViewModel : ViewModel() {
     }
 
     fun validateForm(): Boolean {
-        return false
+        if (emailError.isEmpty()){
+            return true
+        }
+        else{
+            return false
+        }
+
     }
 
 }

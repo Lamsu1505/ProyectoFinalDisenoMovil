@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -23,7 +24,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,9 +37,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
+import com.example.proyectofinaldisenomovil.core.component.DatePickerModal
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.theme.*
+import com.example.proyectofinaldisenomovil.data.model.Event.EventCategory
+import java.text.NumberFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -105,6 +113,8 @@ fun infoSection(
     viewModel: CreateEventViewModel
 ) {
     val colorLabels = MaterialTheme.colorScheme.onSurface
+    var expanded by remember { mutableStateOf(false) }
+
     OutlinedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -118,6 +128,7 @@ fun infoSection(
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = uiState.title,
+                maxLines = 2,
                 onValueChange = { viewModel.onTitleChange(it) },
                 placeholder = { Text("Agrega un titulo llamativo", color = MaterialTheme.colorScheme.outline) },
                 modifier = Modifier.fillMaxWidth(),
@@ -133,16 +144,17 @@ fun infoSection(
             Text("Descripción", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = colorLabels)
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
+                maxLines = 10,
                 value = uiState.description,
                 onValueChange = { viewModel.onDescriptionChange(it) },
                 placeholder = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                         Spacer(Modifier.height(10.dp))
-                        Text("Describe de que se trata el evento", color = Color.Gray)
+                        Text("Describe de que se trata el evento", color = MaterialTheme.colorScheme.outline)
                         Text(
                             "Las descripciones detalladas reciben un 35% mas audiencia.",
                             fontSize = 10.sp,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.outline,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     }
@@ -161,33 +173,98 @@ fun infoSection(
                 Column(modifier = Modifier.weight(1.5f)) {
                     Text("Categoria", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = colorLabels)
                     Spacer(modifier = Modifier.height(4.dp))
-                    OutlinedTextField(
-                        value = uiState.category,
-                        onValueChange = { },
-                        readOnly = true,
-                        placeholder = { Text("Categoria", color = Color.Gray) },
-                        trailingIcon = { Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = green) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = Color.Black,
-                            focusedBorderColor = Color.Black
+                    Box {
+                        OutlinedTextField(
+                            value = uiState.category,
+                            onValueChange = { },
+                            readOnly = true,
+                            placeholder = { Text("Categoria", color = Color.Gray) },
+                            trailingIcon = {
+                                IconButton(onClick = { expanded = !expanded }) {
+                                    Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { expanded = !expanded },
+                            shape = RoundedCornerShape(12.dp),
+                            enabled = false,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                disabledBorderColor = Color.Black,
+                                disabledTextColor = Color.Black,
+                                disabledPlaceholderColor = Color.Gray,
+                                disabledTrailingIconColor = green
+                            )
                         )
-                    )
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier.fillMaxWidth(0.5f),
+                            shape = RoundedCornerShape(16.dp),
+
+                            ) {
+                            EventCategory.entries.forEach { category ->
+                                DropdownMenuItem(
+                                    text = { Text(category.label) },
+                                    onClick = {
+                                        viewModel.onCategoryChange(category.label)
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text("Capacidad", fontWeight = FontWeight.Bold, color = colorLabels, fontSize = 14.sp)
                     Spacer(modifier = Modifier.height(4.dp))
+
+                    var textFieldValue by remember {
+                        mutableStateOf(TextFieldValue(uiState.capacity, TextRange(uiState.capacity.length)))
+                    }
+
+                    LaunchedEffect(uiState.capacity) {
+                        if (uiState.capacity != textFieldValue.text) {
+                            textFieldValue = textFieldValue.copy(
+                                text = uiState.capacity,
+                                selection = TextRange(uiState.capacity.length)
+                            )
+                        }
+                    }
+
                     OutlinedTextField(
-                        value = uiState.capacity,
-                        onValueChange = { viewModel.onCapacityChange(it) },
+                        value = textFieldValue,
+                        onValueChange = { newValue ->
+                            val cleanInput = newValue.text.filter { it.isDigit() }
+
+                            if (cleanInput.isEmpty()) {
+                                textFieldValue = newValue.copy(text = "", selection = TextRange.Zero)
+                                viewModel.onCapacityChange("")
+                            } else if (cleanInput.length <= 9) {
+                                val formatted = NumberFormat
+                                    .getNumberInstance(Locale.forLanguageTag("es-CO"))
+                                    .format(cleanInput.toLong())
+
+                                val diff = formatted.length - newValue.text.length
+                                val newCursor = (newValue.selection.end + diff).coerceIn(0, formatted.length)
+
+                                textFieldValue = newValue.copy(
+                                    text = formatted,
+                                    selection = TextRange(newCursor)
+                                )
+                                viewModel.onCapacityChange(formatted)
+                            }
+                        },
                         placeholder = { Text("Ejm: 100", color = Color.Gray) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(11.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedBorderColor = Color.Black,
                             focusedBorderColor = Color.Black
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number
                         )
                     )
                 }
@@ -329,19 +406,23 @@ fun locationSection(
     uiState: CreateEventUiState,
     viewModel: CreateEventViewModel
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+    OutlinedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Dirección directa", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+        Column(
+            modifier = Modifier.padding(12.dp)
+        ) {
+            Text("Dirección directa", fontWeight = FontWeight.Bold, fontSize = 16.sp , color = MaterialTheme.colorScheme.outline)
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = uiState.address,
                 onValueChange = { viewModel.onAddressChange(it) },
-                placeholder = { Text("Agrega la dirección Ejemplo: Cra 18#49-05", color = Color.Gray) },
+                placeholder = { Text("Agrega la dirección del evento", color = MaterialTheme.colorScheme.outline) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -350,7 +431,7 @@ fun locationSection(
                 )
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             Box(
                 modifier = Modifier
@@ -391,37 +472,157 @@ fun dateSection(
     uiState: CreateEventUiState,
     viewModel: CreateEventViewModel
 ) {
-    var showDatePicker by remember { mutableStateOf(false) }
+    var showStartDatePicker by remember { mutableStateOf(false) }
+    var showEndDatePicker by remember { mutableStateOf(false) }
 
-    Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+    if (showStartDatePicker) {
+        DatePickerModal(
+            onDateSelected = { 
+                viewModel.onStartDateChange(it)
+                showStartDatePicker = false
+            },
+            onDismiss = { showStartDatePicker = false }
+        )
+    }
+
+    if (showEndDatePicker) {
+        DatePickerModal(
+            onDateSelected = { 
+                viewModel.onEndDateChange(it)
+                showEndDatePicker = false
+            },
+            onDismiss = { showEndDatePicker = false }
+        )
+    }
+
+    OutlinedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Inicio del evento", fontWeight = FontWeight.Bold, fontSize = 16.sp, textDecoration = TextDecoration.Underline)
+        Column(modifier = Modifier.padding(5.dp).padding(vertical = 15.dp)) {
+            // Inicio del evento
+            Text(
+                text = "Inicio del evento",
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                textDecoration = TextDecoration.Underline,
+                color = MaterialTheme.colorScheme.outline
+            )
             Spacer(modifier = Modifier.height(8.dp))
 
-            Box(modifier = Modifier.fillMaxWidth().clickable { showDatePicker = true }) {
-                OutlinedTextField(
-                    value = viewModel.eventDate?.toString() ?: "Selecciona una fecha",
-                    onValueChange = { },
-                    readOnly = true,
-                    enabled = false,
-                    modifier = Modifier.fillMaxWidth(),
-                    trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null) }
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
             Row(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.weight(1.6f)) {
+                    Text(
+                        "Fecha",
+                        color = MaterialTheme.colorScheme.outline,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Box {
+                        OutlinedTextField(
+                            value = uiState.startDate,
+                            onValueChange = { },
+                            readOnly = true,
+                            enabled = false,
+                            modifier = Modifier.fillMaxWidth(),
+                            trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null) },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                disabledBorderColor = Color.Black,
+                                disabledTextColor = Color.Black,
+                                disabledPlaceholderColor = Color.Gray
+                            )
+                        )
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .clickable { showStartDatePicker = true }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Hora", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text(
+                        "Hora",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.outline
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
                     OutlinedTextField(
                         value = uiState.startTime,
+                        onValueChange = { },
+                        trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = Color.Black,
+                            focusedBorderColor = Color.Black,
+                            unfocusedTextColor = Color.Gray
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            // Fin del evento
+            Text(
+                text = "Fin del evento (Opcional)",
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.outline,
+                textDecoration = TextDecoration.Underline
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.weight(1.5f)) {
+                    Text(
+                        "Fecha",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Box {
+                        OutlinedTextField(
+                            value = uiState.endDate,
+                            onValueChange = { },
+                            readOnly = true,
+                            enabled = false,
+                            modifier = Modifier.fillMaxWidth(),
+                            trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null) },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                disabledBorderColor = Color.Black,
+                                disabledTextColor = Color.Black,
+                                disabledPlaceholderColor = Color.Gray
+                            )
+                        )
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .clickable { showEndDatePicker = true }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Hora",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    OutlinedTextField(
+                        value = uiState.endTime,
                         onValueChange = { },
                         readOnly = true,
                         trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
@@ -472,8 +673,7 @@ fun CategoryBadge(icon: ImageVector, label: String) {
         ) {
             Row(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+                verticalAlignment = Alignment.CenterVertically) {
                 Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = label, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
@@ -481,6 +681,23 @@ fun CategoryBadge(icon: ImageVector, label: String) {
         }
     }
 }
+
+
+//@Preview(showBackground = true)
+//@Composable
+//fun LocationPreview() {
+//    ProyectoFinalDisenoMovilTheme {
+//        locationSection(navController = rememberNavController(), uiState = CreateEventUiState(), viewModel = CreateEventViewModel())
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun DatePreview() {
+//    ProyectoFinalDisenoMovilTheme {
+//        dateSection(navController = rememberNavController(), uiState = CreateEventUiState(), viewModel = CreateEventViewModel())
+//    }
+//}
 
 @Preview(showBackground = true)
 @Composable

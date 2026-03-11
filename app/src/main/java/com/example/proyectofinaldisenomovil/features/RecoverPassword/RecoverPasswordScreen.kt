@@ -1,44 +1,42 @@
 package com.example.proyectofinaldisenomovil.features.RecoverPassword
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.proyectofinaldisenomovil.R
-import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppSnackbarHost
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SnackbarController
-import com.example.proyectofinaldisenomovil.core.component.recoverPassword.RecoverHeader
+import com.example.proyectofinaldisenomovil.core.component.login.HeaderSectionNonLogued
 import com.example.proyectofinaldisenomovil.core.component.login.TopBarRegister
-import com.example.proyectofinaldisenomovil.core.navigation.AppNavigation
 import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
-import kotlinx.coroutines.launch
-
-
-
-
 
 @Composable
 fun RecoverPasswordScreen(
     navController: NavController
 ) {
-
     var code by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var repeatPassword by remember { mutableStateOf("") }
@@ -53,133 +51,130 @@ fun RecoverPasswordScreen(
     }
 
     Scaffold(
+        topBar = {
+            TopBarRegister(navController)
+        },
         snackbarHost = {
             AppSnackbarHost(snackbarHostState)
-        },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { padding ->
+        }
+    ) { paddingValues ->
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .background(MaterialTheme.colorScheme.background)
+                .padding(paddingValues)
         ) {
+            HeaderSectionNonLogued(navController)
 
-            // HEADER VERDE
-            RecoverHeader(navController)
-
-            // CARD DEL FORMULARIO
+            val cardShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
             Card(
+                shape = cardShape,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .offset(y = 390.dp),
-                shape = RoundedCornerShape(28.dp),
+                    .align(Alignment.TopCenter)
+                    .padding(5.dp)
+                    .offset(y = 130.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-                elevation = CardDefaults.cardElevation(8.dp)
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             ) {
-
                 Column(
-                    modifier = Modifier.padding(24.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 35.dp, vertical = 40.dp)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(30.dp)
                 ) {
-
-                    OutlinedTextField(
-                        value = code,
-                        onValueChange = { code = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Código de verificación") }
+                    Text(
+                        text = "Nueva Contraseña",
+                        fontSize = 40.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        lineHeight = 40.sp,
+                        textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(15.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        OutlinedTextField(
+                            value = code,
+                            onValueChange = { code = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(15.dp),
+                            label = { Text("Código de verificación")
+                            },
+                            maxLines = 1
+                        )
 
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Contraseña") },
-                        visualTransformation =
-                            if (passwordVisible) VisualTransformation.None
-                            else PasswordVisualTransformation(),
-                        trailingIcon = {
-                            IconButton(
-                                onClick = { passwordVisible = !passwordVisible }
-                            ) {
-                                Icon(
-                                    imageVector =
-                                        if (passwordVisible)
-                                            Icons.Default.Visibility
-                                        else
-                                            Icons.Default.VisibilityOff,
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    OutlinedTextField(
-                        value = repeatPassword,
-                        onValueChange = { repeatPassword = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Repetir contraseña") },
-                        visualTransformation =
-                            if (repeatPasswordVisible) VisualTransformation.None
-                            else PasswordVisualTransformation(),
-                        trailingIcon = {
-                            IconButton(
-                                onClick = {
-                                    repeatPasswordVisible =
-                                        !repeatPasswordVisible
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(15.dp),
+                            label = { Text("Contraseña") },
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            trailingIcon = {
+                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                    Icon(
+                                        imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                        contentDescription = null
+                                    )
                                 }
-                            ) {
-                                Icon(
-                                    imageVector =
-                                        if (repeatPasswordVisible)
-                                            Icons.Default.Visibility
-                                        else
-                                            Icons.Default.VisibilityOff,
-                                    contentDescription = null
-                                )
                             }
-                        }
-                    )
+                        )
 
-                    Spacer(modifier = Modifier.height(28.dp))
-
-                    Button(
-                        onClick = {
-
-                            if (password == repeatPassword && password.isNotEmpty()) {
-
-                                snackbarController.showMessage(
-                                    "La contraseña ha sido recuperada correctamente"
-                                )
-
-                            } else {
-
-                                snackbarController.showMessage(
-                                    "Las contraseñas no coinciden"
-                                )
+                        OutlinedTextField(
+                            value = repeatPassword,
+                            onValueChange = { repeatPassword = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(15.dp),
+                            label = { Text("Repetir contraseña") },
+                            visualTransformation = if (repeatPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            trailingIcon = {
+                                IconButton(onClick = { repeatPasswordVisible = !repeatPasswordVisible }) {
+                                    Icon(
+                                        imageVector = if (repeatPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                        contentDescription = null
+                                    )
+                                }
                             }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(50)
-                    ) {
-                        Text("Continuar")
-                    }
+                        )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                    TextButton(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        onClick = {
-                            navController.navigate(AppScreens.LoginScreen.route)
+                        Button(
+                            onClick = {
+                                if (password == repeatPassword && password.isNotEmpty()) {
+                                    snackbarController.showMessage("La contraseña ha sido recuperada correctamente")
+                                } else {
+                                    snackbarController.showMessage("Las contraseñas no coinciden")
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary
+                            )
+                        ) {
+                            Text(text = "Continuar", fontSize = 20.sp)
                         }
-                    ) {
-                        Text("Volver al inicio de sesión")
+
+                        Text(
+                            text = "Regresar a Iniciar sesión",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.clickable {
+                                navController.navigate(AppScreens.LoginScreen.route)
+                            }
+                        )
                     }
                 }
             }
@@ -189,10 +184,8 @@ fun RecoverPasswordScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun ForgotPasswordScreen(
-) {
-    ProyectoFinalDisenoMovilTheme() {
+fun RecoverPasswordScreenPreview() {
+    ProyectoFinalDisenoMovilTheme {
         RecoverPasswordScreen(navController = rememberNavController())
     }
-
 }

@@ -9,6 +9,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 data class CreateEventUiState(
     val title: String = "",
@@ -17,17 +20,18 @@ data class CreateEventUiState(
     val capacity: String = "",
     val images: List<Uri> = emptyList(),
     val address: String = "",
-    val startDate: String = "20 de febrero del 2026" ,
+    val startDate: String = "16 feb del 2026",
     val startTime: String = "7:00 pm",
-    val endDate: String = "20 de febrero del 2026",
+    val endDate: String = "19 feb del 2026",
     val endTime: String = "9:00 pm"
 )
 
 class CreateEventViewModel : ViewModel() {
 
-    var eventDate by mutableStateOf<Long?>(null)
     private val _uiState = MutableStateFlow(CreateEventUiState())
     val uiState: StateFlow<CreateEventUiState> = _uiState.asStateFlow()
+
+    private val dateFormatter = SimpleDateFormat("dd 'de' MMMM 'del' yyyy", Locale("es", "CO"))
 
     fun onTitleChange(newTitle: String) {
         _uiState.update { it.copy(title = newTitle) }
@@ -57,11 +61,21 @@ class CreateEventViewModel : ViewModel() {
         _uiState.update { it.copy(images = it.images - uri) }
     }
 
-    fun onCreateEvent() {
-        // Implementation for creating event
+    fun onStartDateChange(millis: Long?) {
+        millis?.let {
+            val dateString = dateFormatter.format(Date(it))
+            _uiState.update { state -> state.copy(startDate = dateString) }
+        }
     }
 
-    fun onDateChange(newDate: Long?){
-        eventDate = newDate
+    fun onEndDateChange(millis: Long?) {
+        millis?.let {
+            val dateString = dateFormatter.format(Date(it))
+            _uiState.update { state -> state.copy(endDate = dateString) }
+        }
+    }
+
+    fun onCreateEvent() {
+        // Implementation for creating event
     }
 }
