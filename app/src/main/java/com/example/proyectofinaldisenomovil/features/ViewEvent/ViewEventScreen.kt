@@ -1,63 +1,29 @@
 package com.example.proyectofinaldisenomovil.features.ViewEvent
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Groups
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,7 +34,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
-import kotlinx.coroutines.NonCancellable.key
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -80,6 +45,15 @@ fun ViewEventScreen(
 ) {
     val state = viewEventViewModel.uiState
     val numberFormat = NumberFormat.getNumberInstance(Locale("es", "CO"))
+    
+    val listState = rememberLazyListState()
+
+    // Auto-scroll effect when writing a comment
+    LaunchedEffect(viewEventViewModel.newCommentText) {
+        if (viewEventViewModel.isAddingComment && viewEventViewModel.newCommentText.isNotEmpty()) {
+            listState.animateScrollToItem(listState.layoutInfo.totalItemsCount - 1)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -94,6 +68,7 @@ fun ViewEventScreen(
     ) { paddingValues ->
 
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
@@ -148,14 +123,11 @@ fun ViewEventScreen(
 
             item {
                 Text(
-                    text = "Comentarios",
+                    text = "Comentarios (${state.comments.size})",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(
-                        start = 0.dp, end = 20.dp,
-                        top = 16.dp, bottom = 10.dp
-                    )
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp).fillMaxWidth()
                 )
             }
 
@@ -165,6 +137,32 @@ fun ViewEventScreen(
                 key = { it.id }
             ) { comment ->
                 CommentItem(comment = comment)
+            }
+
+            item {
+                if (viewEventViewModel.isAddingComment) {
+                    CommentInputSection(
+                        text = viewEventViewModel.newCommentText,
+                        onTextChange = { viewEventViewModel.onCommentTextChange(it) },
+                        onSend = { viewEventViewModel.sendComment() },
+                        onCancel = { viewEventViewModel.cancelAddingComment() }
+                    )
+                } else {
+                    OutlinedButton(
+                        onClick = { viewEventViewModel.startAddingComment() },
+                        modifier = Modifier
+                            .padding(vertical = 20.dp, horizontal = 20.dp)
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text("Escribir un comentario público...", fontWeight = FontWeight.SemiBold)
+                    }
+                }
             }
 
             // Bottom spacing
@@ -374,14 +372,14 @@ private fun EventInfoCard(
                 // "Confirmar asistencia" button
                 Button(
                     modifier = Modifier.fillMaxWidth().height(40.dp),
-                    onClick = onInterestedClick,
+                    onClick = onConfirmedClick,
                     contentPadding = PaddingValues(8.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = if (isInterested)
+                        containerColor = if (isConfirmed)
                             MaterialTheme.colorScheme.secondary
                         else MaterialTheme.colorScheme.surface,
-                        contentColor = if (isInterested)
+                        contentColor = if (isConfirmed)
                             MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.onSurface
                     )
@@ -504,7 +502,7 @@ private fun CommentItem(comment: CommentUiModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 6.dp),
+            .padding(horizontal = 20.dp, vertical = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // Avatar circle with initials
@@ -523,66 +521,134 @@ private fun CommentItem(comment: CommentUiModel) {
             )
         }
 
-        // Name, time, and text
-        Column(modifier = Modifier.weight(1f)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+        // Professional Bubble for the comment
+        Card(
+            modifier = Modifier.weight(1f),
+            shape = RoundedCornerShape(topStart = 0.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = comment.authorName,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = comment.timeAgo,
+                        fontSize = 11.sp,
+                        color = Color.Gray
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
                 Text(
-                    text = comment.authorName,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    text = comment.text,
+                    fontSize = 14.sp,
+                    color = Color.DarkGray,
+                    lineHeight = 20.sp,
+                    maxLines = if (isExpanded) Int.MAX_VALUE else 3,
+                    overflow = TextOverflow.Ellipsis,
+                    onTextLayout = { result ->
+                        if (!isExpanded) {
+                            isOverflowing = result.hasVisualOverflow
+                        }
+                    }
                 )
-                Text(
-                    text = comment.timeAgo,
-                    fontSize = 13.sp,
-                    color = Color.Gray
-                )
+
+                if (isOverflowing && !isExpanded) {
+                    Text(
+                        text = "Mostrar más",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .clickable { isExpanded = true }
+                            .padding(top = 4.dp)
+                    )
+                }
+
+                if (isExpanded) {
+                    Text(
+                        text = "Mostrar menos",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .clickable { isExpanded = false }
+                            .padding(top = 4.dp)
+                    )
+                }
             }
+        }
+    }
+}
 
-            Spacer(modifier = Modifier.height(2.dp))
-
-            Text(
-                text = comment.text,
-                fontSize = 14.sp,
-                color = Color.DarkGray,
-                lineHeight = 20.sp,
-                maxLines = if (isExpanded) Int.MAX_VALUE else 3,
-                overflow = TextOverflow.Ellipsis,
-                onTextLayout = { result ->
-                    if (!isExpanded) {
-                        isOverflowing = result.hasVisualOverflow
+@Composable
+fun CommentInputSection(
+    text: String,
+    onTextChange: (String) -> Unit,
+    onSend: () -> Unit,
+    onCancel: () -> Unit
+) {
+    val charLimit = 500
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            OutlinedTextField(
+                value = text,
+                onValueChange = onTextChange,
+                placeholder = { Text("Comparte tu opinión con la comunidad...", fontSize = 14.sp) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                maxLines = 6,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = Color.Transparent
+                ),
+                trailingIcon = {
+                    if (text.isNotBlank()) {
+                        IconButton(onClick = onSend) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.Send,
+                                contentDescription = "Enviar",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                },
+                leadingIcon = {
+                    IconButton(onClick = onCancel) {
+                        Icon(Icons.Default.Close, contentDescription = "Cerrar", tint = Color.Gray, modifier = Modifier.size(20.dp))
                     }
                 }
             )
-
-            if (isOverflowing && !isExpanded) {
-                Text(
-                    text = "Mostrar más",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .clickable { isExpanded = true }
-                        .padding(top = 2.dp)
-                )
-            }
-
-            if (isExpanded) {
-                Text(
-                    text = "Mostrar menos",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .clickable { isExpanded = false }
-                        .padding(top = 2.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(20.dp) )
+            
+            Text(
+                text = "${text.length} / $charLimit",
+                style = MaterialTheme.typography.labelSmall,
+                color = if (text.length > 450) MaterialTheme.colorScheme.error else Color.Gray,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp, end = 8.dp),
+                textAlign = TextAlign.End
+            )
         }
     }
 }

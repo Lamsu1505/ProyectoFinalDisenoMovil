@@ -155,7 +155,7 @@ fun EditProfileScreen(
             ) {
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Nombre(s)", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text("Nombre(s)", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
                         Spacer(modifier = Modifier.height(4.dp))
                         OutlinedTextField(
                             value = uiState.name,
@@ -172,7 +172,7 @@ fun EditProfileScreen(
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Apellido(s)", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text("Apellido(s)", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
                         Spacer(modifier = Modifier.height(4.dp))
                         OutlinedTextField(
                             value = uiState.lastName,
@@ -191,7 +191,7 @@ fun EditProfileScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Correo electronico", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text("Correo electronico", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = uiState.email,
@@ -221,9 +221,9 @@ fun EditProfileScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(5.dp))
+                Spacer(modifier = Modifier.height(15.dp))
 
-                Text("Contraseña", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text("Contraseña", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = uiState.passwordPlaceholder,
@@ -238,7 +238,7 @@ fun EditProfileScreen(
                     )
                 )
                 TextButton(
-                    onClick = { //TODO
+                    onClick = { navController.navigate(AppScreens.ForgotPasswordScreen.route)
                          },
                     contentPadding = PaddingValues(0.dp)
                 ) {
@@ -253,7 +253,7 @@ fun EditProfileScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(5.dp))
 
                 Button(
                     onClick = { viewModel.onDeleteAccount() },

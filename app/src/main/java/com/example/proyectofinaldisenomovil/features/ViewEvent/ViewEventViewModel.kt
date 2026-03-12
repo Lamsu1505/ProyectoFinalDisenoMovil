@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.proyectofinaldisenomovil.R
+import java.util.UUID
 
 data class CommentUiModel(
     val id: String,
@@ -65,11 +66,49 @@ class ViewEventViewModel : ViewModel() {
     var isConfirmed by mutableStateOf(false)
         private set
 
+    // UI state for commenting
+    var isAddingComment by mutableStateOf(false)
+        private set
+
+    var newCommentText by mutableStateOf("")
+        private set
+
     fun toggleInterested() {
         isInterested = !isInterested
     }
 
     fun toggleConfirmed() {
         isConfirmed = !isConfirmed
+    }
+
+    fun startAddingComment() {
+        isAddingComment = true
+    }
+
+    fun onCommentTextChange(text: String) {
+        if (text.length <= 500) {
+            newCommentText = text
+        }
+    }
+
+    fun cancelAddingComment() {
+        isAddingComment = false
+        newCommentText = ""
+    }
+
+    fun sendComment() {
+        if (newCommentText.isNotBlank()) {
+            val newComment = CommentUiModel(
+                id = UUID.randomUUID().toString(),
+                authorName = "Tú", // In real app, get from user profile
+                initials = "YO",
+                timeAgo = "Ahora",
+                text = newCommentText
+            )
+            uiState = uiState.copy(
+                comments = uiState.comments + newComment
+            )
+            cancelAddingComment()
+        }
     }
 }
