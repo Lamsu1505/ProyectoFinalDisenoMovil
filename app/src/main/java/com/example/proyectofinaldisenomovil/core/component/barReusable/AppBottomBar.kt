@@ -88,9 +88,7 @@ fun AppBottomBar(
         NavigationBarItem(
             selected = currentRoute == "favorites_route",
             onClick = {
-                navController.navigate("favorites_route") {
-                    launchSingleTop = true
-                }
+                navController.navigate(AppScreens.LikedEventsScreen.route)
             },
             icon = { Icon(Icons.Default.Favorite,
                 contentDescription = "Me gusta",

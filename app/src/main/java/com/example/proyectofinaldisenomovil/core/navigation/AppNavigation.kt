@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.features.CreateEvent.CreateEventScreen
 import com.example.proyectofinaldisenomovil.features.EditProfile.EditProfileScreen
 import com.example.proyectofinaldisenomovil.features.ForgotPassword.ForgotPasswordScreen
+import com.example.proyectofinaldisenomovil.features.LikedEvents.LikedEventsScreen
 import com.example.proyectofinaldisenomovil.features.Notifications.NotificationsScreen
 import com.example.proyectofinaldisenomovil.features.Profile.ProfileScreen
 import com.example.proyectofinaldisenomovil.features.RecoverPassword.RecoverPasswordScreen
@@ -53,6 +54,9 @@ fun AppNavigation(){
         }
         composable ( route = AppScreens.CreateEventScreen.route){
             CreateEventScreen(navController)
+        }
+        composable ( route = AppScreens.LikedEventsScreen.route){
+            LikedEventsScreen(navController)
         }
 
 
