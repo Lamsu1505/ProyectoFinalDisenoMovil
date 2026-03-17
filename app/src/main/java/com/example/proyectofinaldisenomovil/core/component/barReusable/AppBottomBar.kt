@@ -52,8 +52,8 @@ fun AppBottomBar(
 
         // Iré
         BottomNavItem(
-            selected = currentRoute == "going_route",
-            onClick = { /* TODO: Implementar ruta */ },
+            selected = currentRoute == "going_route" || currentRoute == AppScreens.SavedEventsScreen.route,
+            onClick = { navController.navigate(AppScreens.SavedEventsScreen.route) },
             icon = Icons.Default.Bookmark,
             label = "Iré",
             iconSize = iconsActualSize
