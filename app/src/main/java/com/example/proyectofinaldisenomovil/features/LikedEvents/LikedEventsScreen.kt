@@ -31,6 +31,8 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryEventsSelectorBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SearchTopBarApp
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.features.home.DistanceComboBox
+import com.example.proyectofinaldisenomovil.features.home.OrderByComboBox
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -98,41 +100,40 @@ fun FavoritesFilters() {
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Ordenar por
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.weight(1f)
-        ) {
-            Text("Ordenar por:", fontSize = 12.sp, color = Color.Gray)
-            FilterChip(label = "Nombre")
-        }
 
-        // Distancia
         Row(
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.weight(1f)
+            horizontalArrangement = Arrangement.spacedBy(15.dp)
         ) {
-            Text("Distancia:", fontSize = 12.sp, color = Color.Gray)
-            FilterChip(label = "20 km")
-        }
-    }
-}
+            Row(
+                modifier = Modifier.weight(4f),
+                horizontalArrangement = Arrangement.spacedBy(7.dp),
+                verticalAlignment = Alignment.CenterVertically
 
-@Composable
-fun FilterChip(label: String) {
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.clickable { /* Expand menu */ }
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(label, fontSize = 12.sp, fontWeight = FontWeight.Medium)
-            Icon(Icons.Default.ArrowDropDown, contentDescription = null, modifier = Modifier.size(16.dp))
+            ) {
+                Text(
+                    "Ordenar por:",
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+
+                    )
+                OrderByComboBox(listOf("Nombre", "Fecha", "Popularidad"))
+            }
+
+            Row(
+                modifier = Modifier.weight(3f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(7.dp)
+            ) {
+                Text(
+                    "Distancia:",
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                DistanceComboBox()
+            }
         }
     }
 }
