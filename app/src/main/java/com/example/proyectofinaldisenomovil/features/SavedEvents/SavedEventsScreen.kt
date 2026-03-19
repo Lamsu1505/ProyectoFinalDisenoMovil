@@ -31,15 +31,16 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryEventsSelectorBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SearchTopBarApp
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.features.SavedEvents.SavedEventsViewModel
 import com.example.proyectofinaldisenomovil.features.home.DistanceComboBox
 import com.example.proyectofinaldisenomovil.features.home.OrderByComboBox
 import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
-fun LikedEventsScreen(
+fun SavedEventsScreen(
     navController: NavController,
-    viewModel: FavoritesViewModel = viewModel()
+    viewModel: SavedEventsViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -70,15 +71,17 @@ fun LikedEventsScreen(
 
             // Filter Dropdowns
             item {
-                FavoritesFilters()
+                SavedEventsFilters()
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
             // Event List
             items(uiState.favoriteEvents) { event ->
-                FavoriteEventCard(
+                SavedEventCard(
                     event = event,
-                    onToggleFavorite = { viewModel.onToggleFavorite(event.id) }
+                    onToggleFavorite = {
+                        //TODO
+                    }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -92,7 +95,7 @@ fun LikedEventsScreen(
 }
 
 @Composable
-fun FavoritesFilters() {
+fun SavedEventsFilters() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -139,7 +142,7 @@ fun FavoritesFilters() {
 }
 
 @Composable
-fun FavoriteEventCard(
+fun SavedEventCard(
     event: FavoriteEvent,
     onToggleFavorite: () -> Unit
 ) {
@@ -192,15 +195,15 @@ fun FavoriteEventCard(
 
                 Row(modifier = Modifier.fillMaxWidth()) {
                     // Columna izquierda Info
-                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        IconInfoRow(Icons.Default.CalendarToday, event.date)
-                        IconInfoRow(Icons.Default.Schedule, event.time)
-                        IconInfoRow(Icons.Default.LocationOn, "${event.location} (${event.distance})")
+                    Column(modifier = Modifier.weight(1.5f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        IconInfoRowSavedEvents(Icons.Default.CalendarToday, event.date)
+                        IconInfoRowSavedEvents(Icons.Default.Schedule, event.time)
+                        IconInfoRowSavedEvents(Icons.Default.LocationOn, "${event.location} (${event.distance})")
                     }
 
                     // Columna derecha Asistentes y Corazón
                     Column(
-                        modifier = Modifier.fillMaxHeight(),
+                        modifier = Modifier.fillMaxHeight().weight(1f),
                         horizontalAlignment = Alignment.End,
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -210,13 +213,37 @@ fun FavoriteEventCard(
                             Text(numberFormat.format(event.attendees), fontSize = 14.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
                         }
 
-                        IconButton(onClick = onToggleFavorite) {
-                            Icon(
-                                imageVector = Icons.Default.Favorite,
-                                contentDescription = "Favorite",
-                                tint = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(32.dp)
-                            )
+                        Button(
+                            modifier = Modifier.fillMaxWidth().height(30.dp),
+                            onClick = {
+                                //TODO
+                            },
+                            contentPadding = PaddingValues(2.dp),
+                            shape = RoundedCornerShape(15.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.CalendarToday,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.size(17.dp).weight(1f)
+                                )
+                                Text(
+                                    modifier = Modifier.fillMaxWidth()
+                                        .weight(5f),
+                                    textAlign = TextAlign.Center,
+                                    text = "Poner en calendario",
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+
                         }
                     }
                 }
@@ -226,7 +253,7 @@ fun FavoriteEventCard(
 }
 
 @Composable
-fun IconInfoRow(icon: androidx.compose.ui.graphics.vector.ImageVector, text: String) {
+fun IconInfoRowSavedEvents(icon: androidx.compose.ui.graphics.vector.ImageVector, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(icon, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
         Spacer(modifier = Modifier.width(8.dp))
@@ -236,8 +263,8 @@ fun IconInfoRow(icon: androidx.compose.ui.graphics.vector.ImageVector, text: Str
 
 @Preview(showBackground = true)
 @Composable
-fun FavoritesScreenPreview() {
+fun SavedEventsScreenPreview() {
     ProyectoFinalDisenoMovilTheme {
-        LikedEventsScreen(navController = rememberNavController())
+        SavedEventsScreen(navController = rememberNavController())
     }
 }

@@ -9,6 +9,7 @@ import com.example.proyectofinaldisenomovil.features.CreateEvent.CreateEventScre
 import com.example.proyectofinaldisenomovil.features.EditProfile.EditProfileScreen
 import com.example.proyectofinaldisenomovil.features.ForgotPassword.ForgotPasswordScreen
 import com.example.proyectofinaldisenomovil.features.LikedEvents.LikedEventsScreen
+import com.example.proyectofinaldisenomovil.features.LikedEvents.SavedEventsScreen
 import com.example.proyectofinaldisenomovil.features.Notifications.NotificationsScreen
 import com.example.proyectofinaldisenomovil.features.Profile.ProfileScreen
 import com.example.proyectofinaldisenomovil.features.RecoverPassword.RecoverPasswordScreen
@@ -57,6 +58,9 @@ fun AppNavigation(){
         }
         composable ( route = AppScreens.LikedEventsScreen.route){
             LikedEventsScreen(navController)
+        }
+        composable ( route = AppScreens.SavedEventsScreen.route){
+            SavedEventsScreen(navController)
         }
 
 

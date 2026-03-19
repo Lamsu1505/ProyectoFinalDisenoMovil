@@ -79,6 +79,7 @@ import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilT
 import com.example.proyectofinaldisenomovil.features.login.LoginScreen
 import com.example.proyectofinaldisenomovil.features.login.LoginViewModel
 import com.example.proyectofinaldisenomovil.features.register.RegisterScreen
+import okio.Options
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -145,7 +146,7 @@ fun FiltersBar(){
                     color = MaterialTheme.colorScheme.onSurface,
 
                 )
-                OrderByComboBox()
+                OrderByComboBox(listOf("Nombre", "Fecha", "Popularidad"))
             }
 
             Row(
@@ -167,8 +168,9 @@ fun FiltersBar(){
 
 
 @Composable
-fun OrderByComboBox() {
-    val options = listOf("Nombre", "Fecha", "Popularidad")
+fun OrderByComboBox(
+    options: List<String>
+) {
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf(options[0]) }
 
