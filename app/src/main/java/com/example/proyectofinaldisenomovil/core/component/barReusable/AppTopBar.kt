@@ -1,6 +1,5 @@
 package com.example.proyectofinaldisenomovil.core.component.barReusable
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -21,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
+import com.example.proyectofinaldisenomovil.core.navigation.UserRoutes
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,7 +60,7 @@ fun AppTopBar(
             BadgedBox(
                 modifier = Modifier
                     .clickable(onClick = {
-                        navController.navigate(AppScreens.NotificationsScreen.route)
+                        navController.navigate(UserRoutes.NotificationsScreen.route)
                 }),
                 badge = {
                     Badge(

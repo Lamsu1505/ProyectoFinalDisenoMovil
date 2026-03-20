@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
+import com.example.proyectofinaldisenomovil.core.navigation.UserRoutes
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 @Composable
@@ -43,8 +43,8 @@ fun AppBottomBar(
     ) {
         // Inicio
         BottomNavItem(
-            selected = currentRoute == "home_route" || currentRoute == AppScreens.HomeScreen.route,
-            onClick = { navController.navigate(AppScreens.HomeScreen.route) },
+            selected = currentRoute == "home_route" || currentRoute == UserRoutes.HomeScreen.route,
+            onClick = { navController.navigate(UserRoutes.HomeScreen.route) },
             icon = Icons.Default.Home,
             label = "Inicio",
             iconSize = iconsActualSize
@@ -52,8 +52,8 @@ fun AppBottomBar(
 
         // Iré
         BottomNavItem(
-            selected = currentRoute == "going_route" || currentRoute == AppScreens.SavedEventsScreen.route,
-            onClick = { navController.navigate(AppScreens.SavedEventsScreen.route) },
+            selected = currentRoute == "going_route" || currentRoute == UserRoutes.SavedEventsScreen.route,
+            onClick = { navController.navigate(UserRoutes.SavedEventsScreen.route) },
             icon = Icons.Default.Bookmark,
             label = "Iré",
             iconSize = iconsActualSize
@@ -72,7 +72,7 @@ fun AppBottomBar(
                 interactionSource = fabInteractionSource,
                 containerColor = MaterialTheme.colorScheme.primary,
                 onClick = {
-                    navController.navigate(AppScreens.CreateEventScreen.route)
+                    navController.navigate(UserRoutes.CreateEventScreen.route)
                 }
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Agregar", modifier = Modifier.size(40.dp))
@@ -81,8 +81,8 @@ fun AppBottomBar(
 
         // Me gusta
         BottomNavItem(
-            selected = currentRoute == "favorites_route" || currentRoute == AppScreens.LikedEventsScreen.route,
-            onClick = { navController.navigate(AppScreens.LikedEventsScreen.route) },
+            selected = currentRoute == "favorites_route" || currentRoute == UserRoutes.LikedEventsScreen.route,
+            onClick = { navController.navigate(UserRoutes.LikedEventsScreen.route) },
             icon = Icons.Default.Favorite,
             label = "Me gusta",
             iconSize = iconsActualSize
@@ -90,8 +90,8 @@ fun AppBottomBar(
 
         // Perfil
         BottomNavItem(
-            selected = currentRoute == "profile_route" || currentRoute == AppScreens.ProfileScreen.route,
-            onClick = { navController.navigate(AppScreens.ProfileScreen.route) },
+            selected = currentRoute == "profile_route" || currentRoute == UserRoutes.ProfileScreen.route,
+            onClick = { navController.navigate(UserRoutes.ProfileScreen.route) },
             icon = Icons.Default.Person,
             label = "Perfil",
             iconSize = iconsActualSize
