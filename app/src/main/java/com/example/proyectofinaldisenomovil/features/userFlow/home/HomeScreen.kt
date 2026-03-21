@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,7 +58,9 @@ import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilT
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel = viewModel()
+    homeViewModel: HomeViewModel = viewModel(),
+    paddingValues: PaddingValues,
+    onNotificationClick: () -> Unit
 ) {
     var query by remember { mutableStateOf("")  }
 
@@ -65,11 +68,14 @@ fun HomeScreen(
         topBar = {
             SearchTopBarApp(
                 query = query,
-                onQueryChange = { query = it }
+                onQueryChange = { query = it },
+                onNotificationClick
             )
         },
         bottomBar = {
-            AppBottomBar()
+            AppBottomBar(
+                selectedRoute = ""
+            )
         }
 
     ) { paddingValues ->
@@ -429,6 +435,9 @@ fun EventCard(
 @Composable
 fun HomeScreenPreview() {
     ProyectoFinalDisenoMovilTheme() {
-        HomeScreen()
+        HomeScreen(
+            paddingValues = PaddingValues(0.dp),
+            onNotificationClick = {}
+        )
     }
 }

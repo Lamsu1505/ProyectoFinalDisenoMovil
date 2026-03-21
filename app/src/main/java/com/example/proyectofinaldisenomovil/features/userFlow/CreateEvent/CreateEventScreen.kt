@@ -48,19 +48,20 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CreateEventScreen(
-    navController: NavController,
-    viewModel: CreateEventViewModel = viewModel()
+    viewModel: CreateEventViewModel = viewModel(),
+    paddingValues: PaddingValues
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
             AppTopBar(
-                navController = navController,
                 title = "Crear Nuevo Evento"
             )
         },
-        bottomBar = { AppBottomBar() },
+        bottomBar = { AppBottomBar(
+            selectedRoute = ""
+        ) },
         containerColor = whiteBackground
     ) { paddingValues ->
         LazyColumn(
@@ -72,34 +73,42 @@ fun CreateEventScreen(
         ) {
             item {
                 CategoryBadge(icon = Icons.Default.PushPin, label = "Información")
-                infoSection(navController, uiState, viewModel)
+                infoSection(
+                    uiState,
+                    viewModel
+                )
                 Spacer(modifier = Modifier.height(5.dp))
             }
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryBadge(icon = Icons.Default.Image, label = "Imagenes")
-                imageSection(navController, uiState, viewModel)
+                imageSection(
+                    uiState,
+                    viewModel
+                )
                 Spacer(modifier = Modifier.height(5.dp))
             }
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryBadge(icon = Icons.Default.LocationOn, label = "Ubicación")
-                locationSection(navController, uiState, viewModel)
+                locationSection(
+                    uiState,
+                    viewModel)
                 Spacer(modifier = Modifier.height(5.dp))
             }
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryBadge(icon = Icons.Default.CalendarToday, label = "Fecha y Hora")
-                dateSection(navController, uiState, viewModel)
+                dateSection(uiState, viewModel)
                 Spacer(modifier = Modifier.height(5.dp))
             }
 
             item {
                 Spacer(modifier = Modifier.height(24.dp))
-                ButtonsSection(navController, uiState, viewModel)
+                ButtonsSection( uiState, viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }
@@ -108,7 +117,6 @@ fun CreateEventScreen(
 
 @Composable
 fun infoSection(
-    navController: NavController,
     uiState: CreateEventUiState,
     viewModel: CreateEventViewModel
 ) {
@@ -276,7 +284,6 @@ fun infoSection(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun imageSection(
-    navController: NavController,
     uiState: CreateEventUiState,
     viewModel: CreateEventViewModel
 ) {
@@ -402,7 +409,6 @@ fun imageSection(
 
 @Composable
 fun locationSection(
-    navController: NavController,
     uiState: CreateEventUiState,
     viewModel: CreateEventViewModel
 ) {
@@ -468,7 +474,6 @@ fun locationSection(
 
 @Composable
 fun dateSection(
-    navController: NavController,
     uiState: CreateEventUiState,
     viewModel: CreateEventViewModel
 ) {
@@ -642,7 +647,6 @@ fun dateSection(
 
 @Composable
 fun ButtonsSection(
-    navController: NavController,
     uiState: CreateEventUiState,
     viewModel: CreateEventViewModel
 ) {
@@ -703,6 +707,8 @@ fun CategoryBadge(icon: ImageVector, label: String) {
 @Composable
 fun CreateEventScreenPreview() {
     ProyectoFinalDisenoMovilTheme {
-        CreateEventScreen(navController = rememberNavController())
+        CreateEventScreen(
+            paddingValues = PaddingValues(0.dp)
+        )
     }
 }

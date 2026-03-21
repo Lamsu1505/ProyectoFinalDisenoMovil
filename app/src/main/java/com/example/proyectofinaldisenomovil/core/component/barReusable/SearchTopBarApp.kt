@@ -27,7 +27,8 @@ import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilT
 @Composable
 fun SearchTopBarApp(
     query: String,
-    onQueryChange: (String) -> Unit
+    onQueryChange: (String) -> Unit,
+    onNotificationsClick: () -> Unit = {}
 ) {
     CenterAlignedTopAppBar(
         modifier = Modifier
@@ -98,6 +99,11 @@ fun SearchTopBarApp(
                     contentDescription = "Notificaciones",
                     tint = Color.White,
                     modifier = Modifier.size(35.dp)
+                        .clickable(
+                            onClick = {
+                                onNotificationsClick()
+                            }
+                        )
                 )
 
             }

@@ -35,19 +35,21 @@ import com.example.proyectofinaldisenomovil.core.theme.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    navController: NavController,
-    viewModel: ProfileViewModel = viewModel()
+    viewModel: ProfileViewModel = viewModel(),
+    paddingValues: PaddingValues,
+    onLogout: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
             AppTopBar(
-                navController ,
                 title = "Perfil"
             )
         },
-        bottomBar = { AppBottomBar() },
+        bottomBar = { AppBottomBar(
+            selectedRoute = ""
+        ) },
         containerColor = whiteBackground
     ) { paddingValues ->
         Column(
@@ -313,6 +315,9 @@ fun MenuItem(icon: ImageVector, text: String, isLogout: Boolean = false, onClick
 @Composable
 fun ProfileScreenPreview() {
     ProyectoFinalDisenoMovilTheme {
-        ProfileScreen(navController = rememberNavController())
+        ProfileScreen(
+            paddingValues = PaddingValues(),
+            onLogout = {}
+        )
     }
 }

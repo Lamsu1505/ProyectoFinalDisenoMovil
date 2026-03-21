@@ -58,12 +58,13 @@ fun ViewEventScreen(
     Scaffold(
         topBar = {
             AppTopBar(
-                navController ,
                 title = "Evento"
             )
         },
         bottomBar = {
-            AppBottomBar()
+            AppBottomBar(
+                selectedRoute = ""
+            )
         }
     ) { paddingValues ->
 

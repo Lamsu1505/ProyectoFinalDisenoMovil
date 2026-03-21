@@ -73,7 +73,7 @@ class LoginViewModel : ViewModel() {
 
     fun login() {
         _loginResult.value = when {
-            email == "admin@g.com" && password == "321" ->
+            email == "admin@g.com" && password == "87654321" ->
                 LoginResult.Success(UserRole.MODERATOR)
 
             email == "a@g.com" && password == "12345678" ->
@@ -81,7 +81,6 @@ class LoginViewModel : ViewModel() {
             else ->
                LoginResult.Error
         }
-
     }
 
     fun resetResult() {

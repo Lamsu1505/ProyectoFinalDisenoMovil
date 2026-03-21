@@ -38,8 +38,8 @@ import java.util.Locale
 
 @Composable
 fun SavedEventsScreen(
-    navController: NavController,
-    viewModel: SavedEventsViewModel = viewModel()
+    viewModel: SavedEventsViewModel = viewModel(),
+    paddingValues: PaddingValues
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -51,7 +51,9 @@ fun SavedEventsScreen(
             )
         },
         bottomBar = {
-            AppBottomBar()
+            AppBottomBar(
+                selectedRoute = ""
+            )
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
@@ -263,6 +265,8 @@ fun IconInfoRowSavedEvents(icon: ImageVector, text: String) {
 @Composable
 fun SavedEventsScreenPreview() {
     ProyectoFinalDisenoMovilTheme {
-        SavedEventsScreen(navController = rememberNavController())
+        SavedEventsScreen(
+            paddingValues = PaddingValues()
+        )
     }
 }

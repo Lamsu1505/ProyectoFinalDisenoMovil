@@ -35,8 +35,8 @@ import java.util.Locale
 
 @Composable
 fun LikedEventsScreen(
-    navController: NavController,
-    viewModel: FavoritesViewModel = viewModel()
+    viewModel: FavoritesViewModel = viewModel(),
+    paddingValues: PaddingValues
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -48,7 +48,9 @@ fun LikedEventsScreen(
             )
         },
         bottomBar = {
-            AppBottomBar()
+            AppBottomBar(
+                selectedRoute = ""
+            )
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
@@ -234,6 +236,6 @@ fun IconInfoRow(icon: ImageVector, text: String) {
 @Composable
 fun FavoritesScreenPreview() {
     ProyectoFinalDisenoMovilTheme {
-        LikedEventsScreen(navController = rememberNavController())
+        LikedEventsScreen(paddingValues = PaddingValues())
     }
 }

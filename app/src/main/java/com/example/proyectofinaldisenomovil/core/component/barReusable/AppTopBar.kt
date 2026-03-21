@@ -25,7 +25,6 @@ import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilT
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopBar(
-    navController: NavController,
     title: String,
     modifier: Modifier = Modifier,
     navigationIcon: (@Composable () -> Unit)? = null,
@@ -46,7 +45,9 @@ fun AppTopBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = {
+
+            }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Volver",
@@ -88,7 +89,9 @@ fun AppTopBar(
 @Composable
 fun AppTopBarPreview() {
     ProyectoFinalDisenoMovilTheme() {
-        AppTopBar(navController = rememberNavController(), title = "Preview")
+        AppTopBar(
+            title = "Preview"
+        )
 
     }
 }

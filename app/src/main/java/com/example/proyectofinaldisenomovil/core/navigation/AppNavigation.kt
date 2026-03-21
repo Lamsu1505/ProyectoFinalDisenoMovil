@@ -16,6 +16,7 @@ import com.example.proyectofinaldisenomovil.features.loginFlow.RecoverPassword.R
 import com.example.proyectofinaldisenomovil.features.userFlow.home.HomeScreen
 import com.example.proyectofinaldisenomovil.features.loginFlow.login.LoginScreen
 import com.example.proyectofinaldisenomovil.features.loginFlow.register.RegisterScreen
+import com.example.proyectofinaldisenomovil.features.userFlow.UserNavigation
 import com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent.ViewEventScreen
 
 
@@ -28,12 +29,17 @@ fun AppNavigation() {
         startDestination = LoginRoutes.Login
     ) {
 
-        //LOGIN
+        // LOGIN FLOW
         composable<LoginRoutes.Login> {
             LoginScreen(
-                onNavigateToRegister = { navController.navigate(LoginRoutes.Register)},
-                onNavigateToForgotPassword = { navController.navigate((LoginRoutes.ForgotPassword))},
-                onNavigateToUserFLow = { navController.navigate(AppRoutes.UserFlow) },
+                onNavigateToRegister = { navController.navigate(LoginRoutes.Register) },
+                onNavigateToForgotPassword = { navController.navigate(LoginRoutes.ForgotPassword) },
+                onNavigateToUserFLow = {
+                    navController.navigate(AppRoutes.UserFlow) {
+                        // Limpia el back stack de login para que no se pueda volver con "atrás"
+                        popUpTo(LoginRoutes.Login) { inclusive = true }
+                    }
+                },
                 onNavigateToModeratorFlow = {}
             )
         }
@@ -58,15 +64,17 @@ fun AppNavigation() {
                 onBackClick = { navController.popBackStack() },
                 onNavigateToLogin = { navController.navigate(LoginRoutes.Login) },
                 onSubmit = { navController.navigate(LoginRoutes.Login) }
-
             )
         }
 
-
-
-        //User flow
+        // USER FLOW — delega toda la navegación interna a UserNavigation
         composable<AppRoutes.UserFlow> {
-            HomeScreen(
+            UserNavigation(
+                onLogout = {
+                    navController.navigate(LoginRoutes.Login) {
+                        popUpTo(AppRoutes.UserFlow) { inclusive = true }
+                    }
+                }
             )
         }
     }

@@ -41,11 +41,12 @@ fun EditProfileScreen(
     Scaffold(
         topBar = {
             AppTopBar(
-                navController = navController,
                 title = "Editar Perfil"
             )
         },
-        bottomBar = { AppBottomBar() },
+        bottomBar = { AppBottomBar(
+            selectedRoute = ""
+        ) },
         containerColor = whiteBackground
     ) { paddingValues ->
         Column(

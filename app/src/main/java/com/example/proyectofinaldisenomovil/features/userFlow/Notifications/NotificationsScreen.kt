@@ -90,7 +90,9 @@ fun NotificationsScreen(
             )
         },
         bottomBar = {
-            AppBottomBar()
+            AppBottomBar(
+                selectedRoute = ""
+            )
         }
     ) { paddingValues ->
 
