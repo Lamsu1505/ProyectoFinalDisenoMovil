@@ -88,7 +88,5 @@ class RegisterViewModel : ViewModel() {
     }
 
     fun registerUser(onResult: (Boolean) -> Unit) {
-
-
     }
 }

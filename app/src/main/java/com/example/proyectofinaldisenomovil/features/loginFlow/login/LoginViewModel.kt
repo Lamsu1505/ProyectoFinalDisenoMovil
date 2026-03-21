@@ -9,7 +9,18 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.proyectofinaldisenomovil.data.model.User.UserRole
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
+sealed class LoginResult {
+
+    data object Idle : LoginResult() //Inactivo
+    data object Error : LoginResult()
+    data class Success(val role: UserRole) : LoginResult()
+}
 
 class LoginViewModel : ViewModel() {
 
@@ -19,16 +30,19 @@ class LoginViewModel : ViewModel() {
 
     var passwordError by  mutableStateOf("")
 
-    private val _loginResult = MutableLiveData<Boolean>()
-    val loginResult: LiveData<Boolean> = _loginResult
+    val _loginResult = MutableStateFlow<LoginResult>(LoginResult.Idle)
+    var loginResult: StateFlow<LoginResult> = _loginResult.asStateFlow()
+
 
     fun onEmailChange(newEmail: String) {
         this.email = newEmail
+        _loginResult.value = LoginResult.Idle
         validateEmail(email)
     }
 
     fun onPasswordChange(newPassword: String) {
         this.password = newPassword
+        _loginResult.value = LoginResult.Idle
         validatePassword(password)
     }
 
@@ -57,7 +71,21 @@ class LoginViewModel : ViewModel() {
     }
 
 
-    fun login(onResult: (Boolean) -> Unit) {
+    fun login() {
+        _loginResult.value = when {
+            email == "admin@g.com" && password == "321" ->
+                LoginResult.Success(UserRole.MODERATOR)
+
+            email == "a@g.com" && password == "12345678" ->
+                LoginResult.Success(UserRole.USER)
+            else ->
+               LoginResult.Error
+        }
+
+    }
+
+    fun resetResult() {
+        _loginResult.value = LoginResult.Idle
     }
 
 }

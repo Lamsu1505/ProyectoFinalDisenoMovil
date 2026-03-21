@@ -17,18 +17,6 @@ package com.example.proyectofinaldisenomovil.core.navigation
 //}
 
 
-
 sealed class  UserRoutes (val route: String) {
-    object RegisterScreen : UserRoutes("registerScreen")
-    object FirstScreen : UserRoutes("firstScreen")
-    object HomeScreen : UserRoutes("homeScreen")
-    object  ForgotPasswordScreen : UserRoutes("forgotPasswordScreen")
-    object  RecoverPasswordScreen : UserRoutes("recoverPasswordScreen")
-    object  ViewEventScreen : UserRoutes("viewEventScreen")
-    object  NotificationsScreen : UserRoutes("notificationsScreen")
-    object  ProfileScreen : UserRoutes("profileScreen")
-    object  EditProfileScreen : UserRoutes("editprofileScreen")
-    object  CreateEventScreen : UserRoutes("createEventScreen")
-    object  LikedEventsScreen : UserRoutes("likedEventsScreen")
-    object  SavedEventsScreen : UserRoutes("savedEventsScreen")
+
 }

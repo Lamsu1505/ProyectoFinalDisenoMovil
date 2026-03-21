@@ -48,19 +48,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryEventsSelectorBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SearchTopBarApp
-import com.example.proyectofinaldisenomovil.core.navigation.UserRoutes
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    navController: NavController,
     homeViewModel: HomeViewModel = viewModel()
 ) {
     var query by remember { mutableStateOf("")  }
@@ -68,13 +64,12 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             SearchTopBarApp(
-                navController,
                 query = query,
                 onQueryChange = { query = it }
             )
         },
         bottomBar = {
-            AppBottomBar(navController = navController)
+            AppBottomBar()
         }
 
     ) { paddingValues ->
@@ -86,13 +81,13 @@ fun HomeScreen(
                 .padding(paddingValues)
         ) {
 
-            CategoryEventsSelectorBar( navController)
+            CategoryEventsSelectorBar( )
 
             Spacer( modifier = Modifier.size(7.dp))
 
             FiltersBar()
 
-            EventCard( navController)
+            EventCard( )
         }
 
     }
@@ -284,7 +279,6 @@ fun DistanceComboBox() {
 
 @Composable
 fun EventCard(
-    navController: NavController
 ) {
 
     Card(
@@ -292,7 +286,6 @@ fun EventCard(
             .fillMaxWidth()
             .padding(12.dp)
             .clickable( onClick = {
-                navController.navigate(UserRoutes.ViewEventScreen.route)
             }),
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(8.dp)
@@ -436,6 +429,6 @@ fun EventCard(
 @Composable
 fun HomeScreenPreview() {
     ProyectoFinalDisenoMovilTheme() {
-        HomeScreen(navController = rememberNavController())
+        HomeScreen()
     }
 }

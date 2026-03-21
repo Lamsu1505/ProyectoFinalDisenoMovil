@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.proyectofinaldisenomovil.core.navigation.LoginRoutes
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.EditProfile.EditProfileScreen
 import com.example.proyectofinaldisenomovil.features.loginFlow.ForgotPassword.ForgotPasswordScreen
@@ -27,11 +28,13 @@ fun AppNavigation() {
         startDestination = LoginRoutes.Login
     ) {
 
+        //LOGIN
         composable<LoginRoutes.Login> {
             LoginScreen(
                 onNavigateToRegister = { navController.navigate(LoginRoutes.Register)},
                 onNavigateToForgotPassword = { navController.navigate((LoginRoutes.ForgotPassword))},
-                onLoginSuccess = {}
+                onNavigateToUserFLow = { navController.navigate(AppRoutes.UserFlow) },
+                onNavigateToModeratorFlow = {}
             )
         }
 
@@ -56,6 +59,14 @@ fun AppNavigation() {
                 onNavigateToLogin = { navController.navigate(LoginRoutes.Login) },
                 onSubmit = { navController.navigate(LoginRoutes.Login) }
 
+            )
+        }
+
+
+
+        //User flow
+        composable<AppRoutes.UserFlow> {
+            HomeScreen(
             )
         }
     }

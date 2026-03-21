@@ -60,7 +60,7 @@ fun CreateEventScreen(
                 title = "Crear Nuevo Evento"
             )
         },
-        bottomBar = { AppBottomBar(navController = navController) },
+        bottomBar = { AppBottomBar() },
         containerColor = whiteBackground
     ) { paddingValues ->
         LazyColumn(

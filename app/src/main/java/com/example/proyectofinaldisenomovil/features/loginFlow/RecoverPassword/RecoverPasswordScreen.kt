@@ -23,13 +23,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppSnackbarHost
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SnackbarController
 import com.example.proyectofinaldisenomovil.core.component.login.HeaderSectionNonLogued
 import com.example.proyectofinaldisenomovil.core.component.login.TopBarRegister
-import com.example.proyectofinaldisenomovil.core.navigation.UserRoutes
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 @Composable
@@ -149,13 +146,15 @@ fun RecoverPasswordScreen(
 
                         Button(
                             onClick = {
+                                //TODO validar codigo y contraseña y usar el onSubmit()
+
                                 if (password == repeatPassword && password.isNotEmpty()) {
                                     snackbarController.showMessage("La contraseña ha sido recuperada correctamente")
+                                    onSubmit()
                                 } else {
                                     snackbarController.showMessage("Las contraseñas no coinciden")
                                 }
-                                //TODO validar codigo y contraseña y usar el onSubmit()
-                                onSubmit()
+
                             },
                             modifier = Modifier
                                 .fillMaxWidth()

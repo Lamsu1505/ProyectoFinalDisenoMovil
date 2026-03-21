@@ -63,7 +63,7 @@ fun ViewEventScreen(
             )
         },
         bottomBar = {
-            AppBottomBar(navController = navController)
+            AppBottomBar()
         }
     ) { paddingValues ->
 

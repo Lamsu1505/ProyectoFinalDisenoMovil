@@ -27,7 +27,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
-import com.example.proyectofinaldisenomovil.core.navigation.UserRoutes
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.core.theme.*
 
@@ -46,7 +45,7 @@ fun EditProfileScreen(
                 title = "Editar Perfil"
             )
         },
-        bottomBar = { AppBottomBar(navController = navController) },
+        bottomBar = { AppBottomBar() },
         containerColor = whiteBackground
     ) { paddingValues ->
         Column(
@@ -233,7 +232,7 @@ fun EditProfileScreen(
                     )
                 )
                 TextButton(
-                    onClick = { navController.navigate(UserRoutes.ForgotPasswordScreen.route)
+                    onClick = {
                          },
                     contentPadding = PaddingValues(0.dp)
                 ) {
@@ -242,7 +241,6 @@ fun EditProfileScreen(
                         color = blue, fontSize = 14.sp,
                         modifier = Modifier.clickable(
                             onClick = {
-                                navController.navigate(UserRoutes.ForgotPasswordScreen.route)
                             }
                         )
                     )

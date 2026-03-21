@@ -29,7 +29,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
-import com.example.proyectofinaldisenomovil.core.navigation.UserRoutes
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.core.theme.*
 
@@ -48,7 +47,7 @@ fun ProfileScreen(
                 title = "Perfil"
             )
         },
-        bottomBar = { AppBottomBar(navController = navController) },
+        bottomBar = { AppBottomBar() },
         containerColor = whiteBackground
     ) { paddingValues ->
         Column(
@@ -219,8 +218,9 @@ fun ProfileScreen(
                 border = BorderStroke(1.dp, Color.LightGray)
             ) {
                 Column {
-                    MenuItem(Icons.Default.Edit, "Editar Perfil") { navController.navigate(
-                        UserRoutes.EditProfileScreen.route) }
+                    MenuItem(Icons.Default.Edit, "Editar Perfil") {
+
+                    }
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
                     MenuItem(Icons.Default.Description, "Terminos y condiciones") { /* Navigate */ }

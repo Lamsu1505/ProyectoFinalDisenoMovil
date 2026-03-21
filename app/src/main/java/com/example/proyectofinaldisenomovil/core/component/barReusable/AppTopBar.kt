@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.proyectofinaldisenomovil.core.navigation.UserRoutes
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,7 +59,6 @@ fun AppTopBar(
             BadgedBox(
                 modifier = Modifier
                     .clickable(onClick = {
-                        navController.navigate(UserRoutes.NotificationsScreen.route)
                 }),
                 badge = {
                     Badge(

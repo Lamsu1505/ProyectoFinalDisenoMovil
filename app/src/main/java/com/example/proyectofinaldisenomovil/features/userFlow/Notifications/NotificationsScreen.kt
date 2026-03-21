@@ -90,7 +90,7 @@ fun NotificationsScreen(
             )
         },
         bottomBar = {
-            AppBottomBar(navController = navController)
+            AppBottomBar()
         }
     ) { paddingValues ->
 

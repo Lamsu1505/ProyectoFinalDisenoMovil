@@ -60,7 +60,6 @@ private val PlusButtonGray = Color(0xFFD6D6D6)
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CategoryEventsSelectorBar(
-    navController: NavController,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selected by remember { mutableStateOf<EventCategory?>(null) }
@@ -247,7 +246,7 @@ private fun NotificationTab(
 @Composable
 fun PreviewCategorySelect() {
     ProyectoFinalDisenoMovilTheme {
-        CategoryEventsSelectorBar(navController = rememberNavController())
+        CategoryEventsSelectorBar()
     }
 }
 

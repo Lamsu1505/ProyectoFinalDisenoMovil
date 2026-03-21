@@ -43,13 +43,12 @@ fun LikedEventsScreen(
     Scaffold(
         topBar = {
             SearchTopBarApp(
-                navController = navController,
                 query = uiState.searchQuery,
                 onQueryChange = { viewModel.onSearchQueryChange(it) }
             )
         },
         bottomBar = {
-            AppBottomBar(navController = navController)
+            AppBottomBar()
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
@@ -61,7 +60,7 @@ fun LikedEventsScreen(
         ) {
             // Category Selector
             item {
-                CategoryEventsSelectorBar(navController)
+                CategoryEventsSelectorBar()
                 Spacer(modifier = Modifier.height(8.dp))
             }
 

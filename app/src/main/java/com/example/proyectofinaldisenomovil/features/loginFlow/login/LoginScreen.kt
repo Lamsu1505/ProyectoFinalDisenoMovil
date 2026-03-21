@@ -1,6 +1,5 @@
 package com.example.proyectofinaldisenomovil.features.loginFlow.login
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,13 +29,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -45,29 +45,32 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.component.login.LoginHeaderSection
-import com.example.proyectofinaldisenomovil.core.navigation.UserRoutes
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.data.model.User.UserRole
 
 @Composable
 fun LoginScreen(
-        loginViewModel: LoginViewModel = viewModel(),
-        onNavigateToForgotPassword : () -> Unit = {},
-        onNavigateToRegister : () -> Unit = {},
-        onLoginSuccess: (UserRole) -> Unit
+        viewModel: LoginViewModel = viewModel(),
+        onNavigateToForgotPassword : () -> Unit,
+        onNavigateToRegister : () -> Unit,
+        onNavigateToModeratorFlow : () -> Unit,
+        onNavigateToUserFLow : () -> Unit
 ) {
 
-    val myContext = LocalContext.current
+    val loginResult by viewModel.loginResult.collectAsState()
 
-//    LaunchedEffect(loginResult) {
-//        if (loginResult is LoginResult.Success) {
-//            viewModel.resetResult()
-//            onLoginSuccess((loginResult as LoginResult.Success).role)  // pasa el rol
-//        }
-//    }
+    LaunchedEffect(loginResult) {
+        when (loginResult) {
+            is LoginResult.Success -> {
+                val role = (loginResult as LoginResult.Success).role
+                viewModel.resetResult()
+                if (role == UserRole.MODERATOR) onNavigateToModeratorFlow()
+                else onNavigateToUserFLow()
+            }
+            else -> Unit
+        }
+    }
 
     Scaffold(
     ) {
@@ -106,8 +109,7 @@ fun LoginScreen(
                     verticalArrangement = Arrangement.spacedBy(50.dp)
                 ) {
                     LoginForm(
-                        loginViewModel,
-                        myContext,
+                        viewModel,
                         onNavigateToForgotPassword,
                         onNavigateToRegister
                     )
@@ -121,7 +123,6 @@ fun LoginScreen(
 @Composable
 fun LoginForm(
     loginViewModel: LoginViewModel,
-    myContext : Context,
     onNavigateToForgotPassword: () -> Unit,
     onNavigateToRegister: () -> Unit
 ){
@@ -225,6 +226,7 @@ fun LoginForm(
         Button(
             enabled = loginViewModel.validateForm(),
             onClick = {
+                loginViewModel.login()
 //                loginViewModel.login { success ->
 //                    if (success) {
 //                        navController.navigate(AppScreens.HomeScreen.route)
@@ -275,7 +277,10 @@ fun LoginForm(
 fun LoginScreenPreview() {
     ProyectoFinalDisenoMovilTheme {
         LoginScreen(
-            onLoginSuccess = {}
+            onNavigateToForgotPassword = {},
+            onNavigateToRegister = {},
+            onNavigateToModeratorFlow = {},
+            onNavigateToUserFLow = {}
         )
     }
 }
