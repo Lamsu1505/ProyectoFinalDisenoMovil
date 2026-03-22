@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -27,7 +28,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -43,71 +43,58 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryBarNotifications
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationsScreen(
-    navController: NavController,
-    notificationsViewModel: NotificationsViewModel = viewModel()
+    paddingValues: PaddingValues = PaddingValues(0.dp),
+    notificationsViewModel: NotificationsViewModel = viewModel(),
+    onBackClick: () -> Unit = {}
 ) {
     val groupedNotifications = notificationsViewModel.getGroupedNotifications()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
-                title = {
-                    Text(
-                        text = "Notificaciones",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues) // el padding ya incluye top, bottom (BottomBar) y demás insets
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        TopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primary
+            ),
+            title = {
+                Text(
+                    text = "Notificaciones",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            },
+            navigationIcon = {
+                IconButton(onClick = { onBackClick() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Volver",
+                        tint = Color.White,
+                        modifier = Modifier.size(28.dp)
                     )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Volver",
-                            tint = Color.White,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-                },
-                actions = {
-                    // Invisible spacer to keep the title centered
-                    Spacer(modifier = Modifier.width(48.dp))
                 }
-            )
-        },
-        bottomBar = {
-            AppBottomBar(
-                selectedRoute = ""
-            )
-        }
-    ) { paddingValues ->
+            },
+            actions = {
+                Spacer(modifier = Modifier.width(48.dp))
+            }
+        )
 
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues)
+            modifier = Modifier.fillMaxSize()
         ) {
-
-
-            // Category filter bar
             item {
                 CategoryBarNotifications(
-                    navController = navController,
                     onCategorySelected = { category ->
                         notificationsViewModel.selectCategory(category)
                     }
@@ -133,9 +120,7 @@ fun NotificationsScreen(
                 }
             }
 
-            // Grouped notification sections
             groupedNotifications.forEach { (sectionTitle, notifications) ->
-                // Section header
                 item(key = "header_$sectionTitle") {
                     Text(
                         text = sectionTitle,
@@ -149,7 +134,6 @@ fun NotificationsScreen(
                     )
                 }
 
-                // Notification items
                 items(
                     items = notifications,
                     key = { it.id }
@@ -163,7 +147,6 @@ fun NotificationsScreen(
                 }
             }
 
-            // Bottom spacing
             item {
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -181,12 +164,9 @@ private fun NotificationItemRow(notification: NotificationItem) {
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.Top
-
     ) {
-        // Icon / Avatar
         NotificationIcon(notification)
 
-        // Text content
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = notification.title,
@@ -206,12 +186,12 @@ private fun NotificationItemRow(notification: NotificationItem) {
             )
         }
 
-        // Time + unread dot
         Column(
-            modifier = Modifier.fillMaxHeight().width(80.dp),
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(80.dp),
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.SpaceBetween
-
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
@@ -235,7 +215,6 @@ private fun NotificationItemRow(notification: NotificationItem) {
                     )
                 }
             }
-
         }
     }
 }
@@ -246,7 +225,6 @@ private fun NotificationIcon(notification: NotificationItem) {
     val iconSize = 48.dp
     when (notification.type) {
         NotificationType.COMMENT -> {
-            // Avatar circle with initials
             Box(
                 modifier = Modifier
                     .size(iconSize)
@@ -288,7 +266,7 @@ private fun NotificationIcon(notification: NotificationItem) {
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
-            ){}
+            ) {}
         }
     }
 }
@@ -298,6 +276,6 @@ private fun NotificationIcon(notification: NotificationItem) {
 @Composable
 fun PreviewNotificationsScreen() {
     ProyectoFinalDisenoMovilTheme {
-        NotificationsScreen(navController = rememberNavController())
+        NotificationsScreen()
     }
 }

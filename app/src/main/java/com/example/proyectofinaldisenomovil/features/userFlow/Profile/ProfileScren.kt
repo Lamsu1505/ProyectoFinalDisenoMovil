@@ -38,13 +38,17 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel(),
     paddingValues: PaddingValues,
     onLogout: () -> Unit,
+    onNotificationClick: () -> Unit = {},
+    onBackClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
             AppTopBar(
-                title = "Perfil"
+                title = "Perfil",
+                onNotificationsClick = onNotificationClick,
+                onBackClick = onBackClick
             )
         },
         bottomBar = { AppBottomBar(

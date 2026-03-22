@@ -178,7 +178,6 @@ private fun CategoryChip(
 
 @Composable
 fun CategoryBarNotifications(
-    navController: NavController,
     onCategorySelected: (String) -> Unit = {}
 ) {
     val categories = listOf("Todas", "No leidas", "Eventos", "Coments")
@@ -254,6 +253,7 @@ fun PreviewCategorySelect() {
 @Composable
 fun PreviewCategoryNotification() {
     ProyectoFinalDisenoMovilTheme {
-        CategoryBarNotifications(navController = rememberNavController())
+        CategoryBarNotifications(
+        )
     }
 }

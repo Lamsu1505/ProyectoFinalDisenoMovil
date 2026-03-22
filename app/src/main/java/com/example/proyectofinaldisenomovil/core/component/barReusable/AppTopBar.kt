@@ -28,7 +28,9 @@ fun AppTopBar(
     title: String,
     modifier: Modifier = Modifier,
     navigationIcon: (@Composable () -> Unit)? = null,
-    actions: @Composable RowScope.() -> Unit? = {}
+    actions: @Composable RowScope.() -> Unit? = {},
+    onNotificationsClick: () -> Unit = {},
+    onBackClick: () -> Unit = {}
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -53,6 +55,11 @@ fun AppTopBar(
                     contentDescription = "Volver",
                     tint = Color.White,
                     modifier = Modifier.size(28.dp)
+                        .clickable(
+                            onClick = {
+                                onBackClick()
+                            }
+                        )
                 )
             }
         },
@@ -76,6 +83,11 @@ fun AppTopBar(
                     contentDescription = "Notificaciones",
                     tint = Color.White,
                     modifier = Modifier.size(35.dp)
+                        .clickable(
+                            onClick = {
+                                onNotificationsClick()
+                            }
+                        )
                 )
 
             }

@@ -36,7 +36,8 @@ import java.util.Locale
 @Composable
 fun LikedEventsScreen(
     viewModel: FavoritesViewModel = viewModel(),
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    onNotificationClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -44,7 +45,8 @@ fun LikedEventsScreen(
         topBar = {
             SearchTopBarApp(
                 query = uiState.searchQuery,
-                onQueryChange = { viewModel.onSearchQueryChange(it) }
+                onQueryChange = { viewModel.onSearchQueryChange(it) },
+                onNotificationsClick = onNotificationClick
             )
         },
         bottomBar = {

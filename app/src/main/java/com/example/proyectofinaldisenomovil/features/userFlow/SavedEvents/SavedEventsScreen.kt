@@ -39,7 +39,8 @@ import java.util.Locale
 @Composable
 fun SavedEventsScreen(
     viewModel: SavedEventsViewModel = viewModel(),
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    onNotificationClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -47,7 +48,8 @@ fun SavedEventsScreen(
         topBar = {
             SearchTopBarApp(
                 query = uiState.searchQuery,
-                onQueryChange = { viewModel.onSearchQueryChange(it) }
+                onQueryChange = { viewModel.onSearchQueryChange(it) },
+                onNotificationsClick = onNotificationClick
             )
         },
         bottomBar = {

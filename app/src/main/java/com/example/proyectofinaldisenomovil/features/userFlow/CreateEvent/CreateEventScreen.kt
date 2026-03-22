@@ -49,14 +49,18 @@ import java.util.Locale
 @Composable
 fun CreateEventScreen(
     viewModel: CreateEventViewModel = viewModel(),
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    onBackClick: () -> Unit = {},
+    onNotificationClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
             AppTopBar(
-                title = "Crear Nuevo Evento"
+                title = "Crear Nuevo Evento",
+                onNotificationsClick = onNotificationClick,
+                onBackClick = onBackClick
             )
         },
         bottomBar = { AppBottomBar(
