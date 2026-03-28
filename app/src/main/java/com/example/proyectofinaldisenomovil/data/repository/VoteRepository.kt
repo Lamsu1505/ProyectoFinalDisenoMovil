@@ -1,4 +1,4 @@
-package com.example.proyectofinaldisenomovil.domain.repository
+package com.example.proyectofinaldisenomovil.data.repository
 
 /**
  * Contract for "Es importante / Me interesa" vote persistence.

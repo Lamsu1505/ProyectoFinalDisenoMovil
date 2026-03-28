@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.proyectofinaldisenomovil.core.component.login.LoginHeaderSection
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
-import com.example.proyectofinaldisenomovil.data.model.User.UserRole
+import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
 
 @Composable
 fun LoginScreen(

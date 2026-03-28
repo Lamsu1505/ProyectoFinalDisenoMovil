@@ -27,8 +27,6 @@ import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilT
 fun AppTopBar(
     title: String,
     modifier: Modifier = Modifier,
-    navigationIcon: (@Composable () -> Unit)? = null,
-    actions: @Composable RowScope.() -> Unit? = {},
     onNotificationsClick: () -> Unit = {},
     onBackClick: () -> Unit = {}
 ) {

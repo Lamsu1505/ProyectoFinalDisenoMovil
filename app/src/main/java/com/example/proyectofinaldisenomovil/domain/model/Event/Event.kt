@@ -1,4 +1,4 @@
-package com.example.proyectofinaldisenomovil.data.model.Event
+package com.example.proyectofinaldisenomovil.domain.model.Event
 
 //import com.google.firebase.Timestamp
 

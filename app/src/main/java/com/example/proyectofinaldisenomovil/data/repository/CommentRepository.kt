@@ -1,6 +1,6 @@
-package com.example.proyectofinaldisenomovil.domain.repository
+package com.example.proyectofinaldisenomovil.data.repository
 
-import com.example.proyectofinaldisenomovil.data.model.Comment
+import com.example.proyectofinaldisenomovil.domain.model.Comment
 import kotlinx.coroutines.flow.Flow
 
 /**

@@ -1,4 +1,4 @@
-package com.example.proyectofinaldisenomovil.data.model
+package com.example.proyectofinaldisenomovil.domain.model
 
 //import com.google.firebase.Timestamp
 import java.security.Timestamp
@@ -10,8 +10,8 @@ import java.security.Timestamp
  * Document ID          : "{eventId}_{uid}"
  *                        (composite key ensures one vote per user per event)
  *
- * When created, [com.example.proyectofinaldisenomovil.data.model.Event.Event.importantVotes] must be incremented atomically.
- * When deleted, [com.example.proyectofinaldisenomovil.data.model.Event.Event.importantVotes] must be decremented atomically.
+ * When created, [com.example.proyectofinaldisenomovil.domain.model.Event.Event.importantVotes] must be incremented atomically.
+ * When deleted, [com.example.proyectofinaldisenomovil.domain.model.Event.Event.importantVotes] must be decremented atomically.
  */
 data class Vote(
     /** Composite key: "{eventId}_{uid}" */

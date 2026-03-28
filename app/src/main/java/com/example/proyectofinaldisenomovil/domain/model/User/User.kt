@@ -1,10 +1,10 @@
-package com.example.proyectofinaldisenomovil.data.model.User
+package com.example.proyectofinaldisenomovil.domain.model.User
 
 //import com.google.firebase.Timestamp
 //import com.vivetuzona.data.model.UserLevel
 //import com.vivetuzona.data.model.UserRole
-import com.example.proyectofinaldisenomovil.data.model.BadgeType
-import com.example.proyectofinaldisenomovil.data.model.Location
+import com.example.proyectofinaldisenomovil.domain.model.BadgeType
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import java.security.Timestamp
 
 data class User(

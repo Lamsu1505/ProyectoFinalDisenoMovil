@@ -64,7 +64,9 @@ fun LikedEventsScreen(
         ) {
             // Category Selector
             item {
-                CategoryEventsSelectorBar()
+                CategoryEventsSelectorBar(
+                    onCategorySelected = { /* TODO: Handle category selection */ }
+                )
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
@@ -118,7 +120,11 @@ fun FavoritesFilters() {
                     color = MaterialTheme.colorScheme.onSurface,
 
                     )
-                OrderByComboBox(listOf("Nombre", "Fecha", "Popularidad"))
+                OrderByComboBox(
+                    listOf("Nombre", "Fecha", "Popularidad"),
+                    selected = "Nombre",
+                    onSelected = { /* TODO: Handle order change */ }
+                )
             }
 
             Row(

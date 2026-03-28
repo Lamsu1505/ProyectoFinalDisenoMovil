@@ -1,9 +1,9 @@
-package com.example.proyectofinaldisenomovil.data.model
+package com.example.proyectofinaldisenomovil.domain.model
 
 /**
  * Collectible badges a user can earn through participation.
  *
- * Stored as a [List]<[BadgeType]> inside the [com.example.proyectofinaldisenomovil.data.model.User.User] document.
+ * Stored as a [List]<[BadgeType]> inside the [com.example.proyectofinaldisenomovil.domain.model.User.User] document.
  *
  * @property label       Short badge name shown in the UI chip/card.
  * @property description Tooltip / achievement description.

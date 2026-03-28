@@ -1,4 +1,4 @@
-package com.example.proyectofinaldisenomovil.data.model
+package com.example.proyectofinaldisenomovil.domain.model
 
 //import com.google.firebase.Timestamp
 //import com.vivetuzona.data.model.NotificationType

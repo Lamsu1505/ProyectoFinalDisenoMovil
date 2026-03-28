@@ -1,7 +1,7 @@
-package com.example.proyectofinaldisenomovil.domain.repository
+package com.example.proyectofinaldisenomovil.data.repository
 
-import com.example.proyectofinaldisenomovil.data.model.Event.Event
-import com.example.proyectofinaldisenomovil.data.model.Event.EventCategory
+import com.example.proyectofinaldisenomovil.domain.model.Event.Event
+import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import kotlinx.coroutines.flow.Flow
 
 /**

@@ -1,4 +1,4 @@
-package com.example.proyectofinaldisenomovil.data.model
+package com.example.proyectofinaldisenomovil.domain.model
 /**
  * Categorizes in-app notifications so the UI can render the appropriate icon.
  *

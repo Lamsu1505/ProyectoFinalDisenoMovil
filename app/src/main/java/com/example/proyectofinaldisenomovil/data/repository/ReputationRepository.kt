@@ -1,9 +1,9 @@
-package com.example.proyectofinaldisenomovil.domain.repository
+package com.example.proyectofinaldisenomovil.data.repository
 
-import com.example.proyectofinaldisenomovil.data.model.BadgeType
-import com.example.proyectofinaldisenomovil.data.model.ReputationLog
-import com.example.proyectofinaldisenomovil.data.model.ReputationReason
-import com.example.proyectofinaldisenomovil.data.model.User.UserLevel
+import com.example.proyectofinaldisenomovil.domain.model.BadgeType
+import com.example.proyectofinaldisenomovil.domain.model.ReputationLog
+import com.example.proyectofinaldisenomovil.domain.model.ReputationReason
+import com.example.proyectofinaldisenomovil.domain.model.User.UserLevel
 import kotlinx.coroutines.flow.Flow
 
 /**

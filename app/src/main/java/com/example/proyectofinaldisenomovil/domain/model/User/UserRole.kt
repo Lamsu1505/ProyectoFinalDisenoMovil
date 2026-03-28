@@ -1,4 +1,4 @@
-package com.example.proyectofinaldisenomovil.data.model.User
+package com.example.proyectofinaldisenomovil.domain.model.User
 
 /**
  * Defines the two roles a registered account can hold.

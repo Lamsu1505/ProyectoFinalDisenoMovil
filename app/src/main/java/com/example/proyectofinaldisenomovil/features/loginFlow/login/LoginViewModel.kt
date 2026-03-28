@@ -1,16 +1,11 @@
 package com.example.proyectofinaldisenomovil.features.loginFlow.login
 
-import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.proyectofinaldisenomovil.data.model.User.UserRole
-import com.google.firebase.auth.FirebaseAuth
+import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +17,8 @@ sealed class LoginResult {
     data class Success(val role: UserRole) : LoginResult()
 }
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel
+    : ViewModel() {
 
     var email by  mutableStateOf("")
     var password by  mutableStateOf("")

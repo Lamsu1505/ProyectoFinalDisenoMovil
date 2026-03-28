@@ -67,7 +67,7 @@ fun AppNavigation() {
             )
         }
 
-        // USER FLOW — delega toda la navegación interna a UserNavigation
+        // USER FLOW
         composable<AppRoutes.UserFlow> {
             UserNavigation(
                 onLogout = {

@@ -1,4 +1,4 @@
-package com.example.proyectofinaldisenomovil.data.model.User
+package com.example.proyectofinaldisenomovil.domain.model.User
 
 /**
  * Gamification levels for the Community Events theme.

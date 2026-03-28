@@ -1,4 +1,4 @@
-package com.example.proyectofinaldisenomovil.data.model
+package com.example.proyectofinaldisenomovil.domain.model
 
 //import com.google.firebase.Timestamp
 import java.security.Timestamp
@@ -10,7 +10,7 @@ import java.security.Timestamp
  * Document ID          : "{eventId}_{uid}"
  *                        (composite key prevents duplicate confirmations)
  *
- * When created, [com.example.proyectofinaldisenomovil.data.model.Event.Event.currentAttendees] must be incremented atomically
+ * When created, [com.example.proyectofinaldisenomovil.domain.model.Event.Event.currentAttendees] must be incremented atomically
  * using `FieldValue.increment(1)`.
  */
 data class Attendance(
