@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -44,10 +43,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
-import com.example.proyectofinaldisenomovil.data.model.Event.EventCategory
+import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 
 // Colors matching the design
 private val SelectedGreen = Color(0xFF4A8C5C)
@@ -60,7 +57,7 @@ private val PlusButtonGray = Color(0xFFD6D6D6)
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CategoryEventsSelectorBar(
-    navController: NavController,
+    onCategorySelected: (EventCategory?) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selected by remember { mutableStateOf<EventCategory?>(null) }
@@ -179,7 +176,6 @@ private fun CategoryChip(
 
 @Composable
 fun CategoryBarNotifications(
-    navController: NavController,
     onCategorySelected: (String) -> Unit = {}
 ) {
     val categories = listOf("Todas", "No leidas", "Eventos", "Coments")
@@ -247,7 +243,9 @@ private fun NotificationTab(
 @Composable
 fun PreviewCategorySelect() {
     ProyectoFinalDisenoMovilTheme {
-        CategoryEventsSelectorBar(navController = rememberNavController())
+        CategoryEventsSelectorBar(
+            {}
+        )
     }
 }
 
@@ -255,6 +253,7 @@ fun PreviewCategorySelect() {
 @Composable
 fun PreviewCategoryNotification() {
     ProyectoFinalDisenoMovilTheme {
-        CategoryBarNotifications(navController = rememberNavController())
+        CategoryBarNotifications(
+        )
     }
 }

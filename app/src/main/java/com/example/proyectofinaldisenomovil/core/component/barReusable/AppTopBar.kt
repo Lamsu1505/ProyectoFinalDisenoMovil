@@ -1,6 +1,5 @@
 package com.example.proyectofinaldisenomovil.core.component.barReusable
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -21,17 +20,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopBar(
-    navController: NavController,
     title: String,
     modifier: Modifier = Modifier,
-    navigationIcon: (@Composable () -> Unit)? = null,
-    actions: @Composable RowScope.() -> Unit? = {}
+    onNotificationsClick: () -> Unit = {},
+    onBackClick: () -> Unit = {}
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -48,12 +45,19 @@ fun AppTopBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = {
+
+            }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Volver",
                     tint = Color.White,
                     modifier = Modifier.size(28.dp)
+                        .clickable(
+                            onClick = {
+                                onBackClick()
+                            }
+                        )
                 )
             }
         },
@@ -61,7 +65,6 @@ fun AppTopBar(
             BadgedBox(
                 modifier = Modifier
                     .clickable(onClick = {
-                        navController.navigate(AppScreens.NotificationsScreen.route)
                 }),
                 badge = {
                     Badge(
@@ -78,6 +81,11 @@ fun AppTopBar(
                     contentDescription = "Notificaciones",
                     tint = Color.White,
                     modifier = Modifier.size(35.dp)
+                        .clickable(
+                            onClick = {
+                                onNotificationsClick()
+                            }
+                        )
                 )
 
             }
@@ -91,7 +99,9 @@ fun AppTopBar(
 @Composable
 fun AppTopBarPreview() {
     ProyectoFinalDisenoMovilTheme() {
-        AppTopBar(navController = rememberNavController(), title = "Preview")
+        AppTopBar(
+            title = "Preview"
+        )
 
     }
 }

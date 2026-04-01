@@ -18,23 +18,24 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.example.proyectofinaldisenomovil.core.navigation.AppScreens
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 @Composable
 fun AppBottomBar(
-    navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onHomeClick: () -> Unit = {},
+    onCreateEvent: () -> Unit = {},
+    onSavedEvents: () -> Unit = {},
+    onLikedEvents: () -> Unit = {},
+    onProfile: () -> Unit = {},
+    selectedRoute: String
 ) {
     val iconsActualSize = 30.dp
-    val navBackStackEntry = navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry.value?.destination?.route
 
     NavigationBar(
         modifier = modifier,
@@ -43,17 +44,21 @@ fun AppBottomBar(
     ) {
         // Inicio
         BottomNavItem(
-            selected = currentRoute == "home_route" || currentRoute == AppScreens.HomeScreen.route,
-            onClick = { navController.navigate(AppScreens.HomeScreen.route) },
+            selected = selectedRoute == "home",
+            onClick = {
+                onHomeClick()
+            },
             icon = Icons.Default.Home,
             label = "Inicio",
-            iconSize = iconsActualSize
+            iconSize = iconsActualSize,
         )
 
         // Iré
         BottomNavItem(
-            selected = currentRoute == "going_route" || currentRoute == AppScreens.SavedEventsScreen.route,
-            onClick = { navController.navigate(AppScreens.SavedEventsScreen.route) },
+            selected = selectedRoute == "savedEvents",
+            onClick = {
+                onSavedEvents()
+            },
             icon = Icons.Default.Bookmark,
             label = "Iré",
             iconSize = iconsActualSize
@@ -72,7 +77,7 @@ fun AppBottomBar(
                 interactionSource = fabInteractionSource,
                 containerColor = MaterialTheme.colorScheme.primary,
                 onClick = {
-                    navController.navigate(AppScreens.CreateEventScreen.route)
+                    onCreateEvent()
                 }
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Agregar", modifier = Modifier.size(40.dp))
@@ -81,8 +86,10 @@ fun AppBottomBar(
 
         // Me gusta
         BottomNavItem(
-            selected = currentRoute == "favorites_route" || currentRoute == AppScreens.LikedEventsScreen.route,
-            onClick = { navController.navigate(AppScreens.LikedEventsScreen.route) },
+            selected = selectedRoute == "likedEvents",
+            onClick = {
+                onLikedEvents()
+            },
             icon = Icons.Default.Favorite,
             label = "Me gusta",
             iconSize = iconsActualSize
@@ -90,8 +97,10 @@ fun AppBottomBar(
 
         // Perfil
         BottomNavItem(
-            selected = currentRoute == "profile_route" || currentRoute == AppScreens.ProfileScreen.route,
-            onClick = { navController.navigate(AppScreens.ProfileScreen.route) },
+            selected = selectedRoute == "profile",
+            onClick = {
+                onProfile()
+            },
             icon = Icons.Default.Person,
             label = "Perfil",
             iconSize = iconsActualSize
@@ -111,15 +120,32 @@ fun RowScope.BottomNavItem(
     val isHovered by interactionSource.collectIsHoveredAsState()
     val isPressed by interactionSource.collectIsPressedAsState()
 
+    // Animación de escala para el icono cuando hay hover o está presionado
     val scale by animateFloatAsState(
         targetValue = if (isHovered || isPressed) 1.2f else 1f,
         label = "nav_item_scale"
     )
 
+    // Colores personalizados solicitados: Texto verde y fondo gris para el estado seleccionado
+    val selectedGreen = Color(0xFF4A8C5C) // El verde de tu paleta
+    val selectedGray = Color(0xFFE0E0E0)  // Un gris claro para el fondo (indicator)
+
     NavigationBarItem(
         selected = selected,
-        onClick = onClick,
+        onClick = {
+            onClick()
+        },
         interactionSource = interactionSource,
+        colors = NavigationBarItemDefaults.colors(
+            // Estado SELECCIONADO: Texto verde y fondo (indicator) gris
+            selectedIconColor = selectedGreen,
+            selectedTextColor = selectedGreen,
+            indicatorColor = selectedGray,
+            
+            // Estado NO SELECCIONADO: Gris/OnSurfaceVariant (con feedback verde si hay hover)
+            unselectedIconColor = if (isHovered) selectedGreen.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant,
+            unselectedTextColor = if (isHovered) selectedGreen.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant
+        ),
         icon = {
             Icon(
                 imageVector = icon,
@@ -129,7 +155,12 @@ fun RowScope.BottomNavItem(
                     .scale(scale)
             )
         },
-        label = { Text(label) }
+        label = { 
+            Text(
+                text = label,
+                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+            ) 
+        }
     )
 }
 
@@ -137,6 +168,13 @@ fun RowScope.BottomNavItem(
 @Composable
 fun PreviewAppBottomBar() {
     ProyectoFinalDisenoMovilTheme {
-        AppBottomBar(navController = rememberNavController())
+        AppBottomBar(
+            onHomeClick = {},
+            onCreateEvent = {},
+            onSavedEvents = {},
+            onLikedEvents = {},
+            onProfile = {},
+            selectedRoute = "home"
+        )
     }
 }

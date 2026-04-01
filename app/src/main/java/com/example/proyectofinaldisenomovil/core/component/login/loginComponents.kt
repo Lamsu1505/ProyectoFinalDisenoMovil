@@ -32,13 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.proyectofinaldisenomovil.R
-import com.example.proyectofinaldisenomovil.features.ForgotPassword.ForgotPasswordViewModel
-import com.example.proyectofinaldisenomovil.features.login.LoginViewModel
-import com.example.proyectofinaldisenomovil.features.login.RegisterViewModel
 
 @Composable
 fun LoginHeaderSection(
-    navController: NavController,
 ) {
     Box(
         modifier = Modifier
@@ -72,7 +68,6 @@ fun LoginHeaderSection(
 
 @Composable
 fun HeaderSectionNonLogued(
-    navController: NavController,
 ) {
     Box(
         modifier = Modifier
@@ -109,7 +104,9 @@ fun HeaderSectionNonLogued(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarRegister(navController: NavController) {
+fun TopBarRegister(
+    onBackClick: () -> Unit = {}
+) {
 
     TopAppBar(
         title = {
@@ -118,13 +115,13 @@ fun TopBarRegister(navController: NavController) {
                 fontSize = 25.sp,
                 color = MaterialTheme.colorScheme.surface,
                 modifier = Modifier.clickable(onClick = {
-                    navController.popBackStack()
+                    onBackClick()
                 })
             )
         },
         navigationIcon = {
             IconButton(onClick = {
-                navController.popBackStack()
+                onBackClick()
             }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,

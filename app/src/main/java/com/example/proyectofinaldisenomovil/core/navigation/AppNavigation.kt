@@ -1,69 +1,81 @@
 package com.example.proyectofinaldisenomovil.core.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.proyectofinaldisenomovil.features.CreateEvent.CreateEventScreen
-import com.example.proyectofinaldisenomovil.features.EditProfile.EditProfileScreen
-import com.example.proyectofinaldisenomovil.features.ForgotPassword.ForgotPasswordScreen
-import com.example.proyectofinaldisenomovil.features.LikedEvents.LikedEventsScreen
+import com.example.proyectofinaldisenomovil.core.navigation.LoginRoutes
+import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventScreen
+import com.example.proyectofinaldisenomovil.features.userFlow.EditProfile.EditProfileScreen
+import com.example.proyectofinaldisenomovil.features.loginFlow.ForgotPassword.ForgotPasswordScreen
+import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.LikedEventsScreen
 import com.example.proyectofinaldisenomovil.features.LikedEvents.SavedEventsScreen
-import com.example.proyectofinaldisenomovil.features.Notifications.NotificationsScreen
-import com.example.proyectofinaldisenomovil.features.Profile.ProfileScreen
-import com.example.proyectofinaldisenomovil.features.RecoverPassword.RecoverPasswordScreen
-import com.example.proyectofinaldisenomovil.features.home.HomeScreen
-import com.example.proyectofinaldisenomovil.features.login.LoginScreen
-import com.example.proyectofinaldisenomovil.features.login.LoginViewModel
-import com.example.proyectofinaldisenomovil.features.register.RegisterScreen
-import com.example.proyectofinaldisenomovil.features.ViewEvent.ViewEventScreen
+import com.example.proyectofinaldisenomovil.features.userFlow.Notifications.NotificationsScreen
+import com.example.proyectofinaldisenomovil.features.userFlow.Profile.ProfileScreen
+import com.example.proyectofinaldisenomovil.features.loginFlow.RecoverPassword.RecoverPasswordScreen
+import com.example.proyectofinaldisenomovil.features.userFlow.home.HomeScreen
+import com.example.proyectofinaldisenomovil.features.loginFlow.login.LoginScreen
+import com.example.proyectofinaldisenomovil.features.loginFlow.register.RegisterScreen
+import com.example.proyectofinaldisenomovil.features.userFlow.UserNavigation
+import com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent.ViewEventScreen
 
 
-//Se encarga de orquestar la navegacion de la app
 @Composable
-fun AppNavigation(){
-
+fun AppNavigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = AppScreens.HomeScreen.route)  {
-        composable ( route = AppScreens.LoginScreen.route){
-            LoginScreen(navController)
-        }
-        composable ( route = AppScreens.RegisterScreen.route){
-            RegisterScreen(navController)
-        }
-        composable ( route = AppScreens.HomeScreen.route){
-            HomeScreen(navController)
-        }
-        composable ( route = AppScreens.ForgotPasswordScreen.route){
-            ForgotPasswordScreen(navController)
-        }
-        composable ( route = AppScreens.RecoverPasswordScreen.route){
-            RecoverPasswordScreen(navController)
-        }
-        composable ( route = AppScreens.ViewEventScreen.route){
-            ViewEventScreen(navController)
-        }
-        composable ( route = AppScreens.NotificationsScreen.route){
-            NotificationsScreen(navController)
-        }
-        composable ( route = AppScreens.ProfileScreen.route){
-            ProfileScreen(navController)
-        }
-        composable ( route = AppScreens.EditProfileScreen.route){
-            EditProfileScreen(navController)
-        }
-        composable ( route = AppScreens.CreateEventScreen.route){
-            CreateEventScreen(navController)
-        }
-        composable ( route = AppScreens.LikedEventsScreen.route){
-            LikedEventsScreen(navController)
-        }
-        composable ( route = AppScreens.SavedEventsScreen.route){
-            SavedEventsScreen(navController)
+
+    NavHost(
+        navController = navController,
+        startDestination = LoginRoutes.Login
+    ) {
+
+        // LOGIN FLOW
+        composable<LoginRoutes.Login> {
+            LoginScreen(
+                onNavigateToRegister = { navController.navigate(LoginRoutes.Register) },
+                onNavigateToForgotPassword = { navController.navigate(LoginRoutes.ForgotPassword) },
+                onNavigateToUserFLow = {
+                    navController.navigate(AppRoutes.UserFlow) {
+                        // Limpia el back stack de login para que no se pueda volver con "atrás"
+                        popUpTo(LoginRoutes.Login) { inclusive = true }
+                    }
+                },
+                onNavigateToModeratorFlow = {}
+            )
         }
 
+        composable<LoginRoutes.Register> {
+            RegisterScreen(
+                onBackClick = { navController.popBackStack() },
+                onNavigateToLogin = { navController.navigate(LoginRoutes.Login) }
+            )
+        }
 
+        composable<LoginRoutes.ForgotPassword> {
+            ForgotPasswordScreen(
+                onBackClick = { navController.popBackStack() },
+                onNavigateToLogin = { navController.popBackStack() },
+                onNavigateToRecoverPassword = { navController.navigate(LoginRoutes.RecoverPassword) }
+            )
+        }
+
+        composable<LoginRoutes.RecoverPassword> {
+            RecoverPasswordScreen(
+                onBackClick = { navController.popBackStack() },
+                onNavigateToLogin = { navController.navigate(LoginRoutes.Login) },
+                onSubmit = { navController.navigate(LoginRoutes.Login) }
+            )
+        }
+
+        // USER FLOW
+        composable<AppRoutes.UserFlow> {
+            UserNavigation(
+                onLogout = {
+                    navController.navigate(LoginRoutes.Login) {
+                        popUpTo(AppRoutes.UserFlow) { inclusive = true }
+                    }
+                }
+            )
+        }
     }
-
 }
