@@ -5,7 +5,6 @@ import com.google.firebase.auth.FirebaseAuth
 
 class HomeViewModel : ViewModel() {
 
-
-
-
+    //TODO
+    fun hola (){}
 }
