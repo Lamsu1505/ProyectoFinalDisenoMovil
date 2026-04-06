@@ -1,7 +1,7 @@
 package com.example.proyectofinaldisenomovil.domain.model
 
 //import com.google.firebase.Timestamp
-import java.security.Timestamp
+import com.google.firebase.Timestamp
 
 /**
  * Immutable audit record of every reputation point change for a user.

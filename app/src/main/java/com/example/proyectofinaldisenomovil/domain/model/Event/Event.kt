@@ -1,8 +1,6 @@
 package com.example.proyectofinaldisenomovil.domain.model.Event
 
-//import com.google.firebase.Timestamp
-
-import java.security.Timestamp
+import com.google.firebase.Timestamp
 
 /**
  * Main entity: Community Event (Publicación).

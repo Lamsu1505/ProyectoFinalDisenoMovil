@@ -1,7 +1,7 @@
 package com.example.proyectofinaldisenomovil.domain.model
 
 //import com.google.firebase.Timestamp
-import java.security.Timestamp
+import com.google.firebase.Timestamp
 
 /**
  * Records a user's confirmed attendance for an event.

@@ -1,7 +1,7 @@
 package com.example.proyectofinaldisenomovil.domain.model
 
 //import com.google.firebase.Timestamp
-import java.security.Timestamp
+import com.google.firebase.Timestamp
 
 /**
  * Represents an "Es importante / Me interesa" vote cast by a user on an event.

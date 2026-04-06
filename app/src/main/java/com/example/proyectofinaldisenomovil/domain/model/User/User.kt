@@ -5,7 +5,7 @@ package com.example.proyectofinaldisenomovil.domain.model.User
 //import com.vivetuzona.data.model.UserRole
 import com.example.proyectofinaldisenomovil.domain.model.BadgeType
 import com.example.proyectofinaldisenomovil.domain.model.Location
-import java.security.Timestamp
+import com.google.firebase.Timestamp
 
 data class User(
     val uid: String = "",
