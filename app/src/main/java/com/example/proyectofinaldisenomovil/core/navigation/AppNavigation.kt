@@ -18,6 +18,7 @@ import com.example.proyectofinaldisenomovil.features.loginFlow.login.LoginScreen
 import com.example.proyectofinaldisenomovil.features.loginFlow.register.RegisterScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.UserNavigation
 import com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent.ViewEventScreen
+import com.example.proyectofinaldisenomovil.features.moderatorFlow.ModeratorNavigation
 
 
 @Composable
@@ -36,11 +37,14 @@ fun AppNavigation() {
                 onNavigateToForgotPassword = { navController.navigate(LoginRoutes.ForgotPassword) },
                 onNavigateToUserFLow = {
                     navController.navigate(AppRoutes.UserFlow) {
-                        // Limpia el back stack de login para que no se pueda volver con "atrás"
                         popUpTo(LoginRoutes.Login) { inclusive = true }
                     }
                 },
-                onNavigateToModeratorFlow = {}
+                onNavigateToModeratorFlow = {
+                    navController.navigate(AppRoutes.ModeratorFlow) {
+                        popUpTo(LoginRoutes.Login) { inclusive = true }
+                    }
+                }
             )
         }
 
@@ -73,6 +77,17 @@ fun AppNavigation() {
                 onLogout = {
                     navController.navigate(LoginRoutes.Login) {
                         popUpTo(AppRoutes.UserFlow) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // MODERATOR FLOW
+        composable<AppRoutes.ModeratorFlow> {
+            ModeratorNavigation(
+                onLogout = {
+                    navController.navigate(LoginRoutes.Login) {
+                        popUpTo(AppRoutes.ModeratorFlow) { inclusive = true }
                     }
                 }
             )

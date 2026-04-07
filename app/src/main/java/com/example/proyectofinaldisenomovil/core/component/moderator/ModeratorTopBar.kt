@@ -15,8 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.theme.*
 
 /**
@@ -46,6 +49,7 @@ import com.example.proyectofinaldisenomovil.core.theme.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModeratorTopBar(
+    navController: NavController,
     title: String,
     modifier: Modifier = Modifier,
     showBackArrow: Boolean = false,
@@ -149,5 +153,17 @@ fun ModeratorTopBar(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ModeratorTopBarPreview() {
+    ProyectoFinalDisenoMovilTheme() {
+        ModeratorTopBar (
+            navController = rememberNavController(),
+            title = "Moderación de eventos",
+            onLogoutClick = {},
+        )
     }
 }

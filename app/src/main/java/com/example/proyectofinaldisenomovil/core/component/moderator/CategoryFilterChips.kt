@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
@@ -84,5 +85,16 @@ fun CategoryFilterChips(
                 modifier           = Modifier.size(18.dp),
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CategoryFilterChipsPreview() {
+    ProyectoFinalDisenoMovilTheme() {
+        CategoryFilterChips(
+            selectedCategory = null,
+            onCategorySelect = {},
+        )
     }
 }

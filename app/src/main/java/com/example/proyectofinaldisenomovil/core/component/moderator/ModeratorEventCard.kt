@@ -19,8 +19,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.core.theme.*
@@ -41,6 +44,7 @@ import java.util.Locale
  */
 @Composable
 fun ModeratorEventCard(
+    navController: NavController,
     event: Event,
     onCardClick: (Event) -> Unit,
     onAccept: (Event) -> Unit,
@@ -100,7 +104,7 @@ fun ModeratorEventCard(
                     fontWeight = FontWeight.Bold,
                     maxLines   = 1,
                     overflow   = TextOverflow.Ellipsis,
-                    color      = MaterialTheme.colorScheme.onBackground,
+                    color      = MaterialTheme.colorScheme.onSurface,
                 )
 
                 Spacer(Modifier.height(6.dp))
@@ -195,5 +199,28 @@ private fun ActionButton(
         )
         Spacer(Modifier.width(4.dp))
         Text(label, fontSize = 12.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ModeratorEventCardPreview(){
+    ProyectoFinalDisenoMovilTheme() {
+        ModeratorEventCard(
+            navController = rememberNavController(),
+            event = Event(
+                id = "1",
+                title = "Concierto de Rock en el Parque",
+                description = "Disfruta de una noche llena de música y energía con las mejores bandas de rock locales e internacionales. ¡No te lo pierdas!",
+                category = com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory.DEPORTES,
+                startDate = com.google.firebase.Timestamp.now(),
+                endDate = com.google.firebase.Timestamp.now(),
+                address = "Parque Central, Ciudad",
+                imageUrls = listOf("https://example.com/event-image.jpg"),
+            ),
+            onCardClick = {},
+            onAccept = {},
+            onReject = {},
+        )
     }
 }

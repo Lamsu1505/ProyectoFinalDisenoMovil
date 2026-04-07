@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.proyectofinaldisenomovil.core.component.moderator.state.SortOption
@@ -126,5 +127,18 @@ private fun InlineDropdown(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SortDistanceRowPreview() {
+    ProyectoFinalDisenoMovilTheme() {
+        SortDistanceRow(
+            selectedSort = SortOption.NAME,
+            selectedDistance = 20,
+            onSortChange = {},
+            onDistanceChange = {},
+        )
     }
 }
