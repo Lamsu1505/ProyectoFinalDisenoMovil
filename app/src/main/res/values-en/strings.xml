@@ -1,0 +1,177 @@
+<resources>
+    <!-- App Name -->
+    <string name="app_name">ViveTuZona</string>
+
+    <!-- Common -->
+    <string name="ok">Accept</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="back">Back</string>
+    <string name="close">Close</string>
+    <string name="search">Search</string>
+    <string name="loading">Loading...</string>
+    <string name="error">Error</string>
+    <string name="success">Success</string>
+    <string name="retry">Retry</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <!-- Login Screen -->
+    <string name="login_title">Sign In</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="login_button">Sign In</string>
+    <string name="login_no_account">Don\'t have an account?</string>
+    <string name="login_create_here">Create one here</string>
+    <string name="login_forgot_password">Forgot your password?</string>
+    <string name="login_error_empty">Please fill in all fields</string>
+    <string name="login_error_invalid">Invalid email or password</string>
+
+    <!-- Register Screen -->
+    <string name="register_title">Create Account</string>
+    <string name="register_name">Name</string>
+    <string name="register_lastname">Lastname</string>
+    <string name="register_email">Email</string>
+    <string name="register_password">Password</string>
+    <string name="register_confirm_password">Confirm Password</string>
+    <string name="register_button">Register</string>
+    <string name="register_have_account">Already have an account?</string>
+    <string name="register_login_here">Sign in here</string>
+    <string name="register_error_passwords">Passwords do not match</string>
+    <string name="register_error_fields">Please fill in all fields</string>
+
+    <!-- Forgot Password Screen -->
+    <string name="forgot_title">Recover Password</string>
+    <string name="forgot_email">Registered email</string>
+    <string name="forgot_button">Send</string>
+    <string name="forgot_back_login">Back to login</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">Home</string>
+    <string name="home_search_placeholder">Search events...</string>
+    <string name="home_no_events">No events available</string>
+    <string name="home_filter_all">All</string>
+    <string name="home_attendees">%d attendees</string>
+    <string name="home_important">Important</string>
+
+    <!-- Create Event Screen -->
+    <string name="create_event_title">Create Event</string>
+    <string name="create_event_name">Event name</string>
+    <string name="create_event_description">Description</string>
+    <string name="create_event_category">Category</string>
+    <string name="create_event_date">Date</string>
+    <string name="create_event_time">Time</string>
+    <string name="create_event_location">Location</string>
+    <string name="create_event_address">Address</string>
+    <string name="create_event_capacity">Maximum capacity (optional)</string>
+    <string name="create_event_images">Images</string>
+    <string name="create_event_add_image">Add image</string>
+    <string name="create_event_publish">Publish Event</string>
+    <string name="create_event_success">Event published successfully</string>
+    <string name="create_event_error">Error publishing the event</string>
+    <string name="create_event_required">Fields marked with * are required</string>
+
+    <!-- Saved Events Screen -->
+    <string name="saved_events_title">Saved Events</string>
+    <string name="saved_events_empty">You have no saved events</string>
+    <string name="saved_events_removed">Event removed from saved</string>
+
+    <!-- Liked Events Screen -->
+    <string name="liked_events_title">Events I Care About</string>
+    <string name="liked_events_empty">You haven\'t marked any event as important</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_edit">Edit Profile</string>
+    <string name="profile_events_created">Events Created</string>
+    <string name="profile_events_attended">Events Attended</string>
+    <string name="profile_reputation">Reputation</string>
+    <string name="profile_level">Level</string>
+    <string name="profile_badges">Badges</string>
+    <string name="profile_logout">Log Out</string>
+    <string name="profile_logout_confirm">Are you sure you want to log out?</string>
+    <string name="profile_continue_online">Stay online</string>
+
+    <!-- Edit Profile Screen -->
+    <string name="edit_profile_title">Edit Profile</string>
+    <string name="edit_profile_name">Name</string>
+    <string name="edit_profile_lastname">Lastname</string>
+    <string name="edit_profile_city">City</string>
+    <string name="edit_profile_save">Save Changes</string>
+    <string name="edit_profile_success">Profile updated</string>
+    <string name="edit_profile_error">Error updating profile</string>
+
+    <!-- Notifications Screen -->
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_empty">You have no notifications</string>
+    <string name="notification_event_approved">Your event has been approved</string>
+    <string name="notification_event_rejected">Your event has been rejected</string>
+    <string name="notification_new_comment">New comment on your event</string>
+    <string name="notification_new_attendee">New attendee on your event</string>
+
+    <!-- View Event Screen -->
+    <string name="view_event_details">Event Details</string>
+    <string name="view_event_date">Date</string>
+    <string name="view_event_time">Time</string>
+    <string name="view_event_location">Location</string>
+    <string name="view_event_attendees">Attendees</string>
+    <string name="view_event_important">Mark as important</string>
+    <string name="view_event_save">Save event</string>
+    <string name="view_event_share">Share</string>
+    <string name="view_event_attend">I will attend</string>
+    <string name="view_event_unattend">I will no longer attend</string>
+    <string name="view_event_attending">You will attend</string>
+    <string name="view_event_full">Event is full</string>
+    <string name="view_event_comments">Comments</string>
+    <string name="view_event_add_comment">Add comment...</string>
+    <string name="view_event_no_comments">Be the first to comment</string>
+
+    <!-- Moderator Panel -->
+    <string name="moderator_title">Event Moderation</string>
+    <string name="moderator_no_events">No pending events</string>
+    <string name="moderator_pending">Pending review</string>
+    <string name="moderator_accept">Accept</string>
+    <string name="moderator_reject">Reject</string>
+    <string name="moderator_detail_title">Event Details</string>
+    <string name="moderator_confirm_reject">Do you want to reject the event?</string>
+    <string name="moderator_reject_reason">Reason to reject the event *</string>
+    <string name="moderator_reject_placeholder">Write your reasons here...</string>
+    <string name="moderator_confirm_title">CONFIRMATION MESSAGE</string>
+
+    <!-- Logout Dialog -->
+    <string name="logout_confirm">Are you sure you want to log out from the %s account?</string>
+    <string name="logout_continue">Stay online</string>
+
+    <!-- Filter & Sort -->
+    <string name="filter_sort_by">Sort by:</string>
+    <string name="filter_distance">Distance:</string>
+    <string name="filter_name">Name</string>
+    <string name="filter_date">Date</string>
+    <string name="filter_distance_sort">Distance</string>
+    <string name="filter_votes">Votes</string>
+    <string name="filter_more">More filters</string>
+
+    <!-- Categories -->
+    <string name="category_sports">Sports</string>
+    <string name="category_culture">Culture</string>
+    <string name="category_social">Social</string>
+    <string name="category_volunteer">Volunteering</string>
+    <string name="category_fun">Fun</string>
+    <string name="category_other">Other</string>
+    <string name="category_music">Music</string>
+    <string name="category_food">Food</string>
+    <string name="category_tech">Technology</string>
+    <string name="category_art">Art</string>
+
+    <!-- Errors -->
+    <string name="error_network">Connection error. Try again.</string>
+    <string name="error_unknown">An unexpected error occurred</string>
+    <string name="error_no_results">No results found</string>
+
+    <!-- Date & Time -->
+    <string name="date_today">Today</string>
+    <string name="date_tomorrow">Tomorrow</string>
+    <string name="time_format">h:mm a</string>
+</resources>

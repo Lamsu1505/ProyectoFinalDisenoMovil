@@ -1,18 +1,23 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.compose)
+}
+
+ksp {
+    arg("dagger.fastInit", "enabled")
 }
 
 android {
     namespace = "com.example.proyectofinaldisenomovil"
-
     compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.proyectofinaldisenomovil"
-        minSdk = 28
+        minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -28,9 +33,10 @@ android {
         }
     }
 
+    // Esta es la única configuración de Java/Kotlin que necesitas
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     buildFeatures {
@@ -39,7 +45,6 @@ android {
 }
 
 dependencies {
-
     // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
 
@@ -57,7 +62,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.9.7")
+    implementation(libs.androidx.navigation.compose)
 
     // Firebase BOM
     implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
@@ -80,6 +85,13 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
-    implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+
+    // DataStore
+    implementation(libs.datastore.preferences)
 }

@@ -2,7 +2,7 @@ package com.example.proyectofinaldisenomovil.domain.model
 
 //import com.google.firebase.Timestamp
 //import com.vivetuzona.data.model.NotificationType
-import java.security.Timestamp
+import com.google.firebase.Timestamp
 
 /**
  * In-app notification stored in Firestore for the notification list screen.

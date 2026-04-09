@@ -39,4 +39,34 @@ enum class BadgeType(
         description = "Confirmaste asistencia a 20 eventos",
         iconRes     = "ic_badge_attendee",
     ),
+    FOUNDER(
+        label       = "Fundador",
+        description = "Usuario de la primera hora",
+        iconRes     = "ic_badge_founder",
+    ),
+    EARLY_ADOPTER(
+        label       = "Early Adopter",
+        description = "Uno de los primeros 100 usuarios",
+        iconRes     = "ic_badge_early_adopter",
+    ),
+    SOCIAL_BUTTERFLY(
+        label       = "Mariposa Social",
+        description = "Alto engagement en eventos",
+        iconRes     = "ic_badge_social",
+    ),
+    CULTURE_VIP(
+        label       = "VIP Cultural",
+        description = "Participante frecuente en eventos culturales",
+        iconRes     = "ic_badge_culture",
+    ),
+    VOLUNTEER(
+        label       = "Voluntario",
+        description = "Participaste en eventos de voluntariado",
+        iconRes     = "ic_badge_volunteer",
+    ),
+    MODERATOR(
+        label       = "Moderador",
+        description = "Equipo de moderación de la plataforma",
+        iconRes     = "ic_badge_moderator",
+    ),
 }

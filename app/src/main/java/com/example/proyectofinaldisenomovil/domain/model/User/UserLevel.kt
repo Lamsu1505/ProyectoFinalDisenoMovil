@@ -15,6 +15,10 @@ package com.example.proyectofinaldisenomovil.domain.model.User
 enum class UserLevel(val label: String, val minPoints: Int) {
     ESPECTADOR("Espectador", 0),
     PARTICIPANTE("Participante", 100),
+    ENTUSIASTA("Entusiasta", 200),
+    CREADOR("Creador", 500),
+    NOVATO("Novato", 50),
+    ADMIN("Admin", 1000),
     ORGANIZADOR("Organizador", 500),
     LIDER_COMUNITARIO("Líder Comunitario", 1500);
 

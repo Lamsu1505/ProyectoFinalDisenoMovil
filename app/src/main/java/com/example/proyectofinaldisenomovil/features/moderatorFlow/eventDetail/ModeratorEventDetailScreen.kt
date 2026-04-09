@@ -54,6 +54,7 @@ import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.core.component.moderator.ConfirmationDialog
 import com.example.proyectofinaldisenomovil.core.component.moderator.LogoutDialog
+import com.example.proyectofinaldisenomovil.core.component.moderator.state.Moderatoreventdetailuistate
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -73,6 +74,37 @@ fun ModeratorEventDetailScreen(
         viewModel.loadEvent(eventId)
     }
 
+    ModeratorEventDetailScreenContent(
+        uiState = uiState,
+        onBackClick = onBackClick,
+        onLogout = onLogout,
+        onLogoutClick = viewModel::onLogoutClick,
+        onLogoutDismiss = viewModel::onLogoutDismiss,
+        onImageIndexChange = viewModel::onImageIndexChange,
+        onAcceptEvent = viewModel::onAcceptEvent,
+        onRejectClick = viewModel::onRejectClick,
+        onRejectionReasonChange = viewModel::onRejectionReasonChange,
+        onRejectConfirm = viewModel::onRejectConfirm,
+        onRejectDialogDismiss = viewModel::onRejectDialogDismiss,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun ModeratorEventDetailScreenContent(
+    uiState: Moderatoreventdetailuistate,
+    onBackClick: () -> Unit,
+    onLogout: () -> Unit,
+    onLogoutClick: () -> Unit,
+    onLogoutDismiss: () -> Unit,
+    onImageIndexChange: (Int) -> Unit,
+    onAcceptEvent: () -> Unit,
+    onRejectClick: () -> Unit,
+    onRejectionReasonChange: (String) -> Unit,
+    onRejectConfirm: () -> Unit,
+    onRejectDialogDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -110,7 +142,7 @@ fun ModeratorEventDetailScreen(
                     )
                 }
 
-                IconButton(onClick = viewModel::onLogoutClick) {
+                IconButton(onClick = onLogoutClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.Logout,
                         contentDescription = "Cerrar sesión",
@@ -136,11 +168,11 @@ fun ModeratorEventDetailScreen(
 
                 uiState.event != null -> {
                     EventDetailContent(
-                        event = uiState.event!!,
+                        event = uiState.event,
                         currentImageIndex = uiState.currentImageIndex,
-                        onImageIndexChange = viewModel::onImageIndexChange,
-                        onAcceptClick = viewModel::onAcceptEvent,
-                        onRejectClick = viewModel::onRejectClick,
+                        onImageIndexChange = onImageIndexChange,
+                        onAcceptClick = onAcceptEvent,
+                        onRejectClick = onRejectClick,
                         modifier = Modifier.fillMaxSize(),
                     )
                 }
@@ -163,11 +195,11 @@ fun ModeratorEventDetailScreen(
             bodyText = "¿Desea rechazar el evento?",
             showReasonField = true,
             reasonValue = uiState.rejectionReason,
-            onReasonChange = viewModel::onRejectionReasonChange,
+            onReasonChange = onRejectionReasonChange,
             reasonError = uiState.rejectionReasonError,
             isLoading = uiState.isSubmittingVerification,
-            onConfirm = viewModel::onRejectConfirm,
-            onDismiss = viewModel::onRejectDialogDismiss,
+            onConfirm = onRejectConfirm,
+            onDismiss = onRejectDialogDismiss,
         )
     }
 
@@ -175,10 +207,10 @@ fun ModeratorEventDetailScreen(
         LogoutDialog(
             moderatorName = "Moderador",
             onConfirmLogout = {
-                viewModel.onLogoutDismiss()
+                onLogoutDismiss()
                 onLogout()
             },
-            onDismiss = viewModel::onLogoutDismiss,
+            onDismiss = onLogoutDismiss,
         )
     }
 }
@@ -401,10 +433,28 @@ private fun EventDetailContent(
 @Composable
 fun ModeratorEventDetailScreenPreview() {
     ProyectoFinalDisenoMovilTheme {
-        ModeratorEventDetailScreen(
-            eventId = "preview-event-id",
+        ModeratorEventDetailScreenContent(
+            uiState = Moderatoreventdetailuistate(
+                isLoading = false,
+                event = com.example.proyectofinaldisenomovil.domain.model.Event.Event(
+                    id = "1",
+                    title = "Evento de prueba",
+                    description = "Esta es una descripción de prueba para el preview.",
+                    address = "Calle Falsa 123",
+                    imageUrls = listOf("https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800"),
+                    category = com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory.CULTURA
+                )
+            ),
             onBackClick = {},
             onLogout = {},
+            onLogoutClick = {},
+            onLogoutDismiss = {},
+            onImageIndexChange = {},
+            onAcceptEvent = {},
+            onRejectClick = {},
+            onRejectionReasonChange = {},
+            onRejectConfirm = {},
+            onRejectDialogDismiss = {}
         )
     }
 }
