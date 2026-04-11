@@ -24,6 +24,8 @@ data class ModeratorPanelUiState(
     val distanceKm: Int = 20,
     val isLoading: Boolean = true,
     val showLogoutDialog: Boolean = false,
+    val showRejectDialog: Boolean = false,
+    val eventToReject: Event? = null,
 )
 
 /**

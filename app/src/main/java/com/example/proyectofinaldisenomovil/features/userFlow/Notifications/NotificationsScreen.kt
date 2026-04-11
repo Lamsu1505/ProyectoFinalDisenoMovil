@@ -20,9 +20,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.Message
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,6 +34,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +49,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryBarNotifications
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.domain.model.AppNotification
+import com.example.proyectofinaldisenomovil.domain.model.NotificationType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,12 +59,13 @@ fun NotificationsScreen(
     notificationsViewModel: NotificationsViewModel = viewModel(),
     onBackClick: () -> Unit = {}
 ) {
+    val uiState by notificationsViewModel.uiState.collectAsState()
     val groupedNotifications = notificationsViewModel.getGroupedNotifications()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues) // el padding ya incluye top, bottom (BottomBar) y demás insets
+            .padding(paddingValues)
             .background(MaterialTheme.colorScheme.background)
     ) {
         TopAppBar(
@@ -78,7 +85,7 @@ fun NotificationsScreen(
             navigationIcon = {
                 IconButton(onClick = { onBackClick() }) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Volver",
                         tint = Color.White,
                         modifier = Modifier.size(28.dp)
@@ -90,13 +97,11 @@ fun NotificationsScreen(
             }
         )
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
             item {
                 CategoryBarNotifications(
                     onCategorySelected = { category ->
-                        notificationsViewModel.selectCategory(category)
+                        notificationsViewModel.onFilterSelected(category)
                     }
                 )
             }
@@ -138,7 +143,10 @@ fun NotificationsScreen(
                     items = notifications,
                     key = { it.id }
                 ) { notification ->
-                    NotificationItemRow(notification = notification)
+                    NotificationItemRow(
+                        notification = notification,
+                        viewModel = notificationsViewModel
+                    )
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         thickness = 0.5.dp,
@@ -154,14 +162,17 @@ fun NotificationsScreen(
     }
 }
 
-
 @Composable
-private fun NotificationItemRow(notification: NotificationItem) {
+private fun NotificationItemRow(
+    notification: AppNotification,
+    viewModel: NotificationsViewModel
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Max)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .clickable { viewModel.markAsRead(notification.id) },
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.Top
     ) {
@@ -178,7 +189,7 @@ private fun NotificationItemRow(notification: NotificationItem) {
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = notification.subtitle,
+                text = notification.body,
                 fontSize = 13.sp,
                 color = Color.Gray,
                 maxLines = 1,
@@ -195,7 +206,7 @@ private fun NotificationItemRow(notification: NotificationItem) {
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = notification.timeAgo,
+                text = viewModel.getTimeAgo(notification.createdAt),
                 textAlign = TextAlign.End,
                 fontSize = 12.sp,
                 color = Color.Gray
@@ -206,7 +217,7 @@ private fun NotificationItemRow(notification: NotificationItem) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(40.dp)
             ) {
-                if (notification.isUnread) {
+                if (!notification.isRead) {
                     Box(
                         modifier = Modifier
                             .size(12.dp)
@@ -219,9 +230,8 @@ private fun NotificationItemRow(notification: NotificationItem) {
     }
 }
 
-
 @Composable
-private fun NotificationIcon(notification: NotificationItem) {
+private fun NotificationIcon(notification: AppNotification) {
     val iconSize = 48.dp
     when (notification.type) {
         NotificationType.COMMENT -> {
@@ -232,16 +242,16 @@ private fun NotificationIcon(notification: NotificationItem) {
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = notification.initials,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+                Icon(
+                    imageVector = Icons.Default.Message,
+                    contentDescription = "Comentario",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
 
-        NotificationType.EVENT_REJECTED -> {
+        NotificationType.REJECTED -> {
             Icon(
                 imageVector = Icons.Default.Cancel,
                 contentDescription = "Evento rechazado",
@@ -250,7 +260,7 @@ private fun NotificationIcon(notification: NotificationItem) {
             )
         }
 
-        NotificationType.EVENT_VERIFIED -> {
+        NotificationType.VERIFIED -> {
             Icon(
                 imageVector = Icons.Default.CheckCircle,
                 contentDescription = "Evento verificado",
@@ -259,18 +269,33 @@ private fun NotificationIcon(notification: NotificationItem) {
             )
         }
 
-        NotificationType.NEW_EVENT_NEARBY -> {
+        NotificationType.NEW_EVENT, NotificationType.NEW_EVENT_NEARBY -> {
             Box(
                 modifier = Modifier
                     .size(iconSize)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
-            ) {}
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Event,
+                    contentDescription = "Nuevo evento",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+
+        NotificationType.FINALIZED -> {
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = "Evento finalizado",
+                tint = Color(0xFF2196F3),
+                modifier = Modifier.size(iconSize)
+            )
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

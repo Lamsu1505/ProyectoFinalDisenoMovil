@@ -185,7 +185,7 @@ fun infoSection(
                     Spacer(modifier = Modifier.height(4.dp))
                     Box {
                         OutlinedTextField(
-                            value = uiState.category,
+                            value = uiState.category.label,
                             onValueChange = { },
                             readOnly = true,
                             placeholder = { Text("Categoria", color = Color.Gray) },
@@ -217,7 +217,7 @@ fun infoSection(
                                 DropdownMenuItem(
                                     text = { Text(category.label) },
                                     onClick = {
-                                        viewModel.onCategoryChange(category.label)
+                                        viewModel.onCategoryChange(category)
                                         expanded = false
                                     }
                                 )
@@ -653,7 +653,7 @@ fun ButtonsSection(
     viewModel: CreateEventViewModel
 ) {
     Button(
-        onClick = { viewModel.onCreateEvent() },
+        onClick = { viewModel.createEvent() },
         modifier = Modifier.fillMaxWidth().height(50.dp),
         colors = ButtonDefaults.buttonColors(containerColor = orange),
         shape = RoundedCornerShape(20.dp)

@@ -1,138 +1,119 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.Notifications
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-
-enum class NotificationType {
-    COMMENT,
-    EVENT_REJECTED,
-    EVENT_VERIFIED,
-    NEW_EVENT_NEARBY
-}
-
-data class NotificationItem(
-    val id: String,
-    val type: NotificationType,
-    val title: String,
-    val subtitle: String,
-    val timeAgo: String,
-    val isUnread: Boolean = false,
-    val initials: String = ""
-)
+import androidx.lifecycle.viewModelScope
+import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.domain.model.AppNotification
+import com.example.proyectofinaldisenomovil.domain.model.NotificationType
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 data class NotificationsUiState(
-    val notifications: List<NotificationItem> = listOf(
-        // Hoy
-        NotificationItem(
-            id = "1",
-            type = NotificationType.COMMENT,
-            title = "Nuevo comentario",
-            subtitle = "Santiago Londoño comentó en \"Partido de la histo...\"",
-            timeAgo = "Hace 50 min",
-            isUnread = true,
-            initials = "SL"
-        ),
-        NotificationItem(
-            id = "2",
-            type = NotificationType.EVENT_REJECTED,
-            title = "Evento rechazado",
-            subtitle = "Tu evento fue rechazado, revisa los motivos.",
-            timeAgo = "Hace 2 h",
-            isUnread = true
-        ),
-        NotificationItem(
-            id = "3",
-            type = NotificationType.EVENT_VERIFIED,
-            title = "Evento Verificado",
-            subtitle = "Tu evento \"Partido de la historia...\" fue aceptado",
-            timeAgo = "Hace 2 h",
-            isUnread = false
-        ),
-        // Ayer
-        NotificationItem(
-            id = "4",
-            type = NotificationType.NEW_EVENT_NEARBY,
-            title = "Nuevo evento cerca de ti",
-            subtitle = "\"Encuentro de therians\" cerca de ti",
-            timeAgo = "Hace 22 h",
-            isUnread = true
-        ),
-        NotificationItem(
-            id = "5",
-            type = NotificationType.NEW_EVENT_NEARBY,
-            title = "Nuevo evento cerca de ti",
-            subtitle = "\"Encuentro de therians\" cerca de ti",
-            timeAgo = "Hace 22 h",
-            isUnread = false
-        ),
-        // Hace unos dias
-        NotificationItem(
-            id = "6",
-            type = NotificationType.NEW_EVENT_NEARBY,
-            title = "Nuevo evento cerca de ti",
-            subtitle = "\"Encuentro de therians\" cerca de ti",
-            timeAgo = "Hace 22 h",
-            isUnread = false
-        ),
-        NotificationItem(
-            id = "7",
-            type = NotificationType.NEW_EVENT_NEARBY,
-            title = "Nuevo evento cerca de ti",
-            subtitle = "\"Encuentro de therians\" cerca de ti",
-            timeAgo = "Hace 22 h",
-            isUnread = false
-        )
-    )
+    val notifications: List<AppNotification> = emptyList(),
+    val isLoading: Boolean = false,
+    val unreadCount: Int = 0
 )
 
 class NotificationsViewModel : ViewModel() {
 
-    var uiState by mutableStateOf(NotificationsUiState())
-        private set
+    private val _uiState = MutableStateFlow(NotificationsUiState())
+    val uiState: StateFlow<NotificationsUiState> = _uiState.asStateFlow()
 
-    var selectedCategory by mutableStateOf("Todas")
-        private set
+    private val _selectedFilter = MutableStateFlow("Todas")
+    val selectedFilter: StateFlow<String> = _selectedFilter.asStateFlow()
 
-    fun selectCategory(category: String) {
-        selectedCategory = category
+    init {
+        loadNotifications()
     }
 
-    fun markAllAsRead() {
-        uiState = uiState.copy(
-            notifications = uiState.notifications.map { it.copy(isUnread = false) }
-        )
-    }
-
-    fun getFilteredNotifications(): List<NotificationItem> {
-        return when (selectedCategory) {
-            "Todas" -> uiState.notifications
-            "No leidas" -> uiState.notifications.filter { it.isUnread }
-            "Eventos" -> uiState.notifications.filter {
-                it.type == NotificationType.EVENT_REJECTED ||
-                it.type == NotificationType.EVENT_VERIFIED ||
-                it.type == NotificationType.NEW_EVENT_NEARBY
-            }
-            "Coments" -> uiState.notifications.filter {
-                it.type == NotificationType.COMMENT
-            }
-            else -> uiState.notifications
+    fun loadNotifications() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            
+            val userId = MockDataRepository.getLoggedInUser()?.uid ?: return@launch
+            val notifications = MockDataRepository.getNotificationsForUser(userId)
+            val unreadCount = MockDataRepository.getUnreadNotificationCount(userId)
+            
+            _uiState.value = NotificationsUiState(
+                notifications = notifications,
+                isLoading = false,
+                unreadCount = unreadCount
+            )
         }
     }
 
-    /**
-     * Groups notifications into sections: "Hoy", "Ayer", "Hace unos dias"
-     */
-    fun getGroupedNotifications(): Map<String, List<NotificationItem>> {
+    fun onFilterSelected(filter: String) {
+        _selectedFilter.value = filter
+    }
+
+    fun getFilteredNotifications(): List<AppNotification> {
+        val notifications = _uiState.value.notifications
+        return when (_selectedFilter.value) {
+            "Todas" -> notifications
+            "No leídas" -> notifications.filter { !it.isRead }
+            "Eventos" -> notifications.filter { 
+                it.type == NotificationType.VERIFIED ||
+                it.type == NotificationType.REJECTED ||
+                it.type == NotificationType.NEW_EVENT ||
+                it.type == NotificationType.NEW_EVENT_NEARBY
+            }
+            "Comentarios" -> notifications.filter { it.type == NotificationType.COMMENT }
+            else -> notifications
+        }
+    }
+
+    fun markAsRead(notificationId: String) {
+        MockDataRepository.markNotificationAsRead(notificationId)
+        loadNotifications()
+    }
+
+    fun markAllAsRead() {
+        val userId = MockDataRepository.getLoggedInUser()?.uid ?: return
+        MockDataRepository.markAllNotificationsAsRead(userId)
+        loadNotifications()
+    }
+
+    fun getTimeAgo(timestamp: com.google.firebase.Timestamp?): String {
+        if (timestamp == null) return ""
+        
+        val now = Calendar.getInstance().timeInMillis
+        val then = timestamp.toDate().time
+        val diff = now - then
+
+        val minutes = TimeUnit.MILLISECONDS.toMinutes(diff)
+        val hours = TimeUnit.MILLISECONDS.toHours(diff)
+        val days = TimeUnit.MILLISECONDS.toDays(diff)
+
+        return when {
+            minutes < 1 -> "Ahora mismo"
+            minutes < 60 -> "Hace $minutes min"
+            hours < 24 -> "Hace $hours h"
+            days == 1L -> "Ayer"
+            days < 7 -> "Hace $days días"
+            else -> {
+                val formatter = SimpleDateFormat("dd MMM", Locale("es", "CO"))
+                formatter.format(Date(then))
+            }
+        }
+    }
+
+    fun getGroupedNotifications(): Map<String, List<AppNotification>> {
         val filtered = getFilteredNotifications()
-        val grouped = linkedMapOf<String, MutableList<NotificationItem>>()
+        val grouped = linkedMapOf<String, MutableList<AppNotification>>()
 
         for (notification in filtered) {
             val section = when {
-                notification.timeAgo.contains("min") || (notification.timeAgo.contains("h") && !notification.timeAgo.contains("22")) -> "Hoy"
-                notification.timeAgo.contains("22 h") && (notification.id == "4" || notification.id == "5") -> "Ayer"
-                else -> "Hace unos dias"
+                getTimeAgo(notification.createdAt).contains("min") || 
+                getTimeAgo(notification.createdAt).contains("h") && !getTimeAgo(notification.createdAt).contains("d") -> "Hoy"
+                getTimeAgo(notification.createdAt) == "Ayer" -> "Ayer"
+                else -> "Anteriores"
             }
             grouped.getOrPut(section) { mutableListOf() }.add(notification)
         }

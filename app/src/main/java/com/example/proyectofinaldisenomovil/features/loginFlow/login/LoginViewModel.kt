@@ -5,16 +5,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.proyectofinaldisenomovil.data.BdProvisional.MockUserData
+import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 sealed class LoginResult {
-
     data object Idle : LoginResult()
     data object Error : LoginResult()
+    data object Loading : LoginResult()
     data class Success(val role: UserRole) : LoginResult()
 }
 
@@ -25,46 +25,51 @@ class LoginViewModel : ViewModel() {
     var emailError by mutableStateOf("")
     var passwordError by mutableStateOf("")
 
-    val _loginResult = MutableStateFlow<LoginResult>(LoginResult.Idle)
-    var loginResult: StateFlow<LoginResult> = _loginResult.asStateFlow()
+    private val _loginResult = MutableStateFlow<LoginResult>(LoginResult.Idle)
+    val loginResult: StateFlow<LoginResult> = _loginResult.asStateFlow()
 
     fun onEmailChange(newEmail: String) {
-        this.email = newEmail
+        email = newEmail
         _loginResult.value = LoginResult.Idle
         validateEmail(email)
     }
 
     fun onPasswordChange(newPassword: String) {
-        this.password = newPassword
+        password = newPassword
         _loginResult.value = LoginResult.Idle
         validatePassword(password)
     }
 
-    fun validateEmail(email: String) {
-        emailError =
-            if (email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                "Email mal escrito"
-            } else {
-                ""
-            }
+    private fun validateEmail(email: String) {
+        emailError = when {
+            email.isEmpty() -> ""
+            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Email mal escrito"
+            else -> ""
+        }
     }
 
-    fun validatePassword(password: String) {
-        if (password.length > 0 && password.length < 8) {
-            passwordError = "La contraseña debe tener al menos 8 caracteres"
-        } else {
-            passwordError = ""
+    private fun validatePassword(password: String) {
+        passwordError = when {
+            password.isEmpty() -> ""
+            password.length < 8 -> "La contraseña debe tener al menos 8 caracteres"
+            else -> ""
         }
     }
 
     fun validateForm(): Boolean {
-        return emailError.isEmpty() && passwordError.isEmpty() && email.isNotEmpty() && password.isNotEmpty()
+        return emailError.isEmpty() && passwordError.isEmpty() && 
+               email.isNotEmpty() && password.isNotEmpty()
     }
 
     fun login() {
-        val user = MockUserData.validateCredentials(email, password)
-
+        if (!validateForm()) return
+        
+        _loginResult.value = LoginResult.Loading
+        
+        val user = MockDataRepository.validateCredentials(email, password)
+        
         _loginResult.value = if (user != null) {
+            MockDataRepository.setLoggedInUser(user)
             LoginResult.Success(user.role)
         } else {
             LoginResult.Error

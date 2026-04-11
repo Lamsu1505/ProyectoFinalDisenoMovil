@@ -13,48 +13,72 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
-import com.example.proyectofinaldisenomovil.features.login.RegisterViewModel
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.IconButton
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.input.VisualTransformation
 import com.example.proyectofinaldisenomovil.core.component.login.HeaderSectionNonLogued
 import com.example.proyectofinaldisenomovil.core.component.login.TopBarRegister
+import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 
 @Composable
-fun RegisterScreen (
+fun RegisterScreen(
     registerViewModel: RegisterViewModel = viewModel(),
     onBackClick: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {}
-){
+) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    
+    LaunchedEffect(registerViewModel.registerResult) {
+        when (registerViewModel.registerResult) {
+            is RegisterResult.Success -> {
+                snackbarHostState.showSnackbar("Registro exitoso. Ahora puedes iniciar sesión.")
+                registerViewModel.clearForm()
+                onNavigateToLogin()
+            }
+            is RegisterResult.EmailAlreadyExists -> {
+                snackbarHostState.showSnackbar("El email ya está registrado")
+                registerViewModel.resetResult()
+            }
+            is RegisterResult.Error -> {
+                snackbarHostState.showSnackbar((registerViewModel.registerResult as RegisterResult.Error).message)
+                registerViewModel.resetResult()
+            }
+            else -> {}
+        }
+    }
+
     Scaffold(
         topBar = {
             TopBarRegister(onBackClick)
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
 
         Box(
@@ -110,68 +134,51 @@ fun RegisterForm(
         color = MaterialTheme.colorScheme.primary
     )
 
-    //Formulario de registro
     Column(
         verticalArrangement = Arrangement.spacedBy(25.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        // ---------------- Nombre Apellido ----------------
-        Column(
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-            ) {
+            OutlinedTextField(
+                singleLine = true,
+                shape = RoundedCornerShape(15.dp),
+                value = registerViewModel.name,
+                modifier = Modifier.weight(1f),
+                onValueChange = { registerViewModel.onNameChange(it) },
+                label = { Text("Nombre(s)") },
+                isError = registerViewModel.nameError.isNotEmpty()
+            )
 
-                OutlinedTextField(
-                    singleLine = true,
-                    shape = RoundedCornerShape(15.dp),
-                    value = registerViewModel.name,
-                    modifier = Modifier.weight(1f),
-                    onValueChange = {
-                        registerViewModel.onNameChange(it)
-                    },
-                    label = { Text("Nombre(s)") },
-                )
-
-                OutlinedTextField(
-                    singleLine = true,
-                    shape = RoundedCornerShape(15.dp),
-                    value = registerViewModel.lastName,
-                    modifier = Modifier.weight(1f),
-                    onValueChange = {
-                        registerViewModel.onLastNameChange(it)
-                    },
-                    label = { Text("Apellido(s)") },
-                )
-            }
-
-
+            OutlinedTextField(
+                singleLine = true,
+                shape = RoundedCornerShape(15.dp),
+                value = registerViewModel.lastName,
+                modifier = Modifier.weight(1f),
+                onValueChange = { registerViewModel.onLastNameChange(it) },
+                label = { Text("Apellido(s)") },
+                isError = registerViewModel.lastNameError.isNotEmpty()
+            )
         }
 
-        // ---------------- Correo ----------------
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             OutlinedTextField(
                 singleLine = true,
                 shape = RoundedCornerShape(15.dp),
                 value = registerViewModel.email,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = {
-                    registerViewModel.onEmailChange(it)
-                },
-                label = { Text("Correo electronico") },
+                onValueChange = { registerViewModel.onEmailChange(it) },
+                label = { Text("Correo electrónico") },
                 isError = registerViewModel.emailError.isNotEmpty()
             )
 
-            if (registerViewModel.emailError.isNotEmpty()){
+            if (registerViewModel.emailError.isNotEmpty()) {
                 Box(modifier = Modifier.height(17.dp)) {
                     Text(
-                        text = "Email mal escrito, revisa el formato",
+                        text = registerViewModel.emailError,
                         color = MaterialTheme.colorScheme.error,
                         fontSize = 12.sp
                     )
@@ -179,21 +186,14 @@ fun RegisterForm(
             }
         }
 
-
-        //------------ Contraseñas --------------
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             OutlinedTextField(
                 singleLine = true,
                 shape = RoundedCornerShape(15.dp),
                 value = registerViewModel.password,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = {
-                    registerViewModel.onPasswordChange(it)
-                },
-                label = { Text("Contraseña secreta") },
+                onValueChange = { registerViewModel.onPasswordChange(it) },
+                label = { Text("Contraseña") },
                 isError = registerViewModel.passwordError.isNotEmpty(),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
@@ -206,27 +206,24 @@ fun RegisterForm(
                 }
             )
 
-            Box(modifier = Modifier.height(17.dp)) {
-                if (registerViewModel.passwordError.isNotEmpty()) {
+            if (registerViewModel.passwordError.isNotEmpty()) {
+                Box(modifier = Modifier.height(17.dp)) {
                     Text(
-                        text = "La contraseña debe tener al menos 8 caracteres",
+                        text = registerViewModel.passwordError,
                         color = MaterialTheme.colorScheme.error,
                         fontSize = 12.sp
                     )
                 }
             }
 
-
             OutlinedTextField(
                 singleLine = true,
                 shape = RoundedCornerShape(15.dp),
                 value = registerViewModel.passwordConfirmation,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = {
-                    registerViewModel.onPasswordConfirmationChange(it)
-                },
-                label = { Text("Confirmar contraseña secreta") },
-                isError = registerViewModel.passwordError.isNotEmpty(),
+                onValueChange = { registerViewModel.onPasswordConfirmationChange(it) },
+                label = { Text("Confirmar contraseña") },
+                isError = registerViewModel.passwordConfirmationError.isNotEmpty(),
                 visualTransformation = if (repeatPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { repeatPasswordVisible = !repeatPasswordVisible }) {
@@ -238,10 +235,10 @@ fun RegisterForm(
                 }
             )
 
-            Box(modifier = Modifier.height(17.dp)) {
-                if (registerViewModel.passwordConfirmationError.isNotEmpty()) {
+            if (registerViewModel.passwordConfirmationError.isNotEmpty()) {
+                Box(modifier = Modifier.height(17.dp)) {
                     Text(
-                        text = "Las contraseñas no coinciden",
+                        text = registerViewModel.passwordConfirmationError,
                         color = MaterialTheme.colorScheme.error,
                         fontSize = 12.sp
                     )
@@ -253,13 +250,7 @@ fun RegisterForm(
 
         Button(
             enabled = registerViewModel.validateForm(),
-            onClick = {
-                registerViewModel.registerUser { success ->
-                    if (success) {
-                        onNavigateToLogin()
-                    }
-                }
-            },
+            onClick = { registerViewModel.register() },
             modifier = Modifier.height(50.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
@@ -273,15 +264,11 @@ fun RegisterForm(
             )
         }
     }
-
-
-
 }
-
 
 @Preview(showBackground = true)
 @Composable
-fun RegisterPreview(){
+fun RegisterPreview() {
     ProyectoFinalDisenoMovilTheme {
         RegisterScreen()
     }
