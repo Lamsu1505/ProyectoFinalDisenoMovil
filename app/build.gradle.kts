@@ -9,17 +9,17 @@ plugins {
 
 android {
     namespace = "com.example.proyectofinaldisenomovil"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.proyectofinaldisenomovil"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
     }
 
-    ndkVersion = "26.1.10909125"
+    ndkVersion = "27.2.12479018"
 
     buildTypes {
         release {
@@ -58,6 +58,16 @@ android {
     }
 }
 
+// Force Fresco to a 16 KB-aligned version
+configurations.all {
+    resolutionStrategy {
+        force("com.facebook.fresco:fresco:3.3.0")
+        force("com.facebook.fresco:imagepipeline-native:3.3.0")
+        force("com.facebook.fresco:nativeimagetranscoder:3.3.0")
+        force("com.facebook.fresco:animated-gif:3.3.0")
+    }
+}
+
 dependencies {
     // Compose
     implementation(platform(libs.androidx.compose.bom))
@@ -87,7 +97,7 @@ dependencies {
     implementation(libs.firebase.storage)
 
     // Cloudinary
-    implementation("com.cloudinary:cloudinary-android:2.3.1")
+    implementation("com.cloudinary:cloudinary-android:3.0.2")
 
     // Coil
     implementation(libs.coil.compose)
