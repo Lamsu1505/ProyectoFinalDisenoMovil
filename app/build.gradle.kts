@@ -19,6 +19,8 @@ android {
         versionName = "1.0"
     }
 
+    ndkVersion = "26.1.10909125"
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -49,6 +51,9 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+        jniLibs {
+            useLegacyPackaging = false
         }
     }
 }
