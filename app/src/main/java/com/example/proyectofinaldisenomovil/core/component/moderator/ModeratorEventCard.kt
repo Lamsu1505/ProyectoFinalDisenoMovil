@@ -5,11 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.Schedule
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import coil3.compose.AsyncImage
+import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.core.theme.*
 import java.text.SimpleDateFormat
@@ -118,13 +117,13 @@ fun ModeratorEventCard(
                     // ── Left: meta info ──────────────────────────────────────
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         MetaRow(
-                            icon  = Icons.Outlined.CalendarToday,
+                            icon  = Icons.Outlined.DateRange,
                             label = event.startDate?.let {
                                 SimpleDateFormat("EEEE d 'de' MMM", Locale("es")).format(it.toDate())
                             } ?: "Fecha no definida",
                         )
                         MetaRow(
-                            icon  = Icons.Outlined.Schedule,
+                            icon  = Icons.Outlined.DateRange,
                             label = event.startDate?.let {
                                 SimpleDateFormat("h:mm a", Locale.getDefault()).format(it.toDate())
                             } ?: "--",
@@ -143,13 +142,13 @@ fun ModeratorEventCard(
                         ActionButton(
                             label      = "Aceptar",
                             color      = MaterialTheme.colorScheme.primary,
-                            icon       = Icons.Rounded.CheckCircle,
+                            icon       = Icons.Filled.CheckCircle,
                             onClick    = { onAccept(event) },
                         )
                         ActionButton(
                             label      = "Rechazar",
                             color      = MaterialTheme.colorScheme.secondary,
-                            icon       = Icons.Rounded.Cancel,
+                            icon       = Icons.Filled.Close,
                             onClick    = { onReject(event) },
                         )
                     }

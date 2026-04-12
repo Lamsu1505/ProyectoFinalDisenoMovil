@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.proyectofinaldisenomovil.core.navigation.LoginRoutes
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.EditProfile.EditProfileScreen
 import com.example.proyectofinaldisenomovil.features.loginFlow.ForgotPassword.ForgotPasswordScreen
@@ -20,6 +19,17 @@ import com.example.proyectofinaldisenomovil.features.userFlow.UserNavigation
 import com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent.ViewEventScreen
 import com.example.proyectofinaldisenomovil.features.moderatorFlow.ModeratorNavigation
 
+object LoginRoutes {
+    const val LOGIN = "login"
+    const val REGISTER = "register"
+    const val FORGOT_PASSWORD = "forgot_password"
+    const val RECOVER_PASSWORD = "recover_password"
+}
+
+object AppRoutes {
+    const val USER_FLOW = "user_flow"
+    const val MODERATOR_FLOW = "moderator_flow"
+}
 
 @Composable
 fun AppNavigation() {
@@ -27,67 +37,64 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = LoginRoutes.Login
+        startDestination = LoginRoutes.LOGIN
     ) {
 
-        // LOGIN FLOW
-        composable<LoginRoutes.Login> {
+        composable(LoginRoutes.LOGIN) {
             LoginScreen(
-                onNavigateToRegister = { navController.navigate(LoginRoutes.Register) },
-                onNavigateToForgotPassword = { navController.navigate(LoginRoutes.ForgotPassword) },
+                onNavigateToRegister = { navController.navigate(LoginRoutes.REGISTER) },
+                onNavigateToForgotPassword = { navController.navigate(LoginRoutes.FORGOT_PASSWORD) },
                 onNavigateToUserFLow = {
-                    navController.navigate(AppRoutes.UserFlow) {
-                        popUpTo(LoginRoutes.Login) { inclusive = true }
+                    navController.navigate(AppRoutes.USER_FLOW) {
+                        popUpTo(LoginRoutes.LOGIN) { inclusive = true }
                     }
                 },
                 onNavigateToModeratorFlow = {
-                    navController.navigate(AppRoutes.ModeratorFlow) {
-                        popUpTo(LoginRoutes.Login) { inclusive = true }
+                    navController.navigate(AppRoutes.MODERATOR_FLOW) {
+                        popUpTo(LoginRoutes.LOGIN) { inclusive = true }
                     }
                 }
             )
         }
 
-        composable<LoginRoutes.Register> {
+        composable(LoginRoutes.REGISTER) {
             RegisterScreen(
                 onBackClick = { navController.popBackStack() },
-                onNavigateToLogin = { navController.navigate(LoginRoutes.Login) }
+                onNavigateToLogin = { navController.navigate(LoginRoutes.LOGIN) }
             )
         }
 
-        composable<LoginRoutes.ForgotPassword> {
+        composable(LoginRoutes.FORGOT_PASSWORD) {
             ForgotPasswordScreen(
                 onBackClick = { navController.popBackStack() },
                 onNavigateToLogin = { navController.popBackStack() },
-                onNavigateToRecoverPassword = { navController.navigate(LoginRoutes.RecoverPassword) }
+                onNavigateToRecoverPassword = { navController.navigate(LoginRoutes.RECOVER_PASSWORD) }
             )
         }
 
-        composable<LoginRoutes.RecoverPassword> {
+        composable(LoginRoutes.RECOVER_PASSWORD) {
             RecoverPasswordScreen(
                 onBackClick = { navController.popBackStack() },
-                onNavigateToLogin = { navController.navigate(LoginRoutes.Login) },
-                onSubmit = { navController.navigate(LoginRoutes.Login) }
+                onNavigateToLogin = { navController.navigate(LoginRoutes.LOGIN) },
+                onSubmit = { navController.navigate(LoginRoutes.LOGIN) }
             )
         }
 
-        // USER FLOW
-        composable<AppRoutes.UserFlow> {
+        composable(AppRoutes.USER_FLOW) {
             UserNavigation(
                 onLogout = {
-                    navController.navigate(LoginRoutes.Login) {
-                        popUpTo(AppRoutes.UserFlow) { inclusive = true }
+                    navController.navigate(LoginRoutes.LOGIN) {
+                        popUpTo(AppRoutes.USER_FLOW) { inclusive = true }
                     }
                 }
             )
         }
 
-        // MODERATOR FLOW
-        composable<AppRoutes.ModeratorFlow> {
+        composable(AppRoutes.MODERATOR_FLOW) {
             ModeratorNavigation(
                 onLogout = {
-                    navController.navigate(LoginRoutes.Login) {
-                        popUpTo(AppRoutes.ModeratorFlow) { inclusive = true }
+                    navController.navigate(LoginRoutes.LOGIN) {
+                        popUpTo(AppRoutes.MODERATOR_FLOW) { inclusive = true }
                     }
                 }
             )

@@ -9,7 +9,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Camera
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -97,7 +101,7 @@ fun EditProfileScreen(
                         ) {
                             IconButton(onClick = { /* Pick image */ }) {
                                 Icon(
-                                    Icons.Default.CameraAlt,
+                                    Icons.Default.Camera,
                                     contentDescription = "Edit photo",
                                     tint = orange,
                                     modifier = Modifier.size(20.dp)

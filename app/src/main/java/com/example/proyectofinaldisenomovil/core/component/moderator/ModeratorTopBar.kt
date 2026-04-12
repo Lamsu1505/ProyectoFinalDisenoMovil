@@ -6,7 +6,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -108,7 +108,7 @@ fun ModeratorTopBar(
                     modifier = Modifier.align(Alignment.CenterEnd),
                 ) {
                     Icon(
-                        imageVector        = Icons.AutoMirrored.Filled.Logout,
+                        imageVector        = Icons.AutoMirrored.Filled.ExitToApp,
                         contentDescription = "Cerrar sesion",
                         tint               = Color.White,
                     )

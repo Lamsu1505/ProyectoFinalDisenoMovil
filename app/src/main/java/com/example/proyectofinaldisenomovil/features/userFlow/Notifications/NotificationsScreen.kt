@@ -21,10 +21,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Event
-import androidx.compose.material.icons.filled.Message
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -243,7 +243,7 @@ private fun NotificationIcon(notification: AppNotification) {
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Message,
+                    imageVector = Icons.Default.Email,
                     contentDescription = "Comentario",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
@@ -253,7 +253,7 @@ private fun NotificationIcon(notification: AppNotification) {
 
         NotificationType.REJECTED -> {
             Icon(
-                imageVector = Icons.Default.Cancel,
+                imageVector = Icons.Default.Clear,
                 contentDescription = "Evento rechazado",
                 tint = Color(0xFFD32F2F),
                 modifier = Modifier.size(iconSize)

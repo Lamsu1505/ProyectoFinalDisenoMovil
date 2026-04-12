@@ -8,8 +8,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Article
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarHalf
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -182,11 +190,11 @@ fun ProfileScreen(
                         .padding(vertical = 12.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    EventStat(Icons.Default.CalendarMonth, "Activos", uiState.activeEvents.toString(), blue)
+                    EventStat(Icons.Default.DateRange, "Activos", uiState.activeEvents.toString(), blue)
                     VerticalDivider(modifier = Modifier.height(50.dp), color = Color.LightGray)
                     EventStat(Icons.Default.CheckCircle, "Finalizados", uiState.completedEvents.toString(), green)
                     VerticalDivider(modifier = Modifier.height(50.dp), color = Color.LightGray)
-                    EventStat(Icons.Default.Schedule, "Pendientes", uiState.pendingEvents.toString(), Color(0xFFFFA000))
+                    EventStat(Icons.Default.DateRange, "Pendientes", uiState.pendingEvents.toString(), Color(0xFFFFA000))
                 }
             }
 
@@ -208,7 +216,7 @@ fun ProfileScreen(
                 ) {
                     BadgeItem(Icons.Default.EmojiEvents, "Primera\npublicación", Color(0xFFFFD700))
                     BadgeItem(Icons.Default.CheckCircle, "+10\nFinalizados", Color.Gray)
-                    BadgeItem(Icons.Default.Stars, "+50\nFinalizados", Color.LightGray)
+                    BadgeItem(Icons.Default.Star, "+50\nFinalizados", Color.LightGray)
                     BadgeItem(null, "+4,7\nProm.\nCalificación", Color.Black, isRating = true)
                 }
             }
@@ -229,10 +237,10 @@ fun ProfileScreen(
                     }
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
-                    MenuItem(Icons.Default.Description, "Terminos y condiciones") { /* Navigate */ }
+                    MenuItem(Icons.Default.Article, "Terminos y condiciones") { /* Navigate */ }
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
-                    MenuItem(Icons.AutoMirrored.Filled.Logout, "Cerrar sesión", isLogout = true) {
+                    MenuItem(Icons.AutoMirrored.Filled.ExitToApp, "Cerrar sesión", isLogout = true) {
                         viewModel.onLogout()
                     }
                 }
@@ -309,7 +317,7 @@ fun MenuItem(icon: ImageVector, text: String, isLogout: Boolean = false, onClick
                 modifier = Modifier.weight(1f)
             )
             if (!isLogout) {
-                Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.LightGray)
+                Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.LightGray)
             }
         }
     }

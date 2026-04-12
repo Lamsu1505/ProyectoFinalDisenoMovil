@@ -3,7 +3,7 @@ package com.example.proyectofinaldisenomovil.core.component.moderator
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.WifiTethering
 import androidx.compose.material3.*
@@ -134,7 +134,7 @@ fun LogoutDialog(
                                 )
                             } else {
                                 Icon(
-                                    imageVector        = Icons.AutoMirrored.Filled.Logout,
+                                    imageVector        = Icons.AutoMirrored.Filled.ExitToApp,
                                     contentDescription = null,
                                     modifier           = Modifier.size(15.dp),
                                     tint               = Color.White,

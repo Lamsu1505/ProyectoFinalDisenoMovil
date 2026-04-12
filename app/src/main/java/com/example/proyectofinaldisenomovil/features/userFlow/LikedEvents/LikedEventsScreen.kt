@@ -7,7 +7,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -198,8 +203,8 @@ fun FavoriteEventCard(
                 Row(modifier = Modifier.fillMaxWidth()) {
                     // Columna izquierda Info
                     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        IconInfoRow(Icons.Default.CalendarToday, event.date)
-                        IconInfoRow(Icons.Default.Schedule, event.time)
+                        IconInfoRow(Icons.Default.DateRange, event.date)
+                        IconInfoRow(Icons.Default.DateRange, event.time)
                         IconInfoRow(Icons.Default.LocationOn, "${event.location} (${event.distance})")
                     }
 
@@ -210,7 +215,7 @@ fun FavoriteEventCard(
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Groups, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(numberFormat.format(event.attendees), fontSize = 14.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
                         }

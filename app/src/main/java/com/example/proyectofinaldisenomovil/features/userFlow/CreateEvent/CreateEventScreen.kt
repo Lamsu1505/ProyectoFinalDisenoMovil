@@ -14,7 +14,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,7 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil3.compose.AsyncImage
+import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.core.component.DatePickerModal
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
@@ -74,7 +83,7 @@ fun CreateEventScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
-                CategoryBadge(icon = Icons.Default.PushPin, label = "Información")
+                CategoryBadge(icon = Icons.Default.Place, label = "Información")
                 infoSection(
                     uiState,
                     viewModel
@@ -84,7 +93,7 @@ fun CreateEventScreen(
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                CategoryBadge(icon = Icons.Default.Image, label = "Imagenes")
+                CategoryBadge(icon = Icons.Default.AddAPhoto, label = "Imagenes")
                 imageSection(
                     uiState,
                     viewModel
@@ -103,7 +112,7 @@ fun CreateEventScreen(
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                CategoryBadge(icon = Icons.Default.CalendarToday, label = "Fecha y Hora")
+                CategoryBadge(icon = Icons.Default.DateRange, label = "Fecha y Hora")
                 dateSection(uiState, viewModel)
                 Spacer(modifier = Modifier.height(5.dp))
             }
@@ -209,10 +218,8 @@ fun infoSection(
                         DropdownMenu(
                             expanded = expanded,
                             onDismissRequest = { expanded = false },
-                            modifier = Modifier.fillMaxWidth(0.5f),
-                            shape = RoundedCornerShape(16.dp),
-
-                            ) {
+                            modifier = Modifier.fillMaxWidth(0.5f)
+                        ) {
                             EventCategory.entries.forEach { category ->
                                 DropdownMenuItem(
                                     text = { Text(category.label) },
@@ -325,8 +332,7 @@ fun imageSection(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                maxItemsInEachRow = 3,
-                maxLines = 5
+                maxItemsInEachRow = 3
             ) {
                 if (uiState.images.isEmpty()) {
                     repeat(2) {
@@ -398,7 +404,7 @@ fun imageSection(
 
                     ) {
                         Icon(
-                            Icons.Default.AddCircleOutline,
+                            Icons.Default.AddCircle,
                             contentDescription = "Add image",
                             tint = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.size(50.dp))
@@ -464,7 +470,7 @@ fun locationSection(
                     modifier = Modifier.padding(bottom = 8.dp)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.AdsClick, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.TouchApp, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("Seleccionar en el mapa", fontSize = 12.sp)
                     }
@@ -537,7 +543,7 @@ fun dateSection(
                             readOnly = true,
                             enabled = false,
                             modifier = Modifier.fillMaxWidth(),
-                            trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null) },
+                            trailingIcon = { Icon(Icons.Default.ArrowForward, contentDescription = null) },
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 disabledBorderColor = Color.Black,
@@ -564,7 +570,7 @@ fun dateSection(
                     OutlinedTextField(
                         value = uiState.startTime,
                         onValueChange = { },
-                        trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
+                        trailingIcon = { Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.Gray) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -604,7 +610,7 @@ fun dateSection(
                             readOnly = true,
                             enabled = false,
                             modifier = Modifier.fillMaxWidth(),
-                            trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null) },
+                            trailingIcon = { Icon(Icons.Default.ArrowForward, contentDescription = null) },
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 disabledBorderColor = Color.Black,
@@ -632,7 +638,7 @@ fun dateSection(
                         value = uiState.endTime,
                         onValueChange = { },
                         readOnly = true,
-                        trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
+                        trailingIcon = { Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.Gray) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -659,7 +665,7 @@ fun ButtonsSection(
         shape = RoundedCornerShape(20.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.CreateNewFolder, contentDescription = null)
+            Icon(Icons.Default.Folder, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
             Text("Crear evento", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }

@@ -19,10 +19,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -51,7 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil3.compose.AsyncImage
+import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryEventsSelectorBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SearchTopBarApp
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
@@ -209,11 +210,7 @@ fun OrderByComboBox(
             )
             DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false },
-                shape = RoundedCornerShape(16.dp),
-                containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = 20.dp,
-                shadowElevation = 10.dp
+                onDismissRequest = { expanded = false }
             ) {
                 options.forEach { option ->
                     DropdownMenuItem(
@@ -264,11 +261,7 @@ fun DistanceComboBox() {
             )
             DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false },
-                shape = RoundedCornerShape(16.dp),
-                containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = 20.dp,
-                shadowElevation = 10.dp
+                onDismissRequest = { expanded = false }
             ) {
                 options.forEach { option ->
                     DropdownMenuItem(
@@ -450,10 +443,10 @@ fun EventCard(
 
                         // Asistentes
                         Icon(
-                            Icons.Default.Groups,
+                            Icons.Filled.People,
                             contentDescription = null,
                             tint = Color.Gray,
-                            modifier = Modifier.size(26.dp)
+                            modifier = Modifier.size(20.dp)
                         )
 
                         Spacer(modifier = Modifier.width(4.dp))

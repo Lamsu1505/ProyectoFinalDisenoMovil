@@ -12,7 +12,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -284,7 +291,7 @@ private fun EventInfoCard(
                     text = state.date
                 )
                 InfoRow(
-                    icon = Icons.Default.Timer,
+                    icon = Icons.Default.DateRange,
                     text = state.time
                 )
                 InfoRow(
@@ -297,7 +304,7 @@ private fun EventInfoCard(
                     iconTint = if (isInterested) Color.Red else Color.Gray
                 )
                 InfoRow(
-                    icon = Icons.Default.Groups,
+                    icon = Icons.Default.Person,
                     text = "${numberFormat.format(state.currentAttendees)} / ${
                         numberFormat.format(
                             state.maxAttendees
