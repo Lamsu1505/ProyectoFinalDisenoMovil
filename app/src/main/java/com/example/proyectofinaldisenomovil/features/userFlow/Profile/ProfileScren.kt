@@ -2,6 +2,7 @@ package com.example.proyectofinaldisenomovil.features.userFlow.Profile
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarHalf
@@ -22,6 +24,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +57,9 @@ fun ProfileScreen(
     onBackClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    var selectedLanguage by remember { mutableStateOf("es") }
 
     Scaffold(
         topBar = {
@@ -235,8 +243,11 @@ fun ProfileScreen(
                 border = BorderStroke(1.dp, Color.LightGray)
             ) {
                 Column {
-                    MenuItem(Icons.Default.Edit, stringResource(R.string.profile_edit)) {
+                    MenuItem(Icons.Default.Edit, stringResource(R.string.profile_edit)) {}
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
+                    MenuItem(Icons.Default.Language, stringResource(R.string.profile_language)) {
+                        showLanguageDialog = true
                     }
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
@@ -249,6 +260,18 @@ fun ProfileScreen(
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        if (showLanguageDialog) {
+            LanguageDialog(
+                currentLanguage = selectedLanguage,
+                onLanguageSelected = { code ->
+                    selectedLanguage = code
+                    showLanguageDialog = false
+                    // aquí llamas tu lógica para cambiar el idioma
+                },
+                onDismiss = { showLanguageDialog = false }
+            )
         }
     }
 }
@@ -324,6 +347,65 @@ fun MenuItem(icon: ImageVector, text: String, isLogout: Boolean = false, onClick
             }
         }
     }
+}
+
+
+@Composable
+fun LanguageDialog(
+    currentLanguage: String,
+    onLanguageSelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val languages = listOf(
+        Pair("es", "Español"),
+        Pair("en", "English"),
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.profile_select_language),
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
+        },
+        text = {
+            Column {
+                languages.forEach { (code, name) ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onLanguageSelected(code) }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = name, fontSize = 16.sp)
+                        if (code == currentLanguage) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = green,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
+                    if (code != languages.last().first) {
+                        HorizontalDivider(color = Color.LightGray)
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel), color = Color.Gray)
+            }
+        },
+        shape = RoundedCornerShape(20.dp),
+        containerColor = Color.White
+    )
 }
 
 @Preview(showBackground = true)

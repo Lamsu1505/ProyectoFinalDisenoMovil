@@ -98,6 +98,7 @@
     <!-- Profile Screen -->
     <string name="profile_title">Perfil</string>
     <string name="profile_edit">Editar Perfil</string>
+    <string name="profile_language">Cambiar idioma</string>
     <string name="profile_events_created">Eventos Creados</string>
     <string name="profile_events_attended">Eventos Asistidos</string>
     <string name="profile_reputation">Reputación</string>
@@ -105,6 +106,9 @@
     <string name="profile_logout">Cerrar Sesión</string>
     <string name="profile_logout_confirm">¿Estás seguro de cerrar sesión?</string>
     <string name="profile_continue_online">Seguir en línea</string>
+    <string name="profile_select_language">Selecciona un idioma</string>
+
+
 
     <!-- Edit Profile Screen -->
     <string name="edit_profile_title">Editar Perfil</string>

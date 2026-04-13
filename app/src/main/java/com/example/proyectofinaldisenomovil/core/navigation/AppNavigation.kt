@@ -4,41 +4,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.proyectofinaldisenomovil.data.local.SessionManager
-import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventScreen
-import com.example.proyectofinaldisenomovil.features.userFlow.EditProfile.EditProfileScreen
+import androidx.navigation.toRoute
 import com.example.proyectofinaldisenomovil.features.loginFlow.ForgotPassword.ForgotPasswordScreen
-import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.LikedEventsScreen
-import com.example.proyectofinaldisenomovil.features.LikedEvents.SavedEventsScreen
-import com.example.proyectofinaldisenomovil.features.userFlow.Notifications.NotificationsScreen
-import com.example.proyectofinaldisenomovil.features.userFlow.Profile.ProfileScreen
 import com.example.proyectofinaldisenomovil.features.loginFlow.RecoverPassword.RecoverPasswordScreen
-import com.example.proyectofinaldisenomovil.features.userFlow.home.HomeScreen
 import com.example.proyectofinaldisenomovil.features.loginFlow.login.LoginScreen
-import com.example.proyectofinaldisenomovil.features.loginFlow.login.LoginViewModel
 import com.example.proyectofinaldisenomovil.features.loginFlow.register.RegisterScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.UserNavigation
-import com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent.ViewEventScreen
 import com.example.proyectofinaldisenomovil.features.moderatorFlow.ModeratorNavigation
-import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
 
-sealed class LoginRoute(val route: String) {
-    data object Login : LoginRoute("login")
-    data object Register : LoginRoute("register")
-    data object ForgotPassword : LoginRoute("forgot_password")
-    data object RecoverPassword : LoginRoute("recover_password/{email}") {
-        fun createRoute(email: String) = "recover_password/$email"
-    }
-}
-
-sealed class AppRoute(val route: String) {
-    data object UserFlow : AppRoute("user_flow")
-    data object ModeratorFlow : AppRoute("moderator_flow")
+sealed class AppRoute {
+    @kotlinx.serialization.Serializable
+    data object UserFlow : AppRoute()
+    @kotlinx.serialization.Serializable
+    data object ModeratorFlow : AppRoute()
 }
 
 @Composable
@@ -47,83 +28,68 @@ fun AppNavigation() {
     val authViewModel: AuthViewModel = hiltViewModel()
     val authState by authViewModel.authState.collectAsState()
 
-    val startDestination = when (val state = authState) {
-        is AuthState.Loading -> LoginRoute.Login.route
-        is AuthState.NotAuthenticated -> LoginRoute.Login.route
-        is AuthState.Authenticated -> when (state.role) {
-            UserRole.MODERATOR -> AppRoute.ModeratorFlow.route
-            else -> AppRoute.UserFlow.route
-        }
-    }
-
     val onLogout: () -> Unit = {
         authViewModel.logout()
     }
 
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = LoginRoutes.Login
     ) {
-
-        composable(LoginRoute.Login.route) {
+        composable<LoginRoutes.Login> {
             LoginScreen(
-                onNavigateToRegister = { navController.navigate(LoginRoute.Register.route) },
-                onNavigateToForgotPassword = { navController.navigate(LoginRoute.ForgotPassword.route) },
+                onNavigateToRegister = {
+                    navController.navigate(LoginRoutes.Register)
+                },
+                onNavigateToForgotPassword = {
+                    navController.navigate(LoginRoutes.ForgotPassword)
+                },
                 onNavigateToUserFLow = {
-                    navController.navigate(AppRoute.UserFlow.route) {
-                        popUpTo(LoginRoute.Login.route) { inclusive = true }
+                    navController.navigate(AppRoute.UserFlow) {
+                        popUpTo<LoginRoutes.Login> { inclusive = true }
                     }
                 },
                 onNavigateToModeratorFlow = {
-                    navController.navigate(AppRoute.ModeratorFlow.route) {
-                        popUpTo(LoginRoute.Login.route) { inclusive = true }
+                    navController.navigate(AppRoute.ModeratorFlow) {
+                        popUpTo<LoginRoutes.Login> { inclusive = true }
                     }
                 }
             )
         }
 
-        composable(LoginRoute.Register.route) {
+        composable<LoginRoutes.Register> {
             RegisterScreen(
                 onBackClick = { navController.popBackStack() },
-                onNavigateToLogin = { navController.navigate(LoginRoute.Login.route) }
+                onNavigateToLogin = { navController.navigate(LoginRoutes.Login) }
             )
         }
 
-        composable(LoginRoute.ForgotPassword.route) {
+        composable<LoginRoutes.ForgotPassword> {
             ForgotPasswordScreen(
                 onBackClick = { navController.popBackStack() },
                 onNavigateToLogin = { navController.popBackStack() },
                 onNavigateToRecoverPassword = { email ->
-                    navController.navigate(LoginRoute.RecoverPassword.createRoute(email))
+                    navController.navigate(LoginRoutes.RecoverPassword(email))
                 }
             )
         }
 
-        composable(
-            route = LoginRoute.RecoverPassword.route,
-            arguments = listOf(
-                navArgument("email") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val email = backStackEntry.arguments?.getString("email") ?: ""
+        composable<LoginRoutes.RecoverPassword> { backStackEntry ->
+            val route = backStackEntry.toRoute<LoginRoutes.RecoverPassword>()
             RecoverPasswordScreen(
-                email = email,
+                email = route.email,
                 onBackClick = { navController.popBackStack() },
-                onNavigateToLogin = { navController.navigate(LoginRoute.Login.route) },
-                onSubmit = { navController.navigate(LoginRoute.Login.route) }
+                onNavigateToLogin = { navController.navigate(LoginRoutes.Login) },
+                onSubmit = { navController.navigate(LoginRoutes.Login) }
             )
         }
 
-        composable(AppRoute.UserFlow.route) {
-            UserNavigation(
-                onLogout = onLogout
-            )
+        composable<AppRoute.UserFlow> {
+            UserNavigation(onLogout = onLogout)
         }
 
-        composable(AppRoute.ModeratorFlow.route) {
-            ModeratorNavigation(
-                onLogout = onLogout
-            )
+        composable<AppRoute.ModeratorFlow> {
+            ModeratorNavigation(onLogout = onLogout)
         }
     }
 }
