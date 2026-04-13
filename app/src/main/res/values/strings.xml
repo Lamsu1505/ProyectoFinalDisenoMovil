@@ -120,6 +120,7 @@
     <string name="edit_profile_error">Error al actualizar el perfil</string>
 
     <!-- View Event Screen -->
+    <string name="view_event_details">Detalles del Evento</string>
     <string name="view_event_date">Fecha</string>
     <string name="view_event_time">Hora</string>
     <string name="view_event_location">Ubicación</string>
