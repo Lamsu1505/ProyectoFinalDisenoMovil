@@ -1,94 +1,182 @@
 package com.example.proyectofinaldisenomovil.core.component.barReusable
 
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.R
 
 @Composable
 fun AppBottomBar(
-    navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onHomeClick: () -> Unit = {},
+    onCreateEvent: () -> Unit = {},
+    onSavedEvents: () -> Unit = {},
+    onLikedEvents: () -> Unit = {},
+    onProfile: () -> Unit = {},
+    selectedRoute: String
 ) {
-
-    val navBackStackEntry = navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry.value?.destination?.route
+    val iconsActualSize = 30.dp
 
     NavigationBar(
         modifier = modifier,
-        tonalElevation = 8.dp
+        tonalElevation = 8.dp,
+        containerColor = MaterialTheme.colorScheme.onBackground
     ) {
-
-        // 1️⃣ Inicio
-        NavigationBarItem(
-            selected = currentRoute == "home_route",
+        // Inicio
+        BottomNavItem(
+            selected = selectedRoute == "home",
             onClick = {
-                navController.navigate("home_route") {
-                    launchSingleTop = true
-                }
+                onHomeClick()
             },
-            icon = { Icon(Icons.Default.Home, contentDescription = "Inicio") },
-            label = { Text("Inicio") }
+            icon = Icons.Default.Home,
+            label = stringResource(R.string.app_bottom_home),
+            iconSize = iconsActualSize,
         )
 
-        // 2️⃣ Iré
-        NavigationBarItem(
-            selected = currentRoute == "going_route",
+        // Iré
+        BottomNavItem(
+            selected = selectedRoute == "savedEvents",
             onClick = {
-                navController.navigate("going_route") {
-                    launchSingleTop = true
-                }
+                onSavedEvents()
             },
-            icon = { Icon(Icons.Default.Bookmark, contentDescription = "Iré") },
-            label = { Text("Iré") }
+            icon = Icons.Default.Bookmark,
+            label = stringResource(R.string.app_bottom_saved),
+            iconSize = iconsActualSize
         )
 
-        // 3️⃣ Espacio central para FAB
         Box(
-            modifier = Modifier
-                .weight(1f),
+            modifier = Modifier.weight(1f),
             contentAlignment = Alignment.Center
         ) {
+            val fabInteractionSource = remember { MutableInteractionSource() }
+            val isFabHovered by fabInteractionSource.collectIsHoveredAsState()
+            val fabScale by animateFloatAsState(if (isFabHovered) 1.15f else 1f, label = "fab_scale")
+
             FloatingActionButton(
+                modifier = Modifier.scale(fabScale),
+                interactionSource = fabInteractionSource,
+                containerColor = MaterialTheme.colorScheme.primary,
                 onClick = {
-                    navController.navigate("add_route") {
-                        launchSingleTop = true
-                    }
+                    onCreateEvent()
                 }
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.app_bottom_add), modifier = Modifier.size(40.dp))
             }
         }
 
-        // 4️⃣ Me gusta
-        NavigationBarItem(
-            selected = currentRoute == "favorites_route",
+        // Me gusta
+        BottomNavItem(
+            selected = selectedRoute == "likedEvents",
             onClick = {
-                navController.navigate("favorites_route") {
-                    launchSingleTop = true
-                }
+                onLikedEvents()
             },
-            icon = { Icon(Icons.Default.Favorite, contentDescription = "Me gusta") },
-            label = { Text("Me gusta") }
+            icon = Icons.Default.Favorite,
+            label = stringResource(R.string.app_bottom_liked),
+            iconSize = iconsActualSize
         )
 
-        // 5️⃣ Perfil
-        NavigationBarItem(
-            selected = currentRoute == "profile_route",
+        // Perfil
+        BottomNavItem(
+            selected = selectedRoute == "profile",
             onClick = {
-                navController.navigate("profile_route") {
-                    launchSingleTop = true
-                }
+                onProfile()
             },
-            icon = { Icon(Icons.Default.Person, contentDescription = "Perfil") },
-            label = { Text("Perfil") }
+            icon = Icons.Default.Person,
+            label = stringResource(R.string.app_bottom_profile),
+            iconSize = iconsActualSize
+        )
+    }
+}
+
+@Composable
+fun RowScope.BottomNavItem(
+    selected: Boolean,
+    onClick: () -> Unit,
+    icon: ImageVector,
+    label: String,
+    iconSize: androidx.compose.ui.unit.Dp
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsState()
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    // Animación de escala para el icono cuando hay hover o está presionado
+    val scale by animateFloatAsState(
+        targetValue = if (isHovered || isPressed) 1.2f else 1f,
+        label = "nav_item_scale"
+    )
+
+    // Colores personalizados solicitados: Texto verde y fondo gris para el estado seleccionado
+    val selectedGreen = Color(0xFF4A8C5C) // El verde de tu paleta
+    val selectedGray = Color(0xFFE0E0E0)  // Un gris claro para el fondo (indicator)
+
+    NavigationBarItem(
+        selected = selected,
+        onClick = {
+            onClick()
+        },
+        interactionSource = interactionSource,
+        colors = NavigationBarItemDefaults.colors(
+            // Estado SELECCIONADO: Texto verde y fondo (indicator) gris
+            selectedIconColor = selectedGreen,
+            selectedTextColor = selectedGreen,
+            indicatorColor = selectedGray,
+            
+            // Estado NO SELECCIONADO: Gris/OnSurfaceVariant (con feedback verde si hay hover)
+            unselectedIconColor = if (isHovered) selectedGreen.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant,
+            unselectedTextColor = if (isHovered) selectedGreen.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant
+        ),
+        icon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                modifier = Modifier
+                    .size(iconSize)
+                    .scale(scale)
+            )
+        },
+        label = { 
+            Text(
+                text = label,
+                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+            ) 
+        }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewAppBottomBar() {
+    ProyectoFinalDisenoMovilTheme {
+        AppBottomBar(
+            onHomeClick = {},
+            onCreateEvent = {},
+            onSavedEvents = {},
+            onLikedEvents = {},
+            onProfile = {},
+            selectedRoute = "home"
         )
     }
 }

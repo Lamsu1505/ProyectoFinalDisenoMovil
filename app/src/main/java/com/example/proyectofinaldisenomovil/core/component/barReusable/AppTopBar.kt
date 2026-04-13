@@ -1,24 +1,108 @@
 package com.example.proyectofinaldisenomovil.core.component.barReusable
 
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopBar(
     title: String,
     modifier: Modifier = Modifier,
-    navigationIcon: (@Composable () -> Unit)? = null,
-    actions: @Composable RowScope.() -> Unit = {}
+    onNotificationsClick: () -> Unit = {},
+    onBackClick: () -> Unit = {}
 ) {
     TopAppBar(
-        modifier = modifier,
-        title = { Text(text = title) },
-        navigationIcon = {
-            navigationIcon?.invoke()
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        ),
+        title = {
+            Text(
+                text = title,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
         },
-        actions = actions
+        navigationIcon = {
+            IconButton(onClick = {
+
+            }) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.app_topbar_back),
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                        .clickable(
+                            onClick = {
+                                onBackClick()
+                            }
+                        )
+                )
+            }
+        },
+        actions = {
+            BadgedBox(
+                modifier = Modifier
+                    .clickable(onClick = {
+                }),
+                badge = {
+                    Badge(
+                        containerColor = Color.Red,
+                        contentColor = Color.White
+                    ) {
+                        Text(stringResource(R.string.app_topbar_notification_badge), fontSize = 11.sp)
+                    }
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = stringResource(R.string.app_topbar_notifications),
+                    tint = Color.White,
+                    modifier = Modifier.size(35.dp)
+                        .clickable(
+                            onClick = {
+                                onNotificationsClick()
+                            }
+                        )
+                )
+
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+        }
     )
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun AppTopBarPreview() {
+    ProyectoFinalDisenoMovilTheme() {
+        AppTopBar(
+            title = "Preview"
+        )
+
+    }
 }
