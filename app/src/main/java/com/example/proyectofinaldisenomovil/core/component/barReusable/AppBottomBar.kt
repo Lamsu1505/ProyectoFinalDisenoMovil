@@ -20,10 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.R
 
 @Composable
 fun AppBottomBar(
@@ -49,7 +51,7 @@ fun AppBottomBar(
                 onHomeClick()
             },
             icon = Icons.Default.Home,
-            label = "Inicio",
+            label = stringResource(R.string.app_bottom_home),
             iconSize = iconsActualSize,
         )
 
@@ -60,7 +62,7 @@ fun AppBottomBar(
                 onSavedEvents()
             },
             icon = Icons.Default.Bookmark,
-            label = "Iré",
+            label = stringResource(R.string.app_bottom_saved),
             iconSize = iconsActualSize
         )
 
@@ -80,7 +82,7 @@ fun AppBottomBar(
                     onCreateEvent()
                 }
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar", modifier = Modifier.size(40.dp))
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.app_bottom_add), modifier = Modifier.size(40.dp))
             }
         }
 
@@ -91,7 +93,7 @@ fun AppBottomBar(
                 onLikedEvents()
             },
             icon = Icons.Default.Favorite,
-            label = "Me gusta",
+            label = stringResource(R.string.app_bottom_liked),
             iconSize = iconsActualSize
         )
 
@@ -102,7 +104,7 @@ fun AppBottomBar(
                 onProfile()
             },
             icon = Icons.Default.Person,
-            label = "Perfil",
+            label = stringResource(R.string.app_bottom_profile),
             iconSize = iconsActualSize
         )
     }

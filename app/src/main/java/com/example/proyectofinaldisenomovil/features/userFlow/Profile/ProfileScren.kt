@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +40,7 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottom
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.core.theme.*
+import com.example.proyectofinaldisenomovil.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +56,7 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             AppTopBar(
-                title = "Perfil",
+                title = stringResource(R.string.profile_title),
                 onNotificationsClick = onNotificationClick,
                 onBackClick = onBackClick
             )
@@ -146,13 +148,13 @@ fun ProfileScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Nivel ${uiState.level}: ${uiState.levelName}",
+                            text = stringResource(R.string.profile_level, uiState.level, uiState.levelName),
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFD700), modifier = Modifier.size(20.dp))
-                            Text(text = " ${uiState.points} puntos", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                            Text(text = stringResource(R.string.profile_points, uiState.points), fontWeight = FontWeight.Bold, fontSize = 12.sp)
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
@@ -167,7 +169,7 @@ fun ProfileScreen(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Faltan ${uiState.pointsToNextLevel} puntos para subir de nivel.",
+                        text = stringResource(R.string.profile_points_remaining, uiState.pointsToNextLevel),
                         fontSize = 10.sp,
                         color = blue
                     )
@@ -175,7 +177,8 @@ fun ProfileScreen(
             }
 
             // Mis eventos section
-            SectionTitle("Mis eventos")
+            Spacer(modifier = Modifier.height(20.dp))
+            SectionTitle(stringResource(R.string.profile_my_events))
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -190,16 +193,16 @@ fun ProfileScreen(
                         .padding(vertical = 12.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    EventStat(Icons.Default.DateRange, "Activos", uiState.activeEvents.toString(), blue)
+                    EventStat(Icons.Default.DateRange, stringResource(R.string.profile_active), uiState.activeEvents.toString(), blue)
                     VerticalDivider(modifier = Modifier.height(50.dp), color = Color.LightGray)
-                    EventStat(Icons.Default.CheckCircle, "Finalizados", uiState.completedEvents.toString(), green)
+                    EventStat(Icons.Default.CheckCircle, stringResource(R.string.profile_completed), uiState.completedEvents.toString(), green)
                     VerticalDivider(modifier = Modifier.height(50.dp), color = Color.LightGray)
-                    EventStat(Icons.Default.DateRange, "Pendientes", uiState.pendingEvents.toString(), Color(0xFFFFA000))
+                    EventStat(Icons.Default.DateRange, stringResource(R.string.profile_pending), uiState.pendingEvents.toString(), Color(0xFFFFA000))
                 }
             }
 
             // Insignias section
-            SectionTitle("Insignias")
+            SectionTitle(stringResource(R.string.profile_badges))
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -214,10 +217,10 @@ fun ProfileScreen(
                         .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    BadgeItem(Icons.Default.EmojiEvents, "Primera\npublicación", Color(0xFFFFD700))
-                    BadgeItem(Icons.Default.CheckCircle, "+10\nFinalizados", Color.Gray)
-                    BadgeItem(Icons.Default.Star, "+50\nFinalizados", Color.LightGray)
-                    BadgeItem(null, "+4,7\nProm.\nCalificación", Color.Black, isRating = true)
+                    BadgeItem(Icons.Default.EmojiEvents, stringResource(R.string.profile_first_publication), Color(0xFFFFD700))
+                    BadgeItem(Icons.Default.CheckCircle, stringResource(R.string.profile_10_completed), Color.Gray)
+                    BadgeItem(Icons.Default.Star, stringResource(R.string.profile_50_completed), Color.LightGray)
+                    BadgeItem(null, stringResource(R.string.profile_rating), Color.Black, isRating = true)
                 }
             }
 
@@ -232,15 +235,15 @@ fun ProfileScreen(
                 border = BorderStroke(1.dp, Color.LightGray)
             ) {
                 Column {
-                    MenuItem(Icons.Default.Edit, "Editar Perfil") {
+                    MenuItem(Icons.Default.Edit, stringResource(R.string.profile_edit)) {
 
                     }
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
-                    MenuItem(Icons.Default.Article, "Terminos y condiciones") { /* Navigate */ }
+                    MenuItem(Icons.Default.Article, stringResource(R.string.profile_terms)) { /* Navigate */ }
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
-                    MenuItem(Icons.AutoMirrored.Filled.ExitToApp, "Cerrar sesión", isLogout = true) {
+                    MenuItem(Icons.AutoMirrored.Filled.ExitToApp, stringResource(R.string.profile_logout), isLogout = true) {
                         viewModel.onLogout()
                     }
                 }

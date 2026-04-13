@@ -56,6 +56,7 @@ android {
             useLegacyPackaging = false
         }
     }
+    buildToolsVersion = "34.0.0"
 }
 
 // Force Fresco to a 16 KB-aligned version

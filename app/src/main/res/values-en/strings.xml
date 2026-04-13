@@ -77,10 +77,23 @@
     <string name="saved_events_title">Saved Events</string>
     <string name="saved_events_empty">You have no saved events</string>
     <string name="saved_events_removed">Event removed from saved</string>
+    <string name="saved_events_calendar">Add to calendar</string>
 
     <!-- Liked Events Screen -->
     <string name="liked_events_title">Events I Care About</string>
     <string name="liked_events_empty">You haven\'t marked any event as important</string>
+
+    <!-- Edit Profile Screen -->
+    <string name="edit_profile_title_screen">Edit Profile</string>
+    <string name="edit_profile_joined">Joined on %1$s</string>
+    <string name="edit_profile_first_names">First Name(s)</string>
+    <string name="edit_profile_last_names">Last Name(s)</string>
+    <string name="edit_profile_email">Email address</string>
+    <string name="edit_profile_save_data">Save data</string>
+    <string name="edit_profile_password">Password</string>
+    <string name="edit_profile_change_password">Change password</string>
+    <string name="edit_profile_delete_account">Delete account</string>
+    <string name="edit_profile_photo">Edit photo</string>
 
     <!-- Profile Screen -->
     <string name="profile_title">Profile</string>
@@ -88,7 +101,6 @@
     <string name="profile_events_created">Events Created</string>
     <string name="profile_events_attended">Events Attended</string>
     <string name="profile_reputation">Reputation</string>
-    <string name="profile_level">Level</string>
     <string name="profile_badges">Badges</string>
     <string name="profile_logout">Log Out</string>
     <string name="profile_logout_confirm">Are you sure you want to log out?</string>
@@ -102,14 +114,6 @@
     <string name="edit_profile_save">Save Changes</string>
     <string name="edit_profile_success">Profile updated</string>
     <string name="edit_profile_error">Error updating profile</string>
-
-    <!-- Notifications Screen -->
-    <string name="notifications_title">Notifications</string>
-    <string name="notifications_empty">You have no notifications</string>
-    <string name="notification_event_approved">Your event has been approved</string>
-    <string name="notification_event_rejected">Your event has been rejected</string>
-    <string name="notification_new_comment">New comment on your event</string>
-    <string name="notification_new_attendee">New attendee on your event</string>
 
     <!-- View Event Screen -->
     <string name="view_event_details">Event Details</string>
@@ -127,6 +131,36 @@
     <string name="view_event_comments">Comments</string>
     <string name="view_event_add_comment">Add comment...</string>
     <string name="view_event_no_comments">Be the first to comment</string>
+    <string name="view_event_title">Event</string>
+    <string name="view_event_comments_count">Comments (%1$d)</string>
+    <string name="view_event_write_comment">Write a public comment...</string>
+    <string name="view_event_description_title">Event Description</string>
+    <string name="view_event_location_title">Exact Location</string>
+    <string name="view_event_location_map">Location on map</string>
+    <string name="view_event_created_by">Created by:</string>
+    <string name="view_event_interested">I\'m interested</string>
+    <string name="view_event_confirm_attendance">Confirm attendance</string>
+    <string name="view_event_show_more">Show more</string>
+    <string name="view_event_show_less">Show less</string>
+    <string name="view_event_share_opinion">Share your opinion with the community...</string>
+    <string name="view_event_send">Send</string>
+    <string name="view_event_close">Close</string>
+    <string name="view_event_image">Event image</string>
+    <string name="view_event_likes">%1$s likes</string>
+
+    <!-- Notifications Screen -->
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_back">Back</string>
+    <string name="notifications_mark_all_read">Mark all as read</string>
+    <string name="notifications_empty">You have no notifications</string>
+    <string name="notification_event_approved">Your event has been approved</string>
+    <string name="notification_event_rejected">Your event has been rejected</string>
+    <string name="notification_new_comment">New comment on your event</string>
+    <string name="notification_new_attendee">New attendee on your event</string>
+    <string name="notification_comment">Comment</string>
+    <string name="notification_event_verified">Event verified</string>
+    <string name="notification_new_event">New event</string>
+    <string name="notification_event_finalized">Event finalized</string>
 
     <!-- Moderator Panel -->
     <string name="moderator_title">Event Moderation</string>
@@ -139,6 +173,13 @@
     <string name="moderator_reject_reason">Reason to reject the event *</string>
     <string name="moderator_reject_placeholder">Write your reasons here...</string>
     <string name="moderator_confirm_title">CONFIRMATION MESSAGE</string>
+    <string name="moderator_event_not_found">Event not found</string>
+    <string name="moderator_date_not_defined">Date not defined</string>
+    <string name="moderator_location_not_defined">Location not defined</string>
+    <string name="moderator_no_description">No description</string>
+    <string name="moderator_back">Back</string>
+    <string name="moderator_logout">Log out</string>
+    <string name="moderator_description_label">Description</string>
 
     <!-- Logout Dialog -->
     <string name="logout_confirm">Are you sure you want to log out from the %s account?</string>
@@ -174,4 +215,142 @@
     <string name="date_today">Today</string>
     <string name="date_tomorrow">Tomorrow</string>
     <string name="time_format">h:mm a</string>
+
+    <!-- Validation Errors -->
+    <string name="validation_email_invalid">Invalid email, check the format</string>
+    <string name="validation_password_short">Password must be at least 8 characters</string>
+
+    <!-- Labels -->
+    <string name="label_password">Password</string>
+    <string name="label_password_visibility">Show password</string>
+    <string name="label_password_hide">Hide password</string>
+    <string name="label_remember_me">Remember me</string>
+    <string name="label_forgot_password">Forgot your password?</string>
+    <string name="label_no_account">Don\'t have an account?</string>
+    <string name="label_create_here">Create one here</string>
+    <string name="label_have_account">Already have an account?</string>
+    <string name="label_login_here">Sign in here</string>
+
+    <!-- Recover Password -->
+    <string name="recover_password_title">Recover Password</string>
+    <string name="recover_password_email_sent">An email has been sent to recover your password</string>
+    <string name="recover_password_back_login">Back to login</string>
+
+    <!-- Register Screen -->
+    <string name="register_sign_up">Sign Up</string>
+    <string name="register_first_name">First Name</string>
+    <string name="register_last_name">Last Name</string>
+    <string name="register_email_field">Email address</string>
+    <string name="register_password_field">Password</string>
+    <string name="register_confirm_password_field">Confirm password</string>
+    <string name="register_button_sign_up">Sign Up</string>
+    <string name="register_success">Registration successful. You can now sign in.</string>
+    <string name="register_email_exists">Email is already registered</string>
+    <string name="register_complete_fields">Please fill in all fields correctly</string>
+
+    <!-- Validation -->
+    <string name="validation_name_short">Name is too short</string>
+    <string name="validation_lastname_short">Lastname is too short</string>
+    <string name="validation_password_uppercase">Password must contain at least one uppercase letter</string>
+    <string name="validation_password_digit">Password must contain at least one number</string>
+    <string name="validation_passwords_not_match">Passwords do not match</string>
+
+    <!-- Forgot Password -->
+    <string name="forgot_password_title">Recover Your Password</string>
+    <string name="forgot_password_description">Enter the email associated with your account and receive a code to change your password</string>
+    <string name="forgot_password_send_code">Send code</string>
+    <string name="forgot_password_back_login">Back to sign in</string>
+
+    <!-- Recover Password -->
+    <string name="recover_password_new_title">New Password</string>
+    <string name="recover_password_code">Verification code</string>
+    <string name="recover_password_continue">Continue</string>
+    <string name="recover_password_success">Password has been recovered successfully</string>
+
+    <!-- Profile Screen Extended -->
+    <string name="profile_level">Level %1$s: %2$s</string>
+    <string name="profile_points">%1$d points</string>
+    <string name="profile_points_remaining">%1$d points remaining to level up.</string>
+    <string name="profile_my_events">My Events</string>
+    <string name="profile_active">Active</string>
+    <string name="profile_completed">Completed</string>
+    <string name="profile_pending">Pending</string>
+    <string name="profile_first_publication">First\npublication</string>
+    <string name="profile_10_completed">+10\nCompleted</string>
+    <string name="profile_50_completed">+50\nCompleted</string>
+    <string name="profile_rating">+4,7\nRating\nAvg.</string>
+    <string name="profile_terms">Terms and conditions</string>
+
+    <!-- Create Event Screen Extended -->
+    <string name="create_event_new_title">Create New Event</string>
+    <string name="create_event_info">Information</string>
+    <string name="create_event_images_label">Images</string>
+    <string name="create_event_location_label">Location</string>
+    <string name="create_event_date_time">Date and Time</string>
+    <string name="create_event_title_label">Event title</string>
+    <string name="create_event_title_placeholder">Add an eye-catching title</string>
+    <string name="create_event_description_label">Description</string>
+    <string name="create_event_description_placeholder">Describe what the event is about</string>
+    <string name="create_event_description_tip">Detailed descriptions get 35% more visibility.</string>
+    <string name="create_event_category_label">Category</string>
+    <string name="create_event_category_placeholder">Category</string>
+    <string name="create_event_capacity_label">Capacity</string>
+    <string name="create_event_capacity_placeholder">Ex: 100</string>
+    <string name="create_event_add_images_hint">Add relevant images for the event</string>
+    <string name="create_event_images_added_one">%d Image added</string>
+    <string name="create_event_images_added_other">%d Images added</string>
+    <string name="create_event_direct_address">Direct address</string>
+    <string name="create_event_address_placeholder">Add the event address</string>
+    <string name="create_event_select_map">Select on map</string>
+    <string name="create_event_start">Event start</string>
+    <string name="create_event_date_label">Date</string>
+    <string name="create_event_time_label">Time</string>
+    <string name="create_event_end_optional">Event end (Optional)</string>
+    <string name="create_event_button">Create event</string>
+
+    <!-- Search & Components -->
+    <string name="search_placeholder">Search events...</string>
+    <string name="notification_badge">3</string>
+    <string name="notifications_description">Notifications</string>
+
+    <!-- Notification Filters -->
+    <string name="notification_filter_all">All</string>
+    <string name="notification_filter_unread">Unread</string>
+    <string name="notification_filter_events">Events</string>
+    <string name="notification_filter_comments">Comments</string>
+
+    <!-- Home Filters -->
+    <string name="order_by_name">Name</string>
+    <string name="order_by_popularity">Popularity</string>
+    <string name="order_by_date">Date</string>
+
+    <!-- Common Components -->
+    <string name="datepicker_ok">OK</string>
+    <string name="datepicker_cancel">Cancel</string>
+    <string name="app_bottom_home">Home</string>
+    <string name="app_bottom_saved">I\'ll go</string>
+    <string name="app_bottom_add">Add</string>
+    <string name="app_bottom_liked">Liked</string>
+    <string name="app_bottom_profile">Profile</string>
+    <string name="app_topbar_back">Back</string>
+    <string name="app_topbar_notifications">Notifications</string>
+    <string name="app_topbar_notification_badge">3</string>
+
+    <!-- Moderator Components -->
+    <string name="moderator_search_placeholder">Search events...</string>
+    <string name="moderator_search_description">Search</string>
+    <string name="moderator_close_description">Close</string>
+    <string name="moderator_logout_description">Log out</string>
+    <string name="moderator_date_not_defined_short">Date not defined</string>
+    <string name="moderator_location_not_defined_short">Location not defined</string>
+    <string name="moderator_more_filters">More filters</string>
+    <string name="moderator_category_more">More categories</string>
+    <string name="moderator_category_close">Close categories</string>
+
+    <!-- Moderator Dialog -->
+    <string name="logout_confirm_title">Are you sure you want to log out from the moderator account of %1$s?</string>
+    <string name="logout_stay_online">Stay online</string>
+    <string name="logout_button">Log out</string>
+    <string name="dialog_confirm">Confirm</string>
+    <string name="dialog_close">Close</string>
 </resources>

@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +42,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.R
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -65,7 +67,7 @@ fun ViewEventScreen(
     Scaffold(
         topBar = {
             AppTopBar(
-                title = "Evento"
+                title = stringResource(R.string.view_event_title)
             )
         },
         bottomBar = {
@@ -131,7 +133,7 @@ fun ViewEventScreen(
 
             item {
                 Text(
-                    text = "Comentarios (${state.comments.size})",
+                    text = stringResource(R.string.view_event_comments_count, state.comments.size),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -168,7 +170,7 @@ fun ViewEventScreen(
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp))
-                        Text("Escribir un comentario público...", fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.view_event_write_comment), fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -191,7 +193,7 @@ private fun EventImageSection(state: ViewEventUiState) {
     ) {
         Image(
             painter = painterResource(id = state.imageRes),
-            contentDescription = "Imagen del evento",
+            contentDescription = stringResource(R.string.view_event_image),
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
@@ -300,7 +302,7 @@ private fun EventInfoCard(
                 )
                 InfoRow(
                     icon = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    text = "${numberFormat.format(state.likes)} likes",
+                    text = stringResource(R.string.view_event_likes, numberFormat.format(state.likes)),
                     iconTint = if (isInterested) Color.Red else Color.Gray
                 )
                 InfoRow(
@@ -323,7 +325,7 @@ private fun EventInfoCard(
                 Column(horizontalAlignment = Alignment.Start)
                 {
                     Text(
-                        text = "Creado por:",
+                        text = stringResource(R.string.view_event_created_by),
                         fontSize = 13.sp,
                         color = Color.White
                     )
@@ -369,7 +371,7 @@ private fun EventInfoCard(
                             modifier = Modifier.fillMaxWidth()
                                 .weight(5f),
                             textAlign = TextAlign.Center,
-                            text = "Estoy interesado",
+                            text = stringResource(R.string.view_event_interested),
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -403,7 +405,7 @@ private fun EventInfoCard(
                         modifier = Modifier.fillMaxWidth()
                             .weight(5f),
                         textAlign = TextAlign.Center,
-                        text = "Confirmar asistencia",
+                        text = stringResource(R.string.view_event_confirm_attendance),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -446,7 +448,7 @@ private fun EventDescriptionSection(description: String) {
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
         Text(
-            text = "Descripción del evento",
+            text = stringResource(R.string.view_event_description_title),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
@@ -472,7 +474,7 @@ private fun EventLocationSection(imageRes: Int) {
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
         Text(
-            text = "Ubicación exacta",
+            text = stringResource(R.string.view_event_location_title),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
@@ -491,7 +493,7 @@ private fun EventLocationSection(imageRes: Int) {
         ) {
             Icon(
                 imageVector = Icons.Default.LocationOn,
-                contentDescription = "Ubicación en mapa",
+                contentDescription = stringResource(R.string.view_event_location_map),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(48.dp)
             )
@@ -573,7 +575,7 @@ private fun CommentItem(comment: CommentUiModel) {
 
                 if (isOverflowing && !isExpanded) {
                     Text(
-                        text = "Mostrar más",
+                        text = stringResource(R.string.view_event_show_more),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary,
@@ -585,7 +587,7 @@ private fun CommentItem(comment: CommentUiModel) {
 
                 if (isExpanded) {
                     Text(
-                        text = "Mostrar menos",
+                        text = stringResource(R.string.view_event_show_less),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary,
@@ -620,7 +622,7 @@ fun CommentInputSection(
             OutlinedTextField(
                 value = text,
                 onValueChange = onTextChange,
-                placeholder = { Text("Comparte tu opinión con la comunidad...", fontSize = 14.sp) },
+                placeholder = { Text(stringResource(R.string.view_event_share_opinion), fontSize = 14.sp) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 maxLines = 6,
@@ -635,7 +637,7 @@ fun CommentInputSection(
                         IconButton(onClick = onSend) {
                             Icon(
                                 Icons.AutoMirrored.Filled.Send,
-                                contentDescription = "Enviar",
+                                contentDescription = stringResource(R.string.view_event_send),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -643,7 +645,7 @@ fun CommentInputSection(
                 },
                 leadingIcon = {
                     IconButton(onClick = onCancel) {
-                        Icon(Icons.Default.Close, contentDescription = "Cerrar", tint = Color.Gray, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.view_event_close), tint = Color.Gray, modifier = Modifier.size(20.dp))
                     }
                 }
             )

@@ -1,9 +1,11 @@
 package com.example.proyectofinaldisenomovil.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.EditProfile.EditProfileScreen
 import com.example.proyectofinaldisenomovil.features.loginFlow.ForgotPassword.ForgotPasswordScreen
@@ -19,16 +21,18 @@ import com.example.proyectofinaldisenomovil.features.userFlow.UserNavigation
 import com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent.ViewEventScreen
 import com.example.proyectofinaldisenomovil.features.moderatorFlow.ModeratorNavigation
 
-object LoginRoutes {
-    const val LOGIN = "login"
-    const val REGISTER = "register"
-    const val FORGOT_PASSWORD = "forgot_password"
-    const val RECOVER_PASSWORD = "recover_password"
+sealed class LoginRoute(val route: String) {
+    data object Login : LoginRoute("login")
+    data object Register : LoginRoute("register")
+    data object ForgotPassword : LoginRoute("forgot_password")
+    data object RecoverPassword : LoginRoute("recover_password/{email}") {
+        fun createRoute(email: String) = "recover_password/$email"
+    }
 }
 
-object AppRoutes {
-    const val USER_FLOW = "user_flow"
-    const val MODERATOR_FLOW = "moderator_flow"
+sealed class AppRoute(val route: String) {
+    data object UserFlow : AppRoute("user_flow")
+    data object ModeratorFlow : AppRoute("moderator_flow")
 }
 
 @Composable
@@ -37,64 +41,73 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = LoginRoutes.LOGIN
+        startDestination = LoginRoute.Login.route
     ) {
 
-        composable(LoginRoutes.LOGIN) {
+        composable(LoginRoute.Login.route) {
             LoginScreen(
-                onNavigateToRegister = { navController.navigate(LoginRoutes.REGISTER) },
-                onNavigateToForgotPassword = { navController.navigate(LoginRoutes.FORGOT_PASSWORD) },
+                onNavigateToRegister = { navController.navigate(LoginRoute.Register.route) },
+                onNavigateToForgotPassword = { navController.navigate(LoginRoute.ForgotPassword.route) },
                 onNavigateToUserFLow = {
-                    navController.navigate(AppRoutes.USER_FLOW) {
-                        popUpTo(LoginRoutes.LOGIN) { inclusive = true }
+                    navController.navigate(AppRoute.UserFlow.route) {
+                        popUpTo(LoginRoute.Login.route) { inclusive = true }
                     }
                 },
                 onNavigateToModeratorFlow = {
-                    navController.navigate(AppRoutes.MODERATOR_FLOW) {
-                        popUpTo(LoginRoutes.LOGIN) { inclusive = true }
+                    navController.navigate(AppRoute.ModeratorFlow.route) {
+                        popUpTo(LoginRoute.Login.route) { inclusive = true }
                     }
                 }
             )
         }
 
-        composable(LoginRoutes.REGISTER) {
+        composable(LoginRoute.Register.route) {
             RegisterScreen(
                 onBackClick = { navController.popBackStack() },
-                onNavigateToLogin = { navController.navigate(LoginRoutes.LOGIN) }
+                onNavigateToLogin = { navController.navigate(LoginRoute.Login.route) }
             )
         }
 
-        composable(LoginRoutes.FORGOT_PASSWORD) {
+        composable(LoginRoute.ForgotPassword.route) {
             ForgotPasswordScreen(
                 onBackClick = { navController.popBackStack() },
                 onNavigateToLogin = { navController.popBackStack() },
-                onNavigateToRecoverPassword = { navController.navigate(LoginRoutes.RECOVER_PASSWORD) }
+                onNavigateToRecoverPassword = { email ->
+                    navController.navigate(LoginRoute.RecoverPassword.createRoute(email))
+                }
             )
         }
 
-        composable(LoginRoutes.RECOVER_PASSWORD) {
+        composable(
+            route = LoginRoute.RecoverPassword.route,
+            arguments = listOf(
+                navArgument("email") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
             RecoverPasswordScreen(
+                email = email,
                 onBackClick = { navController.popBackStack() },
-                onNavigateToLogin = { navController.navigate(LoginRoutes.LOGIN) },
-                onSubmit = { navController.navigate(LoginRoutes.LOGIN) }
+                onNavigateToLogin = { navController.navigate(LoginRoute.Login.route) },
+                onSubmit = { navController.navigate(LoginRoute.Login.route) }
             )
         }
 
-        composable(AppRoutes.USER_FLOW) {
+        composable(AppRoute.UserFlow.route) {
             UserNavigation(
                 onLogout = {
-                    navController.navigate(LoginRoutes.LOGIN) {
-                        popUpTo(AppRoutes.USER_FLOW) { inclusive = true }
+                    navController.navigate(LoginRoute.Login.route) {
+                        popUpTo(AppRoute.UserFlow.route) { inclusive = true }
                     }
                 }
             )
         }
 
-        composable(AppRoutes.MODERATOR_FLOW) {
+        composable(AppRoute.ModeratorFlow.route) {
             ModeratorNavigation(
                 onLogout = {
-                    navController.navigate(LoginRoutes.LOGIN) {
-                        popUpTo(AppRoutes.MODERATOR_FLOW) { inclusive = true }
+                    navController.navigate(LoginRoute.Login.route) {
+                        popUpTo(AppRoute.ModeratorFlow.route) { inclusive = true }
                     }
                 }
             )

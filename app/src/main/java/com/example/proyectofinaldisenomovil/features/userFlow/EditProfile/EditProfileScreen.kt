@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,6 +34,7 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottom
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.core.theme.*
+import com.example.proyectofinaldisenomovil.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +47,7 @@ fun EditProfileScreen(
     Scaffold(
         topBar = {
             AppTopBar(
-                title = "Editar Perfil"
+                title = stringResource(R.string.edit_profile_title_screen)
             )
         },
         bottomBar = { AppBottomBar(
@@ -102,7 +104,7 @@ fun EditProfileScreen(
                             IconButton(onClick = { /* Pick image */ }) {
                                 Icon(
                                     Icons.Default.Camera,
-                                    contentDescription = "Edit photo",
+                                    contentDescription = stringResource(R.string.edit_profile_photo),
                                     tint = orange,
                                     modifier = Modifier.size(20.dp)
                                 )
@@ -139,7 +141,7 @@ fun EditProfileScreen(
             Spacer(modifier = Modifier.height(16.dp))
             
             Text(
-                text = "Se unio el ${uiState.joinDate}",
+                text = stringResource(R.string.edit_profile_joined, uiState.joinDate),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.outline
             )
@@ -154,7 +156,7 @@ fun EditProfileScreen(
             ) {
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Nombre(s)", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
+                        Text(stringResource(R.string.edit_profile_first_names), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
                         Spacer(modifier = Modifier.height(4.dp))
                         OutlinedTextField(
                             value = uiState.name,
@@ -171,7 +173,7 @@ fun EditProfileScreen(
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Apellido(s)", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
+                        Text(stringResource(R.string.edit_profile_last_names), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
                         Spacer(modifier = Modifier.height(4.dp))
                         OutlinedTextField(
                             value = uiState.lastName,
@@ -190,7 +192,7 @@ fun EditProfileScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Correo electronico", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
+                Text(stringResource(R.string.edit_profile_email), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = uiState.email,
@@ -216,13 +218,13 @@ fun EditProfileScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Guardar datos", fontSize = 16.sp)
+                        Text(stringResource(R.string.edit_profile_save_data), fontSize = 16.sp)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(15.dp))
 
-                Text("Contraseña", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
+                Text(stringResource(R.string.edit_profile_password), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = uiState.passwordPlaceholder,
@@ -242,7 +244,7 @@ fun EditProfileScreen(
                     contentPadding = PaddingValues(0.dp)
                 ) {
                     Text(
-                        "Cambiar contraseña",
+                        stringResource(R.string.edit_profile_change_password),
                         color = blue, fontSize = 14.sp,
                         modifier = Modifier.clickable(
                             onClick = {
@@ -263,7 +265,7 @@ fun EditProfileScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Eliminar cuenta", fontSize = 14.sp)
+                        Text(stringResource(R.string.edit_profile_delete_account), fontSize = 14.sp)
                     }
                 }
                 

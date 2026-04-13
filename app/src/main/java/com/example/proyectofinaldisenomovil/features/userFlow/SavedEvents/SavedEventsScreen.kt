@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,6 +35,7 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottom
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryEventsSelectorBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SearchTopBarApp
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.features.userFlow.SavedEvents.SavedEventsViewModel
 import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.FavoriteEvent
 import com.example.proyectofinaldisenomovil.features.userFlow.home.DistanceComboBox
@@ -125,7 +127,7 @@ fun SavedEventsFilters() {
 
             ) {
                 Text(
-                    "Ordenar por:",
+                    text = stringResource(R.string.filter_sort_by),
                     fontSize = 15.sp,
                     color = MaterialTheme.colorScheme.onSurface,
 
@@ -143,7 +145,7 @@ fun SavedEventsFilters() {
                 horizontalArrangement = Arrangement.spacedBy(7.dp)
             ) {
                 Text(
-                    "Distancia:",
+                    text = stringResource(R.string.filter_distance),
                     fontSize = 15.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -251,7 +253,7 @@ fun SavedEventCard(
                                     modifier = Modifier.fillMaxWidth()
                                         .weight(5f),
                                     textAlign = TextAlign.Center,
-                                    text = "Poner en calendario",
+                                    text = stringResource(R.string.saved_events_calendar),
                                     fontSize = 11.sp,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )

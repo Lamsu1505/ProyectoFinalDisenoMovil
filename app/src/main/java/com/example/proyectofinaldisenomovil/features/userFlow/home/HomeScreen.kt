@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -58,6 +59,7 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.SearchTop
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -110,7 +112,7 @@ fun HomeScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "No hay eventos disponibles",
+                    text = stringResource(R.string.home_no_events),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                     fontSize = 16.sp
                 )
@@ -153,9 +155,13 @@ fun FiltersBar(
                 horizontalArrangement = Arrangement.spacedBy(7.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Ordenar por:", fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface)
+                Text(stringResource(R.string.filter_sort_by), fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface)
                 OrderByComboBox(
-                    options = listOf("Nombre", "Fecha", "Popularidad"),
+                    options = listOf(
+                        stringResource(R.string.filter_name),
+                        stringResource(R.string.filter_date),
+                        stringResource(R.string.filter_votes)
+                    ),
                     selected = selectedOrder,
                     onSelected = onOrderSelected
                 )
@@ -166,7 +172,7 @@ fun FiltersBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(7.dp)
             ) {
-                Text("Distancia:", fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface)
+                Text(stringResource(R.string.filter_distance), fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface)
                 DistanceComboBox()
             }
         }

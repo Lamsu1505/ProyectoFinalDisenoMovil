@@ -23,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +38,7 @@ import com.example.proyectofinaldisenomovil.core.component.moderator.ModeratorEv
 import com.example.proyectofinaldisenomovil.core.component.moderator.ModeratorTopBar
 import com.example.proyectofinaldisenomovil.core.component.moderator.SortDistanceRow
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.R
 
 @Composable
 fun ModeratorPanelScreen(
@@ -52,7 +54,7 @@ fun ModeratorPanelScreen(
         // Top Bar
         ModeratorTopBar(
             navController = navController,
-            title = "Moderación de eventos",
+            title = stringResource(R.string.moderator_title),
             searchQuery = uiState.searchQuery,
             onSearchChange = viewModel::onSearchQueryChange,
             onLogoutClick = viewModel::onLogoutClick,
@@ -148,7 +150,7 @@ private fun EmptyState(modifier: Modifier = Modifier) {
         )
         Spacer(Modifier.height(16.dp))
         Text(
-            text = "No hay eventos pendientes",
+            text = stringResource(R.string.moderator_no_events),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
@@ -156,7 +158,7 @@ private fun EmptyState(modifier: Modifier = Modifier) {
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "Los eventos pendientes de revisión aparecerán aquí",
+            text = stringResource(R.string.moderator_pending),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
             textAlign = TextAlign.Center,

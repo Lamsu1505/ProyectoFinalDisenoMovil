@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +52,7 @@ fun AppTopBar(
             }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Volver",
+                    contentDescription = stringResource(R.string.app_topbar_back),
                     tint = Color.White,
                     modifier = Modifier.size(28.dp)
                         .clickable(
@@ -71,14 +73,13 @@ fun AppTopBar(
                         containerColor = Color.Red,
                         contentColor = Color.White
                     ) {
-                        //TODO cambiar a cantidad real
-                        Text("3", fontSize = 11.sp)
+                        Text(stringResource(R.string.app_topbar_notification_badge), fontSize = 11.sp)
                     }
                 }
             ) {
                 Icon(
                     imageVector = Icons.Default.Notifications,
-                    contentDescription = "Notificaciones",
+                    contentDescription = stringResource(R.string.app_topbar_notifications),
                     tint = Color.White,
                     modifier = Modifier.size(35.dp)
                         .clickable(

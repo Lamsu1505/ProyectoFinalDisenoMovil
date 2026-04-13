@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +34,7 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottom
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryEventsSelectorBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SearchTopBarApp
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.features.userFlow.home.DistanceComboBox
 import com.example.proyectofinaldisenomovil.features.userFlow.home.OrderByComboBox
 import java.text.NumberFormat
@@ -120,7 +122,7 @@ fun FavoritesFilters() {
 
             ) {
                 Text(
-                    "Ordenar por:",
+                    text = stringResource(R.string.filter_sort_by),
                     fontSize = 15.sp,
                     color = MaterialTheme.colorScheme.onSurface,
 
@@ -137,7 +139,7 @@ fun FavoritesFilters() {
                 horizontalArrangement = Arrangement.spacedBy(7.dp)
             ) {
                 Text(
-                    "Distancia:",
+                    text = stringResource(R.string.filter_distance),
                     fontSize = 15.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -223,7 +225,7 @@ fun FavoriteEventCard(
                         IconButton(onClick = onToggleFavorite) {
                             Icon(
                                 imageVector = Icons.Default.Favorite,
-                                contentDescription = "Favorite",
+                                contentDescription = stringResource(R.string.liked_events_title),
                                 tint = MaterialTheme.colorScheme.secondary,
                                 modifier = Modifier.size(32.dp)
                             )

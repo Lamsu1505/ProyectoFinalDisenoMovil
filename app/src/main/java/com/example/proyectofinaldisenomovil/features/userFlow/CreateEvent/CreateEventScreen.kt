@@ -1,6 +1,5 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent
 
-import android.R
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -43,7 +42,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
+import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.DatePickerModal
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
@@ -65,7 +66,7 @@ fun CreateEventScreen(
     Scaffold(
         topBar = {
             AppTopBar(
-                title = "Crear Nuevo Evento",
+                title = stringResource(R.string.create_event_new_title),
                 onNotificationsClick = onNotificationClick,
                 onBackClick = onBackClick
             )
@@ -83,7 +84,7 @@ fun CreateEventScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
-                CategoryBadge(icon = Icons.Default.Place, label = "Información")
+                CategoryBadge(icon = Icons.Default.Place, label = stringResource(R.string.create_event_info))
                 infoSection(
                     uiState,
                     viewModel
@@ -93,7 +94,7 @@ fun CreateEventScreen(
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                CategoryBadge(icon = Icons.Default.AddAPhoto, label = "Imagenes")
+                CategoryBadge(icon = Icons.Default.AddAPhoto, label = stringResource(R.string.create_event_images_label))
                 imageSection(
                     uiState,
                     viewModel
@@ -103,7 +104,7 @@ fun CreateEventScreen(
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                CategoryBadge(icon = Icons.Default.LocationOn, label = "Ubicación")
+                CategoryBadge(icon = Icons.Default.LocationOn, label = stringResource(R.string.create_event_location_label))
                 locationSection(
                     uiState,
                     viewModel)
@@ -112,7 +113,7 @@ fun CreateEventScreen(
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                CategoryBadge(icon = Icons.Default.DateRange, label = "Fecha y Hora")
+                CategoryBadge(icon = Icons.Default.DateRange, label = stringResource(R.string.create_event_date_time))
                 dateSection(uiState, viewModel)
                 Spacer(modifier = Modifier.height(5.dp))
             }
@@ -143,13 +144,13 @@ fun infoSection(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Titulo del evento", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = colorLabels)
+            Text(stringResource(R.string.create_event_title_label), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = colorLabels)
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = uiState.title,
                 maxLines = 2,
                 onValueChange = { viewModel.onTitleChange(it) },
-                placeholder = { Text("Agrega un titulo llamativo", color = MaterialTheme.colorScheme.outline) },
+                placeholder = { Text(stringResource(R.string.create_event_title_placeholder), color = MaterialTheme.colorScheme.outline) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -160,7 +161,7 @@ fun infoSection(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("Descripción", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = colorLabels)
+            Text(stringResource(R.string.create_event_description_label), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = colorLabels)
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 maxLines = 10,
@@ -169,9 +170,9 @@ fun infoSection(
                 placeholder = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                         Spacer(Modifier.height(10.dp))
-                        Text("Describe de que se trata el evento", color = MaterialTheme.colorScheme.outline)
+                        Text(stringResource(R.string.create_event_description_placeholder), color = MaterialTheme.colorScheme.outline)
                         Text(
-                            "Las descripciones detalladas reciben un 35% mas audiencia.",
+                            stringResource(R.string.create_event_description_tip),
                             fontSize = 10.sp,
                             color = MaterialTheme.colorScheme.outline,
                             modifier = Modifier.padding(top = 4.dp)
@@ -190,14 +191,14 @@ fun infoSection(
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1.5f)) {
-                    Text("Categoria", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = colorLabels)
+                    Text(stringResource(R.string.create_event_category_label), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = colorLabels)
                     Spacer(modifier = Modifier.height(4.dp))
                     Box {
                         OutlinedTextField(
                             value = uiState.category.label,
                             onValueChange = { },
                             readOnly = true,
-                            placeholder = { Text("Categoria", color = Color.Gray) },
+                            placeholder = { Text(stringResource(R.string.create_event_category_placeholder), color = Color.Gray) },
                             trailingIcon = {
                                 IconButton(onClick = { expanded = !expanded }) {
                                     Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
@@ -234,7 +235,7 @@ fun infoSection(
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Capacidad", fontWeight = FontWeight.Bold, color = colorLabels, fontSize = 14.sp)
+                    Text(stringResource(R.string.create_event_capacity_label), fontWeight = FontWeight.Bold, color = colorLabels, fontSize = 14.sp)
                     Spacer(modifier = Modifier.height(4.dp))
 
                     var textFieldValue by remember {
@@ -273,7 +274,7 @@ fun infoSection(
                                 viewModel.onCapacityChange(formatted)
                             }
                         },
-                        placeholder = { Text("Ejm: 100", color = Color.Gray) },
+                        placeholder = { Text(stringResource(R.string.create_event_capacity_placeholder), color = Color.Gray) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(11.dp),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -304,12 +305,12 @@ fun imageSection(
     )
 
     val labelInfo = if (uiState.images.isEmpty()) {
-        "Añade imagenes relevantes para el evento"
+        stringResource(R.string.create_event_add_images_hint)
     } else {
         if (uiState.images.size == 1)
-            "${uiState.images.size} Imagen añadida"
+            stringResource(R.string.create_event_images_added_one, uiState.images.size)
         else
-            "${uiState.images.size} Imagenes añadidas"
+            stringResource(R.string.create_event_images_added_other, uiState.images.size)
     }
 
     Text(
@@ -342,11 +343,13 @@ fun imageSection(
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(Color.LightGray)
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_menu_gallery),
+                            Icon(
+                                imageVector = Icons.Default.AddAPhoto,
                                 contentDescription = null,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp),
+                                tint = Color.Gray
                             )
                         }
                     }
@@ -379,7 +382,7 @@ fun imageSection(
                                         viewModel.removeImage(uri)
                                         selectedImageForDelete = null
                                     }) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.White)
+                                        Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete), tint = Color.White)
                                     }
                                 }
                             }
@@ -431,12 +434,12 @@ fun locationSection(
         Column(
             modifier = Modifier.padding(12.dp)
         ) {
-            Text("Dirección directa", fontWeight = FontWeight.Bold, fontSize = 16.sp , color = MaterialTheme.colorScheme.outline)
+            Text(stringResource(R.string.create_event_direct_address), fontWeight = FontWeight.Bold, fontSize = 16.sp , color = MaterialTheme.colorScheme.outline)
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = uiState.address,
                 onValueChange = { viewModel.onAddressChange(it) },
-                placeholder = { Text("Agrega la dirección del evento", color = MaterialTheme.colorScheme.outline) },
+                placeholder = { Text(stringResource(R.string.create_event_address_placeholder), color = MaterialTheme.colorScheme.outline) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -455,13 +458,17 @@ fun locationSection(
                     .background(Color(0xFFE0E0E0)),
                 contentAlignment = Alignment.BottomCenter
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_menu_mapmode),
-                    contentDescription = null,
+                Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop,
-                    alpha = 0.5f
-                )
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                        tint = Color.Gray
+                    )
+                }
 
                 Button(
                     onClick = { /* Map selection */ },
@@ -472,7 +479,7 @@ fun locationSection(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.TouchApp, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Seleccionar en el mapa", fontSize = 12.sp)
+                        Text(stringResource(R.string.create_event_select_map), fontSize = 12.sp)
                     }
                 }
             }
@@ -519,7 +526,7 @@ fun dateSection(
         Column(modifier = Modifier.padding(5.dp).padding(vertical = 15.dp)) {
             // Inicio del evento
             Text(
-                text = "Inicio del evento",
+                text = stringResource(R.string.create_event_start),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 textDecoration = TextDecoration.Underline,
@@ -530,7 +537,7 @@ fun dateSection(
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1.6f)) {
                     Text(
-                        "Fecha",
+                        stringResource(R.string.create_event_date_label),
                         color = MaterialTheme.colorScheme.outline,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
@@ -561,7 +568,7 @@ fun dateSection(
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "Hora",
+                        stringResource(R.string.create_event_time_label),
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.outline
@@ -586,7 +593,7 @@ fun dateSection(
 
             // Fin del evento
             Text(
-                text = "Fin del evento (Opcional)",
+                text = stringResource(R.string.create_event_end_optional),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.outline,
@@ -597,7 +604,7 @@ fun dateSection(
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1.5f)) {
                     Text(
-                        "Fecha",
+                        stringResource(R.string.create_event_date_label),
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.outline
@@ -628,7 +635,7 @@ fun dateSection(
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "Hora",
+                        stringResource(R.string.create_event_time_label),
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.outline
@@ -667,7 +674,7 @@ fun ButtonsSection(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Default.Folder, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Crear evento", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.create_event_button), fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
     }
 }

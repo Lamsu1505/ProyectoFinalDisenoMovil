@@ -43,7 +43,7 @@ class LoginViewModel : ViewModel() {
     private fun validateEmail(email: String) {
         emailError = when {
             email.isEmpty() -> ""
-            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Email mal escrito"
+            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "validation_email_invalid"
             else -> ""
         }
     }
@@ -51,7 +51,7 @@ class LoginViewModel : ViewModel() {
     private fun validatePassword(password: String) {
         passwordError = when {
             password.isEmpty() -> ""
-            password.length < 8 -> "La contraseña debe tener al menos 8 caracteres"
+            password.length < 8 -> "validation_password_short"
             else -> ""
         }
     }

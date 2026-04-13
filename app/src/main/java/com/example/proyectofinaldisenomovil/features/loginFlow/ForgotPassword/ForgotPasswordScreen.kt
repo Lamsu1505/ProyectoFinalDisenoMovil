@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -32,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.login.HeaderSectionNonLogued
 import com.example.proyectofinaldisenomovil.core.component.login.TopBarRegister
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
@@ -40,7 +42,7 @@ import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilT
 fun ForgotPasswordScreen (
     forgotPasswordViewModel: ForgotPasswordViewModel = viewModel(),
     onBackClick: () -> Unit = {},
-    onNavigateToRecoverPassword: () -> Unit = {},
+    onNavigateToRecoverPassword: (String) -> Unit = {},
     onNavigateToLogin: () -> Unit = {}
 ){
 
@@ -87,9 +89,6 @@ fun ForgotPasswordScreen (
                 }
             }
         }
-
-
-
     }
 }
 
@@ -97,11 +96,11 @@ fun ForgotPasswordScreen (
 @Composable
 fun ForgotPasswordForm(
     forgotPasswordViewModel: ForgotPasswordViewModel,
-    onNavigateToRecoverPassword: () -> Unit,
+    onNavigateToRecoverPassword: (String) -> Unit,
     onNavigateToLogin: () -> Unit
 ){
     Text(
-        text = "Recupera tu Contraseña",
+        text = stringResource(R.string.forgot_password_title),
         fontSize = 40.sp,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.primary,
@@ -110,7 +109,7 @@ fun ForgotPasswordForm(
     )
 
     Text(
-        text = "Ingresa el correo asosicado a tu cuenta y recibe un codigo para cambiar tu contraseña",
+        text = stringResource(R.string.forgot_password_description),
         fontSize = 14.sp,
         fontWeight = FontWeight.Normal,
         color = MaterialTheme.colorScheme.onSurface,
@@ -125,8 +124,6 @@ fun ForgotPasswordForm(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        // ---------------- EMAIL ----------------
-
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
@@ -139,14 +136,14 @@ fun ForgotPasswordForm(
                 onValueChange = {
                     forgotPasswordViewModel.onEmailChange(it)
                 },
-                label = { Text("Email") },
+                label = { Text(stringResource(R.string.login_email)) },
                 isError = forgotPasswordViewModel.emailError.isNotEmpty()
             )
 
             Box(modifier = Modifier.height(17.dp)) {
                 if (forgotPasswordViewModel.emailError.isNotEmpty()) {
                     Text(
-                        text = "Email mal escrito, revisa el formato",
+                        text = stringResource(R.string.validation_email_invalid),
                         color = MaterialTheme.colorScheme.error,
                         fontSize = 12.sp
                     )
@@ -159,7 +156,7 @@ fun ForgotPasswordForm(
         Button(
             enabled = forgotPasswordViewModel.validateForm(),
             onClick = {
-                onNavigateToRecoverPassword()
+                onNavigateToRecoverPassword(forgotPasswordViewModel.email)
             },
             modifier = Modifier.height(50.dp),
             shape = RoundedCornerShape(20.dp),
@@ -169,7 +166,7 @@ fun ForgotPasswordForm(
             )
         ) {
             Text(
-                text = "Enviar codigo",
+                text = stringResource(R.string.forgot_password_send_code),
                 fontSize = 20.sp
             )
         }
@@ -177,7 +174,7 @@ fun ForgotPasswordForm(
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = "Regresar a Iniciar sesion",
+            text = stringResource(R.string.forgot_password_back_login),
             fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.secondary,
@@ -186,10 +183,7 @@ fun ForgotPasswordForm(
                 onNavigateToLogin()
             }
         )
-
-
     }
-
 }
 
 

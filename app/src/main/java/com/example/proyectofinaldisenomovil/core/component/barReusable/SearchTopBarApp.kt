@@ -17,11 +17,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +60,7 @@ fun SearchTopBarApp(
                     shape = RoundedCornerShape(50),
                     placeholder = {
                         Text(
-                            "Buscar eventos...",
+                            text = stringResource(R.string.search_placeholder),
                             fontSize = 18.sp
                         )
                     },
@@ -96,7 +98,7 @@ fun SearchTopBarApp(
             ) {
                 Icon(
                     imageVector = Icons.Default.Notifications,
-                    contentDescription = "Notificaciones",
+                    contentDescription = stringResource(R.string.notifications_description),
                     tint = Color.White,
                     modifier = Modifier.size(35.dp)
                         .clickable(

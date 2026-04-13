@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,6 +52,7 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryB
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.domain.model.AppNotification
 import com.example.proyectofinaldisenomovil.domain.model.NotificationType
+import com.example.proyectofinaldisenomovil.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,7 +76,7 @@ fun NotificationsScreen(
             ),
             title = {
                 Text(
-                    text = "Notificaciones",
+                    text = stringResource(R.string.notifications_title),
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp,
@@ -86,7 +88,7 @@ fun NotificationsScreen(
                 IconButton(onClick = { onBackClick() }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Volver",
+                        contentDescription = stringResource(R.string.notifications_back),
                         tint = Color.White,
                         modifier = Modifier.size(28.dp)
                     )
@@ -114,7 +116,7 @@ fun NotificationsScreen(
                     horizontalArrangement = Arrangement.End
                 ) {
                     Text(
-                        text = "Marcar todo como leído",
+                        text = stringResource(R.string.notifications_mark_all_read),
                         color = MaterialTheme.colorScheme.secondary,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -244,7 +246,7 @@ private fun NotificationIcon(notification: AppNotification) {
             ) {
                 Icon(
                     imageVector = Icons.Default.Email,
-                    contentDescription = "Comentario",
+                    contentDescription = stringResource(R.string.notification_comment),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
@@ -254,7 +256,7 @@ private fun NotificationIcon(notification: AppNotification) {
         NotificationType.REJECTED -> {
             Icon(
                 imageVector = Icons.Default.Clear,
-                contentDescription = "Evento rechazado",
+                contentDescription = stringResource(R.string.notification_event_rejected),
                 tint = Color(0xFFD32F2F),
                 modifier = Modifier.size(iconSize)
             )
@@ -263,7 +265,7 @@ private fun NotificationIcon(notification: AppNotification) {
         NotificationType.VERIFIED -> {
             Icon(
                 imageVector = Icons.Default.CheckCircle,
-                contentDescription = "Evento verificado",
+                contentDescription = stringResource(R.string.notification_event_verified),
                 tint = Color(0xFF4CAF50),
                 modifier = Modifier.size(iconSize)
             )
@@ -279,7 +281,7 @@ private fun NotificationIcon(notification: AppNotification) {
             ) {
                 Icon(
                     imageVector = Icons.Default.Event,
-                    contentDescription = "Nuevo evento",
+                    contentDescription = stringResource(R.string.notification_new_event),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
@@ -289,7 +291,7 @@ private fun NotificationIcon(notification: AppNotification) {
         NotificationType.FINALIZED -> {
             Icon(
                 imageVector = Icons.Default.CheckCircle,
-                contentDescription = "Evento finalizado",
+                contentDescription = stringResource(R.string.notification_event_finalized),
                 tint = Color(0xFF2196F3),
                 modifier = Modifier.size(iconSize)
             )

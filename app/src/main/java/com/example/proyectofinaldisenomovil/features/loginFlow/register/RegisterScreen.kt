@@ -36,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -43,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.login.HeaderSectionNonLogued
 import com.example.proyectofinaldisenomovil.core.component.login.TopBarRegister
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
@@ -54,20 +56,25 @@ fun RegisterScreen(
     onNavigateToLogin: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    
+    val successMessage = stringResource(R.string.register_success)
+    val emailExistsMessage = stringResource(R.string.register_email_exists)
+    val completeFieldsMessage = stringResource(R.string.register_complete_fields)
     
     LaunchedEffect(registerViewModel.registerResult) {
         when (registerViewModel.registerResult) {
             is RegisterResult.Success -> {
-                snackbarHostState.showSnackbar("Registro exitoso. Ahora puedes iniciar sesión.")
+                snackbarHostState.showSnackbar(successMessage)
                 registerViewModel.clearForm()
                 onNavigateToLogin()
             }
             is RegisterResult.EmailAlreadyExists -> {
-                snackbarHostState.showSnackbar("El email ya está registrado")
+                snackbarHostState.showSnackbar(emailExistsMessage)
                 registerViewModel.resetResult()
             }
             is RegisterResult.Error -> {
-                snackbarHostState.showSnackbar((registerViewModel.registerResult as RegisterResult.Error).message)
+                snackbarHostState.showSnackbar(completeFieldsMessage)
                 registerViewModel.resetResult()
             }
             else -> {}
@@ -108,10 +115,7 @@ fun RegisterScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(50.dp)
                 ) {
-                    RegisterForm(
-                        registerViewModel,
-                        onNavigateToLogin
-                    )
+                    RegisterForm(registerViewModel)
                 }
             }
         }
@@ -119,16 +123,19 @@ fun RegisterScreen(
 }
 
 @Composable
-fun RegisterForm(
-    registerViewModel: RegisterViewModel,
-    onNavigateToLogin: () -> Unit
-) {
-
+fun RegisterForm(registerViewModel: RegisterViewModel) {
     var passwordVisible by remember { mutableStateOf(false) }
     var repeatPasswordVisible by remember { mutableStateOf(false) }
 
+    val passwordErrorMessage = when {
+        registerViewModel.passwordErrorShort -> stringResource(R.string.validation_password_short)
+        registerViewModel.passwordErrorUppercase -> stringResource(R.string.validation_password_uppercase)
+        registerViewModel.passwordErrorDigit -> stringResource(R.string.validation_password_digit)
+        else -> null
+    }
+
     Text(
-        text = "Registrarse",
+        text = stringResource(R.string.register_sign_up),
         fontSize = 40.sp,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.primary
@@ -149,8 +156,8 @@ fun RegisterForm(
                 value = registerViewModel.name,
                 modifier = Modifier.weight(1f),
                 onValueChange = { registerViewModel.onNameChange(it) },
-                label = { Text("Nombre(s)") },
-                isError = registerViewModel.nameError.isNotEmpty()
+                label = { Text(stringResource(R.string.register_first_name)) },
+                isError = registerViewModel.nameError
             )
 
             OutlinedTextField(
@@ -159,8 +166,8 @@ fun RegisterForm(
                 value = registerViewModel.lastName,
                 modifier = Modifier.weight(1f),
                 onValueChange = { registerViewModel.onLastNameChange(it) },
-                label = { Text("Apellido(s)") },
-                isError = registerViewModel.lastNameError.isNotEmpty()
+                label = { Text(stringResource(R.string.register_last_name)) },
+                isError = registerViewModel.lastNameError
             )
         }
 
@@ -171,14 +178,14 @@ fun RegisterForm(
                 value = registerViewModel.email,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = { registerViewModel.onEmailChange(it) },
-                label = { Text("Correo electrónico") },
-                isError = registerViewModel.emailError.isNotEmpty()
+                label = { Text(stringResource(R.string.register_email_field)) },
+                isError = registerViewModel.emailError
             )
 
-            if (registerViewModel.emailError.isNotEmpty()) {
+            if (registerViewModel.emailError) {
                 Box(modifier = Modifier.height(17.dp)) {
                     Text(
-                        text = registerViewModel.emailError,
+                        text = stringResource(R.string.validation_email_invalid),
                         color = MaterialTheme.colorScheme.error,
                         fontSize = 12.sp
                     )
@@ -193,23 +200,23 @@ fun RegisterForm(
                 value = registerViewModel.password,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = { registerViewModel.onPasswordChange(it) },
-                label = { Text("Contraseña") },
-                isError = registerViewModel.passwordError.isNotEmpty(),
+                label = { Text(stringResource(R.string.register_password_field)) },
+                isError = registerViewModel.passwordError,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
                             imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                            contentDescription = null
+                            contentDescription = stringResource(R.string.label_password_visibility)
                         )
                     }
                 }
             )
 
-            if (registerViewModel.passwordError.isNotEmpty()) {
+            if (registerViewModel.passwordError && passwordErrorMessage != null) {
                 Box(modifier = Modifier.height(17.dp)) {
                     Text(
-                        text = registerViewModel.passwordError,
+                        text = passwordErrorMessage,
                         color = MaterialTheme.colorScheme.error,
                         fontSize = 12.sp
                     )
@@ -222,23 +229,23 @@ fun RegisterForm(
                 value = registerViewModel.passwordConfirmation,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = { registerViewModel.onPasswordConfirmationChange(it) },
-                label = { Text("Confirmar contraseña") },
-                isError = registerViewModel.passwordConfirmationError.isNotEmpty(),
+                label = { Text(stringResource(R.string.register_confirm_password_field)) },
+                isError = registerViewModel.passwordConfirmationError,
                 visualTransformation = if (repeatPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { repeatPasswordVisible = !repeatPasswordVisible }) {
                         Icon(
                             imageVector = if (repeatPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                            contentDescription = null
+                            contentDescription = stringResource(R.string.label_password_visibility)
                         )
                     }
                 }
             )
 
-            if (registerViewModel.passwordConfirmationError.isNotEmpty()) {
+            if (registerViewModel.passwordConfirmationError) {
                 Box(modifier = Modifier.height(17.dp)) {
                     Text(
-                        text = registerViewModel.passwordConfirmationError,
+                        text = stringResource(R.string.validation_passwords_not_match),
                         color = MaterialTheme.colorScheme.error,
                         fontSize = 12.sp
                     )
@@ -259,7 +266,7 @@ fun RegisterForm(
             )
         ) {
             Text(
-                text = "Registrarse",
+                text = stringResource(R.string.register_button_sign_up),
                 fontSize = 20.sp
             )
         }

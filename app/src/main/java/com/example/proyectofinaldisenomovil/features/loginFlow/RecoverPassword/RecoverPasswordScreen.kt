@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppSnackbarHost
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SnackbarController
 import com.example.proyectofinaldisenomovil.core.component.login.HeaderSectionNonLogued
@@ -31,6 +33,7 @@ import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilT
 
 @Composable
 fun RecoverPasswordScreen(
+    email: String = "",
     onBackClick: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
     onSubmit: () -> Unit = {}
@@ -47,6 +50,9 @@ fun RecoverPasswordScreen(
     val snackbarController = remember {
         SnackbarController(scope, snackbarHostState)
     }
+
+    val passwordMatchMessage = stringResource(R.string.validation_passwords_not_match)
+    val passwordChangedMessage = stringResource(R.string.recover_password_success)
 
     Scaffold(
         topBar = {
@@ -86,7 +92,7 @@ fun RecoverPasswordScreen(
                     verticalArrangement = Arrangement.spacedBy(30.dp)
                 ) {
                     Text(
-                        text = "Nueva Contraseña",
+                        text = stringResource(R.string.recover_password_new_title),
                         fontSize = 40.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
@@ -103,8 +109,7 @@ fun RecoverPasswordScreen(
                             onValueChange = { code = it },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(15.dp),
-                            label = { Text("Código de verificación")
-                            },
+                            label = { Text(stringResource(R.string.recover_password_code)) },
                             maxLines = 1
                         )
 
@@ -113,13 +118,13 @@ fun RecoverPasswordScreen(
                             onValueChange = { password = it },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(15.dp),
-                            label = { Text("Contraseña") },
+                            label = { Text(stringResource(R.string.register_password_field)) },
                             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             trailingIcon = {
                                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                     Icon(
                                         imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                        contentDescription = null
+                                        contentDescription = stringResource(R.string.label_password_visibility)
                                     )
                                 }
                             }
@@ -130,13 +135,13 @@ fun RecoverPasswordScreen(
                             onValueChange = { repeatPassword = it },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(15.dp),
-                            label = { Text("Repetir contraseña") },
+                            label = { Text(stringResource(R.string.register_confirm_password_field)) },
                             visualTransformation = if (repeatPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             trailingIcon = {
                                 IconButton(onClick = { repeatPasswordVisible = !repeatPasswordVisible }) {
                                     Icon(
                                         imageVector = if (repeatPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                        contentDescription = null
+                                        contentDescription = stringResource(R.string.label_password_visibility)
                                     )
                                 }
                             }
@@ -146,15 +151,12 @@ fun RecoverPasswordScreen(
 
                         Button(
                             onClick = {
-                                //TODO validar codigo y contraseña y usar el onSubmit()
-
                                 if (password == repeatPassword && password.isNotEmpty()) {
-                                    snackbarController.showMessage("La contraseña ha sido recuperada correctamente")
+                                    snackbarController.showMessage(passwordChangedMessage)
                                     onSubmit()
                                 } else {
-                                    snackbarController.showMessage("Las contraseñas no coinciden")
+                                    snackbarController.showMessage(passwordMatchMessage)
                                 }
-
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -164,11 +166,11 @@ fun RecoverPasswordScreen(
                                 containerColor = MaterialTheme.colorScheme.secondary
                             )
                         ) {
-                            Text(text = "Continuar", fontSize = 20.sp)
+                            Text(text = stringResource(R.string.recover_password_continue), fontSize = 20.sp)
                         }
 
                         Text(
-                            text = "Regresar a Iniciar sesión",
+                            text = stringResource(R.string.forgot_password_back_login),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.secondary,

@@ -24,23 +24,26 @@ class RegisterViewModel : ViewModel() {
     var password by mutableStateOf("")
     var passwordConfirmation by mutableStateOf("")
     
-    var nameError by mutableStateOf("")
-    var lastNameError by mutableStateOf("")
-    var emailError by mutableStateOf("")
-    var passwordError by mutableStateOf("")
-    var passwordConfirmationError by mutableStateOf("")
+    var nameError by mutableStateOf(false)
+    var lastNameError by mutableStateOf(false)
+    var emailError by mutableStateOf(false)
+    var passwordError by mutableStateOf(false)
+    var passwordErrorShort by mutableStateOf(false)
+    var passwordErrorUppercase by mutableStateOf(false)
+    var passwordErrorDigit by mutableStateOf(false)
+    var passwordConfirmationError by mutableStateOf(false)
 
     private val _registerResult = mutableStateOf<RegisterResult>(RegisterResult.Idle)
     val registerResult: RegisterResult get() = _registerResult.value
 
     fun onNameChange(newName: String) {
         name = newName
-        nameError = if (name.isNotEmpty() && name.length < 2) "Nombre muy corto" else ""
+        nameError = if (name.isNotEmpty() && name.length < 2) true else false
     }
 
     fun onLastNameChange(newLastName: String) {
         lastName = newLastName
-        lastNameError = if (lastName.isNotEmpty() && lastName.length < 2) "Apellido muy corto" else ""
+        lastNameError = if (lastName.isNotEmpty() && lastName.length < 2) true else false
     }
 
     fun onEmailChange(newEmail: String) {
@@ -62,43 +65,29 @@ class RegisterViewModel : ViewModel() {
     }
 
     private fun validateEmail(email: String) {
-        emailError = when {
-            email.isEmpty() -> ""
-            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Email mal escrito"
-            else -> ""
-        }
+        emailError = if (email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) true else false
     }
 
     private fun validatePassword(password: String) {
-        passwordError = when {
-            password.isEmpty() -> ""
-            password.length < 8 -> "La contraseña debe tener al menos 8 caracteres"
-            !password.any { it.isUpperCase() } -> "La contraseña debe tener al menos una mayúscula"
-            !password.any { it.isDigit() } -> "La contraseña debe tener al menos un número"
-            else -> ""
-        }
+        passwordErrorShort = if (password.isNotEmpty() && password.length < 8) true else false
+        passwordErrorUppercase = if (password.isNotEmpty() && !password.any { it.isUpperCase() }) true else false
+        passwordErrorDigit = if (password.isNotEmpty() && !password.any { it.isDigit() }) true else false
+        passwordError = passwordErrorShort || passwordErrorUppercase || passwordErrorDigit
     }
 
     private fun validatePasswordConfirmation(confirmation: String) {
-        passwordConfirmationError = when {
-            confirmation.isEmpty() -> ""
-            confirmation != password -> "Las contraseñas no coinciden"
-            else -> ""
-        }
+        passwordConfirmationError = if (confirmation.isNotEmpty() && confirmation != password) true else false
     }
 
     fun validateForm(): Boolean {
-        return nameError.isEmpty() && lastNameError.isEmpty() &&
-               emailError.isEmpty() && passwordError.isEmpty() &&
-               passwordConfirmationError.isEmpty() &&
-               name.isNotEmpty() && lastName.isNotEmpty() &&
-               email.isNotEmpty() && password.isNotEmpty() &&
-               passwordConfirmation.isNotEmpty()
+        return !nameError && !lastNameError && !emailError && !passwordError && !passwordConfirmationError &&
+               name.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() && 
+               password.isNotEmpty() && passwordConfirmation.isNotEmpty()
     }
 
     fun register() {
         if (!validateForm()) {
-            _registerResult.value = RegisterResult.Error("Por favor complete todos los campos correctamente")
+            _registerResult.value = RegisterResult.Error("register_complete_fields")
             return
         }
 
@@ -127,11 +116,14 @@ class RegisterViewModel : ViewModel() {
         email = ""
         password = ""
         passwordConfirmation = ""
-        nameError = ""
-        lastNameError = ""
-        emailError = ""
-        passwordError = ""
-        passwordConfirmationError = ""
+        nameError = false
+        lastNameError = false
+        emailError = false
+        passwordErrorShort = false
+        passwordErrorUppercase = false
+        passwordErrorDigit = false
+        passwordError = false
+        passwordConfirmationError = false
         _registerResult.value = RegisterResult.Idle
     }
 }

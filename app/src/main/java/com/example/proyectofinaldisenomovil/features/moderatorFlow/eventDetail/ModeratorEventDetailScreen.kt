@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,6 +56,7 @@ import com.example.proyectofinaldisenomovil.core.component.moderator.Confirmatio
 import com.example.proyectofinaldisenomovil.core.component.moderator.LogoutDialog
 import com.example.proyectofinaldisenomovil.core.component.moderator.state.Moderatoreventdetailuistate
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.R
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -124,7 +126,7 @@ fun ModeratorEventDetailScreenContent(
                 IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Volver",
+                        contentDescription = stringResource(R.string.moderator_back),
                         tint = Color.White,
                     )
                 }
@@ -134,7 +136,7 @@ fun ModeratorEventDetailScreenContent(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "Detalle del Evento",
+                        text = stringResource(R.string.moderator_detail_title),
                         color = Color.White,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -144,7 +146,7 @@ fun ModeratorEventDetailScreenContent(
                 IconButton(onClick = onLogoutClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                        contentDescription = "Cerrar sesión",
+                        contentDescription = stringResource(R.string.moderator_logout),
                         tint = Color.White,
                     )
                 }
@@ -178,7 +180,7 @@ fun ModeratorEventDetailScreenContent(
 
                 else -> {
                     Text(
-                        text = "Evento no encontrado",
+                        text = stringResource(R.string.moderator_event_not_found),
                         modifier = Modifier.align(Alignment.Center),
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     )
@@ -190,8 +192,8 @@ fun ModeratorEventDetailScreenContent(
     // Dialogs
     if (uiState.showRejectDialog) {
         ConfirmationDialog(
-            title = "MENSAJE DE CONFIRMACIÓN",
-            bodyText = "¿Desea rechazar el evento?",
+            title = stringResource(R.string.moderator_confirm_title),
+            bodyText = stringResource(R.string.moderator_confirm_reject),
             showReasonField = true,
             reasonValue = uiState.rejectionReason,
             onReasonChange = onRejectionReasonChange,
@@ -319,7 +321,7 @@ private fun EventDetailContent(
                     )
                     Spacer(Modifier.width(10.dp))
                     Text(
-                        text = event.startDate?.let { dateFormatter.format(it.toDate()) } ?: "Fecha no definida",
+                        text = event.startDate?.let { dateFormatter.format(it.toDate()) } ?: stringResource(R.string.moderator_date_not_defined),
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -355,7 +357,7 @@ private fun EventDetailContent(
                     )
                     Spacer(Modifier.width(10.dp))
                     Text(
-                        text = event.address.ifBlank { "Ubicación no definida" },
+                        text = event.address.ifBlank { stringResource(R.string.moderator_location_not_defined) },
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 2,
@@ -369,14 +371,14 @@ private fun EventDetailContent(
 
                 // Description
                 Text(
-                    text = "Descripción",
+                    text = stringResource(R.string.moderator_description_label),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = event.description.ifBlank { "Sin descripción" },
+                    text = event.description.ifBlank { stringResource(R.string.moderator_no_description) },
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                     lineHeight = 22.sp,
@@ -404,7 +406,7 @@ private fun EventDetailContent(
                 ),
             ) {
                 Text(
-                    text = "Rechazar",
+                    text = stringResource(R.string.moderator_reject),
                     fontWeight = FontWeight.SemiBold,
                 )
             }
@@ -420,7 +422,7 @@ private fun EventDetailContent(
                 ),
             ) {
                 Text(
-                    text = "Aceptar",
+                    text = stringResource(R.string.moderator_accept),
                     fontWeight = FontWeight.SemiBold,
                 )
             }

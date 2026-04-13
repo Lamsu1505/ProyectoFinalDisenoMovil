@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -45,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.login.LoginHeaderSection
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
@@ -130,7 +132,7 @@ fun LoginForm(
     var passwordVisible by remember { mutableStateOf(false) }
 
     Text(
-        text = "Inicia Sesion",
+        text = stringResource(R.string.login_title),
         fontSize = 40.sp,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.primary
@@ -156,14 +158,14 @@ fun LoginForm(
                 onValueChange = {
                     loginViewModel.onEmailChange(it)
                 },
-                label = { Text("Email") },
+                label = { Text(stringResource(R.string.login_email)) },
                 isError = loginViewModel.emailError.isNotEmpty()
             )
 
             Box(modifier = Modifier.height(17.dp)) {
                 if (loginViewModel.emailError.isNotEmpty()) {
                     Text(
-                        text = "Email mal escrito, revisa el formato",
+                        text = stringResource(R.string.validation_email_invalid),
                         color = MaterialTheme.colorScheme.error,
                         fontSize = 12.sp
                     )
@@ -185,14 +187,14 @@ fun LoginForm(
                 onValueChange = {
                     loginViewModel.onPasswordChange(it)
                 },
-                label = { Text("Contraseña") },
+                label = { Text(stringResource(R.string.login_password)) },
                 isError = loginViewModel.passwordError.isNotEmpty(),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
                             imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                            contentDescription = null
+                            contentDescription = stringResource(R.string.label_password_visibility)
                         )
                     }
                 }
@@ -201,7 +203,7 @@ fun LoginForm(
             Box(modifier = Modifier.height(17.dp)) {
                 if (loginViewModel.passwordError.isNotEmpty()) {
                     Text(
-                        text = loginViewModel.passwordError,
+                        text = stringResource(R.string.validation_password_short),
                         color = MaterialTheme.colorScheme.error,
                         fontSize = 12.sp
                     )
@@ -209,7 +211,7 @@ fun LoginForm(
             }
 
             Text(
-                text = "¿Olvidaste tu contraseña?",
+                text = stringResource(R.string.login_forgot_password),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.secondary,
@@ -227,13 +229,6 @@ fun LoginForm(
             enabled = loginViewModel.validateForm(),
             onClick = {
                 loginViewModel.login()
-//                loginViewModel.login { success ->
-//                    if (success) {
-//                        navController.navigate(AppScreens.HomeScreen.route)
-//                    } else {
-//                        Toast.makeText(myContext, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
-//                    }
-//                }
             },
             modifier = Modifier.height(50.dp),
             shape = RoundedCornerShape(20.dp),
@@ -243,7 +238,7 @@ fun LoginForm(
             )
         ) {
             Text(
-                text = "Iniciar Sesión",
+                text = stringResource(R.string.login_button),
                 fontSize = 20.sp
             )
         }
@@ -252,12 +247,12 @@ fun LoginForm(
 
         Row {
             Text(
-                text = "No tienes cuenta? ",
+                text = stringResource(R.string.label_no_account),
                 fontSize = 15.sp,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "Creala Aqui",
+                text = stringResource(R.string.label_create_here),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.secondary,
