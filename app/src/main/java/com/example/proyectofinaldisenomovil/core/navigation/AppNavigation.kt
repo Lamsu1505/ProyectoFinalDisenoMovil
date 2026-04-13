@@ -1,11 +1,15 @@
 package com.example.proyectofinaldisenomovil.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.proyectofinaldisenomovil.data.local.SessionManager
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.EditProfile.EditProfileScreen
 import com.example.proyectofinaldisenomovil.features.loginFlow.ForgotPassword.ForgotPasswordScreen
@@ -16,10 +20,12 @@ import com.example.proyectofinaldisenomovil.features.userFlow.Profile.ProfileScr
 import com.example.proyectofinaldisenomovil.features.loginFlow.RecoverPassword.RecoverPasswordScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.home.HomeScreen
 import com.example.proyectofinaldisenomovil.features.loginFlow.login.LoginScreen
+import com.example.proyectofinaldisenomovil.features.loginFlow.login.LoginViewModel
 import com.example.proyectofinaldisenomovil.features.loginFlow.register.RegisterScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.UserNavigation
 import com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent.ViewEventScreen
 import com.example.proyectofinaldisenomovil.features.moderatorFlow.ModeratorNavigation
+import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
 
 sealed class LoginRoute(val route: String) {
     data object Login : LoginRoute("login")
@@ -38,10 +44,25 @@ sealed class AppRoute(val route: String) {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val authState by authViewModel.authState.collectAsState()
+
+    val startDestination = when (val state = authState) {
+        is AuthState.Loading -> LoginRoute.Login.route
+        is AuthState.NotAuthenticated -> LoginRoute.Login.route
+        is AuthState.Authenticated -> when (state.role) {
+            UserRole.MODERATOR -> AppRoute.ModeratorFlow.route
+            else -> AppRoute.UserFlow.route
+        }
+    }
+
+    val onLogout: () -> Unit = {
+        authViewModel.logout()
+    }
 
     NavHost(
         navController = navController,
-        startDestination = LoginRoute.Login.route
+        startDestination = startDestination
     ) {
 
         composable(LoginRoute.Login.route) {
@@ -95,21 +116,13 @@ fun AppNavigation() {
 
         composable(AppRoute.UserFlow.route) {
             UserNavigation(
-                onLogout = {
-                    navController.navigate(LoginRoute.Login.route) {
-                        popUpTo(AppRoute.UserFlow.route) { inclusive = true }
-                    }
-                }
+                onLogout = onLogout
             )
         }
 
         composable(AppRoute.ModeratorFlow.route) {
             ModeratorNavigation(
-                onLogout = {
-                    navController.navigate(LoginRoute.Login.route) {
-                        popUpTo(AppRoute.ModeratorFlow.route) { inclusive = true }
-                    }
-                }
+                onLogout = onLogout
             )
         }
     }

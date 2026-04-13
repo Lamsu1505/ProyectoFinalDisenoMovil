@@ -5,11 +5,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.proyectofinaldisenomovil.data.local.SessionManager
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 sealed class LoginResult {
     data object Idle : LoginResult()
@@ -18,7 +21,9 @@ sealed class LoginResult {
     data class Success(val role: UserRole) : LoginResult()
 }
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(
+    private val sessionManager: SessionManager
+) : ViewModel() {
 
     var email by mutableStateOf("")
     var password by mutableStateOf("")
@@ -68,11 +73,19 @@ class LoginViewModel : ViewModel() {
         
         val user = MockDataRepository.validateCredentials(email, password)
         
-        _loginResult.value = if (user != null) {
+        if (user != null) {
+            viewModelScope.launch {
+                sessionManager.saveSession(
+                    userId = user.uid,
+                    email = user.email,
+                    name = user.fullName,
+                    role = user.role.name
+                )
+            }
             MockDataRepository.setLoggedInUser(user)
-            LoginResult.Success(user.role)
+            _loginResult.value = LoginResult.Success(user.role)
         } else {
-            LoginResult.Error
+            _loginResult.value = LoginResult.Error
         }
     }
 
