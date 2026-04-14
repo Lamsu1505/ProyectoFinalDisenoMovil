@@ -318,6 +318,12 @@ object MockDataRepository {
     }
     
     fun getAllEvents(): List<Event> = _events.toList()
+
+    fun printEvents()
+    {
+        _events.forEach { println(it.title) }
+    }
+
     
     fun getEventById(eventId: String): Event? = _events.firstOrNull { it.id == eventId }
     

@@ -47,6 +47,7 @@ import com.example.proyectofinaldisenomovil.core.component.moderator.SortDistanc
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.R
+import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository.printEvents
 
 @Composable
 fun ModeratorPanelScreen(
@@ -57,6 +58,8 @@ fun ModeratorPanelScreen(
     viewModel: ModeratorPanelViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    printEvents()
 
     Column(modifier = modifier.fillMaxSize()) {
         ModeratorTopBar(
