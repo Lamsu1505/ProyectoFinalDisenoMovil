@@ -35,46 +35,27 @@ import java.util.Locale
 class MainActivity : ComponentActivity() {
 
     override fun attachBaseContext(newBase: Context) {
-        val languageCode = runBlocking {
-            try {
-                val prefs = newBase.getSharedPreferences("session_prefs", Context.MODE_PRIVATE)
-                prefs.getString("app_language", "es") ?: "es"
-            } catch (e: Exception) {
-                "es"
-            }
+    val languageCode = runBlocking {
+        try {
+            val prefs = newBase.getSharedPreferences("session_prefs", Context.MODE_PRIVATE)
+            prefs.getString("app_language", "es") ?: "es"
+        } catch (e: Exception) {
+            "es"
         }
-        
-        val locale = Locale(languageCode)
-        val config = Configuration(newBase.resources.configuration)
-        
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            config.setLocales(LocaleList(locale))
-        } else {
-            @Suppress("DEPRECATION")
-            config.locale = locale
-            @Suppress("DEPRECATION")
-            newBase.resources.updateConfiguration(config, newBase.resources.displayMetrics)
-        }
-        
-        super.attachBaseContext(newBase)
     }
+
+    val locale = Locale(languageCode)
+    Locale.setDefault(locale)
+
+    val config = Configuration(newBase.resources.configuration)
+    config.setLocale(locale) // funciona en todas las versiones relevantes
+
+    // ✅ Crear el nuevo contexto con la configuración y pasarlo a super
+    super.attachBaseContext(newBase.createConfigurationContext(config))
+}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val currentLanguage = runBlocking {
-            try {
-                val prefs = getSharedPreferences("session_prefs", Context.MODE_PRIVATE)
-                prefs.getString("app_language", "es") ?: "es"
-            } catch (e: Exception) {
-                "es"
-            }
-        }
-        
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val localeManager = getSystemService(LOCALE_SERVICE) as? android.app.LocaleManager
-            localeManager?.applicationLocales = LocaleList.forLanguageTags(currentLanguage)
-        }
 
         val configMap = mapOf(
             "cloud_name" to "dcr9hdiat",
@@ -83,11 +64,11 @@ class MainActivity : ComponentActivity() {
         )
         MediaManager.init(this, configMap)
         subirImagen()
-
         enableEdgeToEdge()
+
         setContent {
             ProyectoFinalDisenoMovilTheme {
-                Surface{AppNavigation()}
+                Surface { AppNavigation() }
             }
         }
     }
