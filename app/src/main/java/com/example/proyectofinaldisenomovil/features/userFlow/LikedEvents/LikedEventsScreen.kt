@@ -1,7 +1,6 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents
 
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,8 +8,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -20,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,8 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryEventsSelectorBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SearchTopBarApp
@@ -69,7 +64,6 @@ fun LikedEventsScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Category Selector
             item {
                 CategoryEventsSelectorBar(
                     onCategorySelected = {}
@@ -77,22 +71,19 @@ fun LikedEventsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Filter Dropdowns
             item {
                 FavoritesFilters()
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Event List
             items(uiState.favoriteEvents) { event ->
                 FavoriteEventCard(
                     event = event,
-                    onToggleFavorite = { viewModel.onToggleFavorite(event.id) }
+                    onToggleLike = { viewModel.onToggleFavorite(event.id) }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Bottom Spacing
             item {
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -153,7 +144,7 @@ fun FavoritesFilters() {
 @Composable
 fun FavoriteEventCard(
     event: FavoriteEvent,
-    onToggleFavorite: () -> Unit
+    onToggleLike: () -> Unit
 ) {
     val numberFormat = NumberFormat.getNumberInstance(Locale("es", "CO"))
 
@@ -167,8 +158,8 @@ fun FavoriteEventCard(
     ) {
         Column {
             Box {
-                Image(
-                    painter = painterResource(id = event.imageRes),
+                AsyncImage(
+                    model = event.imageUrl,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -176,7 +167,6 @@ fun FavoriteEventCard(
                         .height(140.dp)
                 )
 
-                // Categoria tag
                 Surface(
                     color = MaterialTheme.colorScheme.secondary,
                     shape = RoundedCornerShape(bottomEnd = 16.dp),
@@ -203,14 +193,12 @@ fun FavoriteEventCard(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    // Columna izquierda Info
                     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         IconInfoRow(Icons.Default.DateRange, event.date)
                         IconInfoRow(Icons.Default.DateRange, event.time)
                         IconInfoRow(Icons.Default.LocationOn, "${event.location} (${event.distance})")
                     }
 
-                    // Columna derecha Asistentes y Corazón
                     Column(
                         modifier = Modifier.fillMaxHeight(),
                         horizontalAlignment = Alignment.End,
@@ -222,7 +210,7 @@ fun FavoriteEventCard(
                             Text(numberFormat.format(event.attendees), fontSize = 14.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
                         }
 
-                        IconButton(onClick = onToggleFavorite) {
+                        IconButton(onClick = onToggleLike) {
                             Icon(
                                 imageVector = Icons.Default.Favorite,
                                 contentDescription = stringResource(R.string.liked_events_title),

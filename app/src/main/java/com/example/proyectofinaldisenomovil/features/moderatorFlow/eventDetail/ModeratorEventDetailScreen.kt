@@ -56,6 +56,7 @@ import com.example.proyectofinaldisenomovil.core.component.moderator.Confirmatio
 import com.example.proyectofinaldisenomovil.core.component.moderator.LogoutDialog
 import com.example.proyectofinaldisenomovil.core.component.moderator.state.Moderatoreventdetailuistate
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.R
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -229,10 +230,22 @@ private fun EventDetailContent(
     val dateFormatter = SimpleDateFormat("EEEE d 'de' MMMM", Locale("es"))
     val timeFormatter = SimpleDateFormat("h:mm a", Locale.getDefault())
 
+    val statusColor = when (event.status) {
+        EventStatus.PENDING_REVIEW -> Color(0xFFFFA000)
+        EventStatus.VERIFIED -> Color(0xFF4CAF50)
+        EventStatus.REJECTED -> Color(0xFFF44336)
+        EventStatus.RESOLVED -> Color(0xFF2196F3)
+    }
+    val statusLabel = when (event.status) {
+        EventStatus.PENDING_REVIEW -> "Pendiente de verificación"
+        EventStatus.VERIFIED -> "Verificado"
+        EventStatus.REJECTED -> "Rechazado"
+        EventStatus.RESOLVED -> "Resuelto"
+    }
+
     Column(
         modifier = modifier.verticalScroll(scrollState),
     ) {
-        // Image Carousel
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -245,7 +258,6 @@ private fun EventDetailContent(
                 modifier = Modifier.fillMaxSize(),
             )
 
-            // Category Badge
             Surface(
                 modifier = Modifier
                     .padding(12.dp)
@@ -262,7 +274,22 @@ private fun EventDetailContent(
                 )
             }
 
-            // Image Indicators
+            Surface(
+                modifier = Modifier
+                    .padding(12.dp)
+                    .align(Alignment.TopEnd),
+                shape = RoundedCornerShape(6.dp),
+                color = statusColor,
+            ) {
+                Text(
+                    text = statusLabel,
+                    color = Color.White,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                )
+            }
+
             if (event.imageUrls.size > 1) {
                 Row(
                     modifier = Modifier
@@ -287,7 +314,6 @@ private fun EventDetailContent(
             }
         }
 
-        // Event Info Card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -299,7 +325,6 @@ private fun EventDetailContent(
             Column(
                 modifier = Modifier.padding(16.dp),
             ) {
-                // Title
                 Text(
                     text = event.title,
                     style = MaterialTheme.typography.titleLarge,
@@ -311,7 +336,6 @@ private fun EventDetailContent(
                 HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1.dp.value))
                 Spacer(Modifier.height(16.dp))
 
-                // Date
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Outlined.DateRange,
@@ -329,7 +353,6 @@ private fun EventDetailContent(
 
                 Spacer(Modifier.height(12.dp))
 
-                // Time
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Outlined.DateRange,
@@ -347,7 +370,6 @@ private fun EventDetailContent(
 
                 Spacer(Modifier.height(12.dp))
 
-                // Location
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Outlined.LocationOn,
@@ -365,11 +387,30 @@ private fun EventDetailContent(
                     )
                 }
 
+                if (event.status == EventStatus.REJECTED && !event.rejectionReason.isNullOrBlank()) {
+                    Spacer(Modifier.height(16.dp))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1.dp.value))
+                    Spacer(Modifier.height(16.dp))
+
+                    Text(
+                        text = "Motivo de rechazo:",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFFF44336),
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = event.rejectionReason,
+                        fontSize = 14.sp,
+                        color = Color(0xFFF44336),
+                        lineHeight = 20.sp,
+                    )
+                }
+
                 Spacer(Modifier.height(16.dp))
                 HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1.dp.value))
                 Spacer(Modifier.height(16.dp))
 
-                // Description
                 Text(
                     text = stringResource(R.string.moderator_description_label),
                     fontSize = 14.sp,
@@ -386,7 +427,6 @@ private fun EventDetailContent(
             }
         }
 
-        // Action Buttons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -394,37 +434,47 @@ private fun EventDetailContent(
                 .padding(bottom = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            OutlinedButton(
-                onClick = onRejectClick,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp),
-                shape = RoundedCornerShape(24.dp),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                    contentColor = Color.White,
-                ),
-            ) {
-                Text(
-                    text = stringResource(R.string.moderator_reject),
-                    fontWeight = FontWeight.SemiBold,
-                )
+            if (event.status != EventStatus.REJECTED) {
+                OutlinedButton(
+                    onClick = onRejectClick,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = Color(0xFFF44336),
+                        contentColor = Color.White,
+                    ),
+                ) {
+                    Text(
+                        text = if (event.status == EventStatus.PENDING_REVIEW) 
+                            stringResource(R.string.moderator_reject)
+                        else 
+                            "Rechazar",
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
             }
 
-            Button(
-                onClick = onAcceptClick,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp),
-                shape = RoundedCornerShape(24.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                ),
-            ) {
-                Text(
-                    text = stringResource(R.string.moderator_accept),
-                    fontWeight = FontWeight.SemiBold,
-                )
+            if (event.status != EventStatus.VERIFIED) {
+                Button(
+                    onClick = onAcceptClick,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF4CAF50),
+                    ),
+                ) {
+                    Text(
+                        text = if (event.status == EventStatus.PENDING_REVIEW)
+                            stringResource(R.string.moderator_accept)
+                        else
+                            "Verificar",
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
             }
         }
     }

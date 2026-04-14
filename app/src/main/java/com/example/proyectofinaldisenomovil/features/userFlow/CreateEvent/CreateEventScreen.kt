@@ -59,9 +59,24 @@ fun CreateEventScreen(
     viewModel: CreateEventViewModel = viewModel(),
     paddingValues: PaddingValues,
     onBackClick: () -> Unit = {},
-    onNotificationClick: () -> Unit = {}
+    onNotificationClick: () -> Unit = {},
+    onEventCreated: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val createResult by viewModel.createResult.collectAsState()
+
+    LaunchedEffect(createResult) {
+        when (createResult) {
+            is CreateEventResult.Success -> {
+                viewModel.resetResult()
+                onEventCreated()
+            }
+            is CreateEventResult.Error -> {
+                viewModel.resetResult()
+            }
+            else -> {}
+        }
+    }
 
     Scaffold(
         topBar = {

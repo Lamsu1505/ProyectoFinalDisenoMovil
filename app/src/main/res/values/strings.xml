@@ -78,6 +78,7 @@
     <string name="saved_events_empty">No tienes eventos guardados</string>
     <string name="saved_events_removed">Evento eliminado de guardados</string>
     <string name="saved_events_calendar">Poner en calendario</string>
+    <string name="saved_events_unsave">Quitar de guardados</string>
 
     <!-- Liked Events Screen -->
     <string name="liked_events_title">Eventos que me importan</string>

@@ -1,10 +1,13 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents
 
 import androidx.lifecycle.ViewModel
-import com.example.proyectofinaldisenomovil.R
+import androidx.lifecycle.viewModelScope
+import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 data class FavoriteEvent(
     val id: String,
@@ -15,7 +18,7 @@ data class FavoriteEvent(
     val location: String,
     val distance: String,
     val attendees: Int,
-    val imageRes: Int
+    val imageUrl: String?
 )
 
 data class FavoritesUiState(
@@ -30,30 +33,38 @@ class FavoritesViewModel : ViewModel() {
     val uiState: StateFlow<FavoritesUiState> = _uiState.asStateFlow()
 
     init {
-        // Data quemada inicial
-        _uiState.value = _uiState.value.copy(
-            favoriteEvents = listOf(
-                FavoriteEvent(
-                    "1", "Partido de la paz (R. Madrid vs Universid...", "Deportes",
-                    "Jueves 19 de feb", "6:00 pm", "Estadio centenario", "2 km", 30000, R.mipmap.fut_img
-                ),
-                FavoriteEvent(
-                    "2", "Reunion de Therians Quindio - Colombia", "Deportes",
-                    "Jueves 28 de feb", "6:00 pm", "Plaza Bolivar Armenia", "4 km", 30000, R.mipmap.fut_img
-                ),
-                FavoriteEvent(
-                    "3", "Torneo de Ajedrez Universitario", "Academico",
-                    "Viernes 5 de mar", "2:00 pm", "Biblioteca Central", "1 km", 50, R.mipmap.fut_img
-                ),
-                FavoriteEvent(
-                    "4", "Clase de Yoga al Aire Libre", "Pasatiempo",
-                    "Sabado 6 de mar", "8:00 am", "Parque de la Vida", "3 km", 100, R.mipmap.fut_img
-                ),
-                FavoriteEvent(
-                    "5", "Concierto Rock Local", "Pasatiempo",
-                    "Domingo 7 de mar", "7:00 pm", "Teatro Cruz Roja", "5 km", 500, R.mipmap.fut_img
+        loadLikedEvents()
+    }
+
+    private fun loadLikedEvents() {
+        viewModelScope.launch {
+            val currentUser = MockDataRepository.getLoggedInUser()
+            if (currentUser != null) {
+                val likedEvents = MockDataRepository.getLikedEvents(currentUser.uid)
+                _uiState.value = _uiState.value.copy(
+                    favoriteEvents = likedEvents.map { it.toFavoriteEvent() }
                 )
-            )
+            }
+        }
+    }
+
+    private fun Event.toFavoriteEvent(): FavoriteEvent {
+        return FavoriteEvent(
+            id = this.id,
+            title = this.title,
+            category = this.category.label,
+            date = this.startDate?.let {
+                val dateFormat = java.text.SimpleDateFormat("EEEE d 'de' MMMM", java.util.Locale("es", "CO"))
+                dateFormat.format(it.toDate())
+            } ?: "",
+            time = this.startDate?.let {
+                val timeFormat = java.text.SimpleDateFormat("h:mm a", java.util.Locale("es", "CO"))
+                timeFormat.format(it.toDate())
+            } ?: "",
+            location = this.address,
+            distance = "",
+            attendees = this.currentAttendees,
+            imageUrl = this.thumbnailUrl
         )
     }
 
@@ -66,8 +77,16 @@ class FavoritesViewModel : ViewModel() {
     }
 
     fun onToggleFavorite(eventId: String) {
-        // Lógica para quitar de favoritos
-        val updatedList = _uiState.value.favoriteEvents.filter { it.id != eventId }
-        _uiState.value = _uiState.value.copy(favoriteEvents = updatedList)
+        viewModelScope.launch {
+            val currentUser = MockDataRepository.getLoggedInUser()
+            currentUser?.let {
+                MockDataRepository.toggleLikeEvent(it.uid, eventId)
+                loadLikedEvents()
+            }
+        }
+    }
+
+    fun refresh() {
+        loadLikedEvents()
     }
 }

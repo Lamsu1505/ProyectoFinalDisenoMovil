@@ -95,4 +95,10 @@ class LoginViewModel @Inject constructor(
     fun resetResult() {
         _loginResult.value = LoginResult.Idle
     }
+
+    fun onLanguageSelected(languageCode: String) {
+        viewModelScope.launch {
+            sessionManager.setAppLanguage(languageCode)
+        }
+    }
 }

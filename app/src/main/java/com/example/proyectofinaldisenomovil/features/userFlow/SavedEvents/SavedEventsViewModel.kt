@@ -1,14 +1,17 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.SavedEvents
 
 import androidx.lifecycle.ViewModel
-import com.example.proyectofinaldisenomovil.R
+import androidx.lifecycle.viewModelScope
+import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.FavoriteEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 data class SavedEventsUiState(
-    val favoriteEvents: List<FavoriteEvent> = emptyList(),
+    val savedEvents: List<FavoriteEvent> = emptyList(),
     val categories: List<String> = listOf("Deportes", "Pasatiempo", "Academico"),
     val selectedCategory: String = "Deportes",
     val searchQuery: String = ""
@@ -19,18 +22,38 @@ class SavedEventsViewModel : ViewModel() {
     val uiState: StateFlow<SavedEventsUiState> = _uiState.asStateFlow()
 
     init {
-        // Datos iniciales para que la pantalla no aparezca vacía
-        _uiState.value = _uiState.value.copy(
-            favoriteEvents = listOf(
-                FavoriteEvent(
-                    "1", "Partido de la paz (R. Madrid vs Universid...", "Deportes",
-                    "Jueves 19 de feb", "6:00 pm", "Estadio centenario", "2 km", 30000, R.mipmap.fut_img
-                ),
-                FavoriteEvent(
-                    "2", "Reunion de Therians Quindio - Colombia", "Deportes",
-                    "Jueves 28 de feb", "6:00 pm", "Plaza Bolivar Armenia", "4 km", 30000, R.mipmap.fut_img
+        loadSavedEvents()
+    }
+
+    private fun loadSavedEvents() {
+        viewModelScope.launch {
+            val currentUser = MockDataRepository.getLoggedInUser()
+            if (currentUser != null) {
+                val savedEvents = MockDataRepository.getSavedEvents(currentUser.uid)
+                _uiState.value = _uiState.value.copy(
+                    savedEvents = savedEvents.map { it.toFavoriteEvent() }
                 )
-            )
+            }
+        }
+    }
+
+    private fun Event.toFavoriteEvent(): FavoriteEvent {
+        return FavoriteEvent(
+            id = this.id,
+            title = this.title,
+            category = this.category.label,
+            date = this.startDate?.let {
+                val dateFormat = java.text.SimpleDateFormat("EEEE d 'de' MMMM", java.util.Locale("es", "CO"))
+                dateFormat.format(it.toDate())
+            } ?: "",
+            time = this.startDate?.let {
+                val timeFormat = java.text.SimpleDateFormat("h:mm a", java.util.Locale("es", "CO"))
+                timeFormat.format(it.toDate())
+            } ?: "",
+            location = this.address,
+            distance = "",
+            attendees = this.currentAttendees,
+            imageUrl = this.thumbnailUrl
         )
     }
 
@@ -42,4 +65,17 @@ class SavedEventsViewModel : ViewModel() {
         _uiState.value = _uiState.value.copy(selectedCategory = category)
     }
 
+    fun onUnsaveEvent(eventId: String) {
+        viewModelScope.launch {
+            val currentUser = MockDataRepository.getLoggedInUser()
+            currentUser?.let {
+                MockDataRepository.toggleSaveEvent(it.uid, eventId)
+                loadSavedEvents()
+            }
+        }
+    }
+
+    fun refresh() {
+        loadSavedEvents()
+    }
 }

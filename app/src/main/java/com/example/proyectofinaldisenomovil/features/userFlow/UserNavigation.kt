@@ -14,7 +14,6 @@ import com.example.proyectofinaldisenomovil.features.LikedEvents.SavedEventsScre
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.LikedEventsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.Notifications.NotificationsScreen
-import com.example.proyectofinaldisenomovil.features.userFlow.Profile.ProfileScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.home.HomeScreen
 
 object UserRoutes {
@@ -88,6 +87,9 @@ fun UserNavigation(
                     },
                     onNotificationClick = {
                         userNavController.navigate(UserRoutes.NOTIFICATIONS)
+                    },
+                    onEventCreated = {
+                        userNavController.popBackStack()
                     }
                 )
             }
@@ -106,19 +108,6 @@ fun UserNavigation(
                     paddingValues = paddingValues,
                     onNotificationClick = {
                         userNavController.navigate(UserRoutes.NOTIFICATIONS)
-                    }
-                )
-            }
-
-            composable(UserRoutes.PROFILE) {
-                ProfileScreen(
-                    paddingValues = paddingValues,
-                    onLogout = onLogout,
-                    onNotificationClick = {
-                        userNavController.navigate(UserRoutes.NOTIFICATIONS)
-                    },
-                    onBackClick = {
-                        userNavController.popBackStack()
                     }
                 )
             }

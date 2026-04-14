@@ -7,6 +7,7 @@ import com.example.proyectofinaldisenomovil.core.component.moderator.state.SortO
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
+import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,12 +30,18 @@ class ModeratorPanelViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             
-            val pendingEvents = MockDataRepository.getPendingEvents()
+            val allEvents = MockDataRepository.getAllEvents()
+            val pendingEvents = allEvents.filter { it.status == EventStatus.PENDING_REVIEW }
+            val verifiedEvents = allEvents.filter { it.status == EventStatus.VERIFIED }
+            val rejectedEvents = allEvents.filter { it.status == EventStatus.REJECTED }
             
             _uiState.update {
                 it.copy(
-                    events = pendingEvents,
-                    filteredEvents = pendingEvents,
+                    events = allEvents,
+                    filteredEvents = allEvents,
+                    pendingEvents = pendingEvents,
+                    verifiedEvents = verifiedEvents,
+                    rejectedEvents = rejectedEvents,
                     isLoading = false
                 )
             }
@@ -58,6 +65,11 @@ class ModeratorPanelViewModel @Inject constructor() : ViewModel() {
 
     fun onDistanceChange(distanceKm: Int) {
         _uiState.update { it.copy(distanceKm = distanceKm) }
+        applyFilters()
+    }
+
+    fun onStatusFilterChange(status: EventStatus?) {
+        _uiState.update { it.copy(statusFilter = status) }
         applyFilters()
     }
 
@@ -94,9 +106,22 @@ class ModeratorPanelViewModel @Inject constructor() : ViewModel() {
         loadEvents()
     }
 
+    fun onEventReverify(event: Event) {
+        MockDataRepository.approveEvent(event.id)
+        loadEvents()
+    }
+
+    fun onEventRejectAgain(event: Event) {
+        _uiState.update { it.copy(showRejectDialog = true, eventToReject = event) }
+    }
+
     private fun applyFilters() {
         val currentState = _uiState.value
         var filtered = currentState.events
+
+        currentState.statusFilter?.let { status ->
+            filtered = filtered.filter { it.status == status }
+        }
 
         currentState.selectedCategory?.let { category ->
             filtered = filtered.filter { it.category == category }

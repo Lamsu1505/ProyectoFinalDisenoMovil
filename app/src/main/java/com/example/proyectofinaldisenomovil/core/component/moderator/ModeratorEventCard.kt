@@ -1,6 +1,5 @@
 package com.example.proyectofinaldisenomovil.core.component.moderator
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,22 +24,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
+import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.core.theme.*
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-/**
- * Reusable card used in the moderator panel event list.
- *
- * Shows a banner image with a category badge overlay, then the event title,
- * date, time, location and the two action buttons (Aceptar / Rechazar).
- *
- * @param event         The [Event] data to display.
- * @param onCardClick   Called when the user taps the card body → opens detail screen.
- * @param onAccept      Called when "Aceptar" is tapped.
- * @param onReject      Called when "Rechazar" is tapped → opens confirmation dialog.
- * @param modifier      Optional layout modifier.
- */
 @Composable
 fun ModeratorEventCard(
     navController: NavController,
@@ -50,6 +38,19 @@ fun ModeratorEventCard(
     onReject: (Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val statusColor = when (event.status) {
+        EventStatus.PENDING_REVIEW -> Color(0xFFFFA000)
+        EventStatus.VERIFIED -> Color(0xFF4CAF50)
+        EventStatus.REJECTED -> Color(0xFFF44336)
+        EventStatus.RESOLVED -> Color(0xFF2196F3)
+    }
+    val statusLabel = when (event.status) {
+        EventStatus.PENDING_REVIEW -> "Pendiente"
+        EventStatus.VERIFIED -> "Verificado"
+        EventStatus.REJECTED -> "Rechazado"
+        EventStatus.RESOLVED -> "Resuelto"
+    }
+
     Card(
         modifier  = modifier
             .fillMaxWidth()
@@ -59,22 +60,19 @@ fun ModeratorEventCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
     ) {
         Column {
-            // ── Banner image with category badge overlay ───────────────────────
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(140.dp)
                     .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)),
             ) {
-                // TODO: replace placeholder with real image from event.imageUrls.firstOrNull()
                 AsyncImage(
-                    model             = event.imageUrls.firstOrNull(),
+                    model = event.imageUrls.firstOrNull(),
                     contentDescription = event.title,
-                    contentScale      = ContentScale.Crop,
-                    modifier          = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
                 )
 
-                // Category badge — top-left overlay
                 Surface(
                     modifier = Modifier
                         .padding(10.dp)
@@ -83,8 +81,24 @@ fun ModeratorEventCard(
                     color = MaterialTheme.colorScheme.secondary,
                 ) {
                     Text(
-                        text     = event.category.label,
-                        color    = Color.White,
+                        text = event.category.label,
+                        color = Color.White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                    )
+                }
+
+                Surface(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .align(Alignment.TopEnd),
+                    shape = RoundedCornerShape(6.dp),
+                    color = statusColor,
+                ) {
+                    Text(
+                        text = statusLabel,
+                        color = Color.White,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
@@ -92,65 +106,81 @@ fun ModeratorEventCard(
                 }
             }
 
-            // ── Content area ──────────────────────────────────────────────────
             Column(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
             ) {
-                // Title
                 Text(
-                    text       = event.title,
-                    style      = MaterialTheme.typography.titleMedium,
+                    text = event.title,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    maxLines   = 1,
-                    overflow   = TextOverflow.Ellipsis,
-                    color      = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
 
                 Spacer(Modifier.height(6.dp))
 
-                // Date / Time / Location row and action buttons side-by-side
                 Row(
-                    modifier                  = Modifier.fillMaxWidth(),
-                    verticalAlignment         = Alignment.Bottom,
-                    horizontalArrangement     = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    // ── Left: meta info ──────────────────────────────────────
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         MetaRow(
-                            icon  = Icons.Outlined.DateRange,
+                            icon = Icons.Outlined.DateRange,
                             label = event.startDate?.let {
                                 SimpleDateFormat("EEEE d 'de' MMM", Locale("es")).format(it.toDate())
                             } ?: "Fecha no definida",
                         )
                         MetaRow(
-                            icon  = Icons.Outlined.DateRange,
+                            icon = Icons.Outlined.DateRange,
                             label = event.startDate?.let {
                                 SimpleDateFormat("h:mm a", Locale.getDefault()).format(it.toDate())
                             } ?: "--",
                         )
                         MetaRow(
-                            icon  = Icons.Outlined.LocationOn,
+                            icon = Icons.Outlined.LocationOn,
                             label = event.address.ifBlank { "Ubicacion no definida" },
                         )
                     }
 
-                    // ── Right: action buttons ────────────────────────────────
                     Column(
-                        verticalArrangement   = Arrangement.spacedBy(6.dp),
-                        horizontalAlignment   = Alignment.End,
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                        horizontalAlignment = Alignment.End,
                     ) {
-                        ActionButton(
-                            label      = "Aceptar",
-                            color      = MaterialTheme.colorScheme.primary,
-                            icon       = Icons.Filled.CheckCircle,
-                            onClick    = { onAccept(event) },
-                        )
-                        ActionButton(
-                            label      = "Rechazar",
-                            color      = MaterialTheme.colorScheme.secondary,
-                            icon       = Icons.Filled.Close,
-                            onClick    = { onReject(event) },
-                        )
+                        when (event.status) {
+                            EventStatus.PENDING_REVIEW -> {
+                                ActionButton(
+                                    label = "Aceptar",
+                                    color = Color(0xFF4CAF50),
+                                    icon = Icons.Filled.CheckCircle,
+                                    onClick = { onAccept(event) },
+                                )
+                                ActionButton(
+                                    label = "Rechazar",
+                                    color = Color(0xFFF44336),
+                                    icon = Icons.Filled.Close,
+                                    onClick = { onReject(event) },
+                                )
+                            }
+                            EventStatus.VERIFIED -> {
+                                ActionButton(
+                                    label = "Rechazar",
+                                    color = Color(0xFFF44336),
+                                    icon = Icons.Filled.Close,
+                                    onClick = { onReject(event) },
+                                )
+                            }
+                            EventStatus.REJECTED -> {
+                                ActionButton(
+                                    label = "Verificar",
+                                    color = Color(0xFF4CAF50),
+                                    icon = Icons.Filled.CheckCircle,
+                                    onClick = { onAccept(event) },
+                                )
+                            }
+                            EventStatus.RESOLVED -> { }
+                        }
                     }
                 }
             }
@@ -158,18 +188,14 @@ fun ModeratorEventCard(
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Private helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
 @Composable
 private fun MetaRow(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            imageVector        = icon,
+            imageVector = icon,
             contentDescription = null,
-            tint               = MaterialTheme.colorScheme.onSurface,
-            modifier           = Modifier.size(14.dp),
+            tint = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.size(14.dp),
         )
         Spacer(Modifier.width(4.dp))
         Text(label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -184,17 +210,17 @@ private fun ActionButton(
     onClick: () -> Unit,
 ) {
     Button(
-        onClick  = onClick,
-        colors   = ButtonDefaults.buttonColors(containerColor = color),
-        shape    = RoundedCornerShape(20.dp),
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(containerColor = color),
+        shape = RoundedCornerShape(20.dp),
         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
         modifier = Modifier.height(32.dp),
     ) {
         Icon(
-            imageVector        = icon,
+            imageVector = icon,
             contentDescription = null,
-            modifier           = Modifier.size(14.dp),
-            tint               = Color.White,
+            modifier = Modifier.size(14.dp),
+            tint = Color.White,
         )
         Spacer(Modifier.width(4.dp))
         Text(label, fontSize = 12.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
@@ -203,19 +229,20 @@ private fun ActionButton(
 
 @Preview(showBackground = true)
 @Composable
-fun ModeratorEventCardPreview(){
+fun ModeratorEventCardPreview() {
     ProyectoFinalDisenoMovilTheme() {
         ModeratorEventCard(
             navController = rememberNavController(),
             event = Event(
                 id = "1",
                 title = "Concierto de Rock en el Parque",
-                description = "Disfruta de una noche llena de música y energía con las mejores bandas de rock locales e internacionales. ¡No te lo pierdas!",
+                description = "Descripción del evento",
                 category = com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory.DEPORTES,
                 startDate = com.google.firebase.Timestamp.now(),
                 endDate = com.google.firebase.Timestamp.now(),
                 address = "Parque Central, Ciudad",
                 imageUrls = listOf("https://example.com/event-image.jpg"),
+                status = EventStatus.PENDING_REVIEW
             ),
             onCardClick = {},
             onAccept = {},

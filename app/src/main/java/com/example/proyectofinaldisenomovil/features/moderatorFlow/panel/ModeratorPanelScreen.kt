@@ -1,20 +1,26 @@
 package com.example.proyectofinaldisenomovil.features.moderatorFlow.panel
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +45,7 @@ import com.example.proyectofinaldisenomovil.core.component.moderator.ModeratorEv
 import com.example.proyectofinaldisenomovil.core.component.moderator.ModeratorTopBar
 import com.example.proyectofinaldisenomovil.core.component.moderator.SortDistanceRow
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.R
 
 @Composable
@@ -51,7 +59,6 @@ fun ModeratorPanelScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Column(modifier = modifier.fillMaxSize()) {
-        // Top Bar
         ModeratorTopBar(
             navController = navController,
             title = stringResource(R.string.moderator_title),
@@ -60,13 +67,45 @@ fun ModeratorPanelScreen(
             onLogoutClick = viewModel::onLogoutClick,
         )
 
-        // Category Filter Chips
         CategoryFilterChips(
             selectedCategory = uiState.selectedCategory,
             onCategorySelect = viewModel::onCategorySelect,
         )
 
-        // Sort and Distance Row
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            StatusChip(
+                label = "Todos (${uiState.events.size})",
+                isSelected = uiState.statusFilter == null,
+                color = MaterialTheme.colorScheme.primary,
+                onClick = { viewModel.onStatusFilterChange(null) }
+            )
+            StatusChip(
+                label = "Pendientes (${uiState.pendingEvents.size})",
+                isSelected = uiState.statusFilter == EventStatus.PENDING_REVIEW,
+                color = Color(0xFFFFA000),
+                onClick = { viewModel.onStatusFilterChange(EventStatus.PENDING_REVIEW) }
+            )
+            StatusChip(
+                label = "Verificados (${uiState.verifiedEvents.size})",
+                isSelected = uiState.statusFilter == EventStatus.VERIFIED,
+                color = Color(0xFF4CAF50),
+                onClick = { viewModel.onStatusFilterChange(EventStatus.VERIFIED) }
+            )
+            StatusChip(
+                label = "Rechazados (${uiState.rejectedEvents.size})",
+                isSelected = uiState.statusFilter == EventStatus.REJECTED,
+                color = Color(0xFFF44336),
+                onClick = { viewModel.onStatusFilterChange(EventStatus.REJECTED) }
+            )
+        }
+
         SortDistanceRow(
             selectedSort = uiState.sortBy,
             selectedDistance = uiState.distanceKm,
@@ -74,7 +113,6 @@ fun ModeratorPanelScreen(
             onDistanceChange = viewModel::onDistanceChange,
         )
 
-        // Content
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -113,8 +151,8 @@ fun ModeratorPanelScreen(
                                 navController = navController,
                                 event = event,
                                 onCardClick = { onEventClick(event.id) },
-                                onAccept = viewModel::onEventAccept,
-                                onReject = viewModel::onEventReject,
+                                onAccept = viewModel::onEventReverify,
+                                onReject = viewModel::onEventRejectAgain,
                             )
                         }
                     }
@@ -123,7 +161,6 @@ fun ModeratorPanelScreen(
         }
     }
 
-    // Logout Dialog
     if (uiState.showLogoutDialog) {
         LogoutDialog(
             moderatorName = "Moderador",
@@ -134,6 +171,26 @@ fun ModeratorPanelScreen(
             onDismiss = viewModel::onLogoutDismiss,
         )
     }
+}
+
+@Composable
+private fun StatusChip(
+    label: String,
+    isSelected: Boolean,
+    color: Color,
+    onClick: () -> Unit
+) {
+    FilterChip(
+        selected = isSelected,
+        onClick = onClick,
+        label = { Text(label, fontSize = 12.sp) },
+        colors = FilterChipDefaults.filterChipColors(
+            selectedContainerColor = color,
+            selectedLabelColor = Color.White,
+            containerColor = Color.Transparent,
+            labelColor = MaterialTheme.colorScheme.onSurface,
+        ),
+    )
 }
 
 @Composable
@@ -155,14 +212,6 @@ private fun EmptyState(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(8.dp))
-        Text(
-            text = stringResource(R.string.moderator_pending),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-            textAlign = TextAlign.Center,
-            lineHeight = 20.sp,
         )
     }
 }
