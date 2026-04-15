@@ -152,6 +152,9 @@
     <string name="view_event_close">Cerrar</string>
     <string name="view_event_image">Imagen del evento</string>
     <string name="view_event_likes">%1$s me gusta</string>
+    <string name="detail_success">Evento cargado correctamente</string>
+
+
 
     <!-- Notifications Screen -->
     <string name="notifications_title">Notificaciones</string>

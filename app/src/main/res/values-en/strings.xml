@@ -78,6 +78,7 @@
     <string name="saved_events_empty">You have no saved events</string>
     <string name="saved_events_removed">Event removed from saved</string>
     <string name="saved_events_calendar">Add to calendar</string>
+    <string name="saved_events_unsave">Remove from saved</string>
 
     <!-- Liked Events Screen -->
     <string name="liked_events_title">Events I Care About</string>
@@ -149,6 +150,7 @@
     <string name="view_event_close">Close</string>
     <string name="view_event_image">Event image</string>
     <string name="view_event_likes">%1$s likes</string>
+    <string name="detail_success">Event loaded correctly</string>
 
     <!-- Notifications Screen -->
     <string name="notifications_title">Notifications</string>

@@ -12,7 +12,6 @@ import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 object MockEventData {
 
     val events = listOf(
-
         // ─── DEPORTES ────────────────────────────────────────────────────────────
         Event(
             id = "evt_001",

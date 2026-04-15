@@ -1,25 +1,15 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,7 +18,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,641 +25,270 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import coil.compose.AsyncImage
+import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
-import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
-import com.example.proyectofinaldisenomovil.R
+import com.example.proyectofinaldisenomovil.core.utils.RequestResult
+import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import java.text.NumberFormat
-import java.util.Locale
+import java.text.SimpleDateFormat
+import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ViewEventScreen(
     eventId: String,
     onBackClick: () -> Unit,
-    viewEventViewModel: ViewEventViewModel = viewModel()
+    viewEventViewModel: ViewEventViewModel = hiltViewModel()
 ) {
-    val state = viewEventViewModel.uiState
-    val numberFormat = NumberFormat.getNumberInstance(Locale("es", "CO"))
-    
+    Log.e("ID", eventId)
+
+    // 1. Observación de estados de forma reactiva
+    val event by viewEventViewModel.currentEvent.collectAsState()
+    val detailResult by viewEventViewModel.detailResult.collectAsState()
+    val isInterested by viewEventViewModel.isInterested.collectAsState()
+    val isConfirmed by viewEventViewModel.isConfirmed.collectAsState()
+
     val listState = rememberLazyListState()
 
-    // Auto-scroll effect when writing a comment
-    LaunchedEffect(viewEventViewModel.newCommentText) {
-        if (viewEventViewModel.isAddingComment && viewEventViewModel.newCommentText.isNotEmpty()) {
-            listState.animateScrollToItem(listState.layoutInfo.totalItemsCount - 1)
-        }
+    // 2. Disparador de carga inicial
+    LaunchedEffect(eventId) {
+        viewEventViewModel.findEventById(eventId)
     }
 
     Scaffold(
         topBar = {
             AppTopBar(
-                title = stringResource(R.string.view_event_title)
+                title = event?.title ?: stringResource(R.string.view_event_title),
+                onBackClick = onBackClick
             )
         },
-        bottomBar = {
-            AppBottomBar(
-                selectedRoute = ""
-            )
-        }
+        bottomBar = { AppBottomBar(selectedRoute = "") }
     ) { paddingValues ->
-
-        LazyColumn(
-            state = listState,
+        Box(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // ── Seccion de imagenes ──
-            item {
-                EventImageSection(state)
-            }
-
-            // ── Info Card ──
-            item {
-                EventInfoCard(
-                    state = state,
-                    isInterested = viewEventViewModel.isInterested,
-                    isConfirmed = viewEventViewModel.isConfirmed,
-                    onInterestedClick = { viewEventViewModel.toggleInterested() },
-                    onConfirmedClick = { viewEventViewModel.toggleConfirmed() },
-                    numberFormat = numberFormat
-                )
-            }
-
-            // ── Description Section ──
-            item {
-                EventDescriptionSection(state.description)
-            }
-
-            // ── Divider ──
-            item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.surfaceVariant
-                )
-            }
-
-            // ── Location Section ──
-            item {
-                EventLocationSection(state.imageRes)
-            }
-
-            // ── Divider before comments ──
-            item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.surfaceVariant
-                )
-            }
-
-
-            item {
-                Text(
-                    text = stringResource(R.string.view_event_comments_count, state.comments.size),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp).fillMaxWidth()
-                )
-            }
-
-            // ── Comment items ──
-            items(
-                items = state.comments,
-                key = { it.id }
-            ) { comment ->
-                CommentItem(comment = comment)
-            }
-
-            item {
-                if (viewEventViewModel.isAddingComment) {
-                    CommentInputSection(
-                        text = viewEventViewModel.newCommentText,
-                        onTextChange = { viewEventViewModel.onCommentTextChange(it) },
-                        onSend = { viewEventViewModel.sendComment() },
-                        onCancel = { viewEventViewModel.cancelAddingComment() }
-                    )
-                } else {
-                    OutlinedButton(
-                        onClick = { viewEventViewModel.startAddingComment() },
-                        modifier = Modifier
-                            .padding(vertical = 20.dp, horizontal = 20.dp)
-                            .fillMaxWidth()
-                            .height(48.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
-                    ) {
-                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.view_event_write_comment), fontWeight = FontWeight.SemiBold)
+            // 3. Gestión de estados de la petición (Loading, Success, Error)
+            when (detailResult) {
+                is RequestResult.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+                is RequestResult.Failure -> {
+                    ErrorState((detailResult as RequestResult.Failure).errorMessage)
+                }
+                is RequestResult.Success -> {
+                    event?.let { safeEvent ->
+                        EventDetailContent(
+                            event = safeEvent,
+                            isInterested = isInterested,
+                            isConfirmed = isConfirmed,
+                            onInterestedClick = viewEventViewModel::toggleInterested,
+                            onConfirmedClick = viewEventViewModel::toggleConfirmed,
+                            listState = listState
+                        )
                     }
                 }
-            }
-
-            // Bottom spacing
-            item {
-                Spacer(modifier = Modifier.height(24.dp))
+                else -> { /* Estado inicial */ }
             }
         }
     }
 }
 
-
 @Composable
-private fun EventImageSection(state: ViewEventUiState) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-    ) {
-        Image(
-            painter = painterResource(id = state.imageRes),
-            contentDescription = stringResource(R.string.view_event_image),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-
-        // Categoria
-        Box(
-            modifier = Modifier
-                .padding(10.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.secondary,
-                    shape = RoundedCornerShape(50)
-                )
-                .padding(horizontal = 18.dp, vertical = 2.dp)
-                .align(Alignment.TopStart)
-                .width(90.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = state.category,
-                color = Color.White,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center
-            )
-        }
-
-        // Page indicator
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(14.dp)
-                .background(
-                    color = Color.Black.copy(alpha = 0.70f),
-                    shape = RoundedCornerShape(7.dp)
-                )
-                .padding(horizontal = 10.dp, vertical = 4.dp)
-        ) {
-            Text(
-                text = "${state.currentImageIndex} / ${state.totalImages}",
-                color = MaterialTheme.colorScheme.background,
-                fontSize = 13.sp
-            )
-        }
-    }
-}
-
-
-@Composable
-private fun EventInfoCard(
-    state: ViewEventUiState,
+private fun EventDetailContent(
+    event: Event,
     isInterested: Boolean,
     isConfirmed: Boolean,
     onInterestedClick: () -> Unit,
     onConfirmedClick: () -> Unit,
-    numberFormat: NumberFormat
+    listState: androidx.compose.foundation.lazy.LazyListState
 ) {
-    Column(
-        modifier = Modifier
-            .width(400.dp)
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape( bottomEnd = 20.dp , bottomStart = 20.dp )
+    LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+        item { EventImageHeader(event) }
+        item {
+            EventInfoSection(
+                event = event,
+                isInterested = isInterested,
+                isConfirmed = isConfirmed,
+                onInterestedClick = onInterestedClick,
+                onConfirmedClick = onConfirmedClick
             )
-            .padding(horizontal = 10.dp, vertical = 18.dp)
-
-    ) {
-
-        // Title
-        Text(
-            text = state.title,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            lineHeight = 26.sp,
-            maxLines = 2,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-        HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.surfaceVariant)
-        Spacer(modifier = Modifier.height(14.dp))
-
-        // Two-column layout: left info rows, right creator + buttons
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            // Left column – info rows
-            Column(
-                modifier = Modifier.weight(4f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                InfoRow(
-                    icon = Icons.Default.DateRange,
-                    text = state.date
-                )
-                InfoRow(
-                    icon = Icons.Default.DateRange,
-                    text = state.time
-                )
-                InfoRow(
-                    icon = Icons.Default.LocationOn,
-                    text = "${state.location}"
-                )
-                InfoRow(
-                    icon = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    text = stringResource(R.string.view_event_likes, numberFormat.format(state.likes)),
-                    iconTint = if (isInterested) Color.Red else Color.Gray
-                )
-                InfoRow(
-                    icon = Icons.Default.Person,
-                    text = "${numberFormat.format(state.currentAttendees)} / ${
-                        numberFormat.format(
-                            state.maxAttendees
-                        )
-                    }"
-                )
-            }
-
-            // Right column – creator + action buttons
-            Column(
-                modifier = Modifier.weight(3f),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                // Creator info
-                Column(horizontalAlignment = Alignment.Start)
-                {
-                    Text(
-                        text = stringResource(R.string.view_event_created_by),
-                        fontSize = 13.sp,
-                        color = Color.White
-                    )
-                    Text(
-                        text = state.creatorName,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                        maxLines = 1
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // "Estoy interesado" button
-                Button(
-                    modifier = Modifier.fillMaxWidth().height(40.dp),
-                    onClick = onInterestedClick,
-                    contentPadding = PaddingValues(8.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = if (isInterested)
-                            MaterialTheme.colorScheme.secondary
-                        else MaterialTheme.colorScheme.surface,
-                        contentColor = if (isInterested)
-                            MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurface
-                    ),
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = null,
-                            tint = if (isInterested) Color.Red else MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.size(18.dp).weight(1f)
-                        )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Text(
-                            modifier = Modifier.fillMaxWidth()
-                                .weight(5f),
-                            textAlign = TextAlign.Center,
-                            text = stringResource(R.string.view_event_interested),
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                }
-
-                // "Confirmar asistencia" button
-                Button(
-                    modifier = Modifier.fillMaxWidth().height(40.dp),
-                    onClick = onConfirmedClick,
-                    contentPadding = PaddingValues(8.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = if (isConfirmed)
-                            MaterialTheme.colorScheme.secondary
-                        else MaterialTheme.colorScheme.surface,
-                        contentColor = if (isConfirmed)
-                            MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurface
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        tint = if (isConfirmed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(2.dp))
-                    Text(
-                        modifier = Modifier.fillMaxWidth()
-                            .weight(5f),
-                        textAlign = TextAlign.Center,
-                        text = stringResource(R.string.view_event_confirm_attendance),
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            }
         }
+        item { EventDescription(event.description) }
+        item { EventMapPlaceholder() }
+        item { Spacer(modifier = Modifier.height(32.dp)) }
     }
 }
 
-
 @Composable
-private fun InfoRow(
-    icon: ImageVector,
-    text: String,
-    iconTint: Color = Color.Gray
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            imageVector = icon,
+private fun EventImageHeader(event: Event) {
+    Box(modifier = Modifier.fillMaxWidth().height(250.dp)) {
+        AsyncImage(
+            model = event.imageUrls.firstOrNull(),
             contentDescription = null,
-            tint = Color.White,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = text,
-            fontSize = 14.sp,
-            color = Color.White,
-            modifier = Modifier.fillMaxWidth(),
-            maxLines = 2
-        )
-    }
-}
-
-@Composable
-private fun EventDescriptionSection(description: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 16.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.view_event_description_title),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text(
-            text = description,
-            fontSize = 14.sp,
-            color = Color.Gray,
-            lineHeight = 22.sp
-        )
-    }
-}
-
-
-@Composable
-private fun EventLocationSection(imageRes: Int) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 16.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.view_event_location_title),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        // Placeholder map box
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.LocationOn,
-                contentDescription = stringResource(R.string.view_event_location_map),
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(48.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-    }
-}
-
-
-@Composable
-private fun CommentItem(comment: CommentUiModel) {
-    var isExpanded by remember { mutableStateOf(false) }
-    var isOverflowing by remember { mutableStateOf(false) }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 10.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        // Avatar circle with initials
-        Box(
-            modifier = Modifier
-                .size(44.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary),
-            contentAlignment = Alignment.Center
+        // Badge de Categoría
+        Surface(
+            modifier = Modifier.padding(16.dp).align(Alignment.TopStart),
+            color = MaterialTheme.colorScheme.secondary,
+            shape = RoundedCornerShape(50)
         ) {
             Text(
-                text = comment.initials,
+                text = event.category.label,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                 color = Color.White,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.labelMedium
             )
         }
+    }
+}
 
-        // Professional Bubble for the comment
-        Card(
-            modifier = Modifier.weight(1f),
-            shape = RoundedCornerShape(topStart = 0.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-        ) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = comment.authorName,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = comment.timeAgo,
-                        fontSize = 11.sp,
-                        color = Color.Gray
-                    )
-                }
+@Composable
+private fun EventInfoSection(
+    event: Event,
+    isInterested: Boolean,
+    isConfirmed: Boolean,
+    onInterestedClick: () -> Unit,
+    onConfirmedClick: () -> Unit
+) {
+    val numberFormat = NumberFormat.getNumberInstance(Locale("es", "CO"))
+    val dateFormat = SimpleDateFormat("EEEE d 'de' MMMM", Locale("es", "CO"))
+    val timeFormat = SimpleDateFormat("h:mm a", Locale("es", "CO"))
 
-                Spacer(modifier = Modifier.height(4.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
+            .background(MaterialTheme.colorScheme.primary)
+            .padding(24.dp)
+    ) {
+        Text(
+            text = event.title,
+            style = MaterialTheme.typography.headlineMedium,
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
 
-                Text(
-                    text = comment.text,
-                    fontSize = 14.sp,
-                    color = Color.DarkGray,
-                    lineHeight = 20.sp,
-                    maxLines = if (isExpanded) Int.MAX_VALUE else 3,
-                    overflow = TextOverflow.Ellipsis,
-                    onTextLayout = { result ->
-                        if (!isExpanded) {
-                            isOverflowing = result.hasVisualOverflow
-                        }
-                    }
+        Spacer(modifier = Modifier.height(16.dp))
+        HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            // Columna izquierda: Datos
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                IconLabel(Icons.Default.CalendarToday, event.startDate?.let { dateFormat.format(it.toDate()) } ?: "")
+                IconLabel(Icons.Default.Schedule, event.startDate?.let { timeFormat.format(it.toDate()) } ?: "")
+                IconLabel(Icons.Default.LocationOn, event.address)
+                IconLabel(
+                    icon = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    label = "${event.importantVotes} interesados",
+                    tint = if (isInterested) Color.Red else Color.White
+                )
+            }
+
+            // Columna derecha: Acciones
+            Column(modifier = Modifier.width(140.dp), horizontalAlignment = Alignment.End) {
+                Text("Organizado por:", color = Color.White.copy(alpha = 0.7f), fontSize = 11.sp)
+                Text(event.authorName, color = Color.White, fontWeight = FontWeight.Bold, maxLines = 1)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ActionButton(
+                    text = if (isInterested) "Interesado" else "Me interesa",
+                    icon = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    isSelected = isInterested,
+                    onClick = onInterestedClick
                 )
 
-                if (isOverflowing && !isExpanded) {
-                    Text(
-                        text = stringResource(R.string.view_event_show_more),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .clickable { isExpanded = true }
-                            .padding(top = 4.dp)
-                    )
-                }
+                Spacer(modifier = Modifier.height(8.dp))
 
-                if (isExpanded) {
-                    Text(
-                        text = stringResource(R.string.view_event_show_less),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .clickable { isExpanded = false }
-                            .padding(top = 4.dp)
-                    )
-                }
+                ActionButton(
+                    text = if (isConfirmed) "Confirmado" else "Confirmar",
+                    icon = Icons.Default.Check,
+                    isSelected = isConfirmed,
+                    isPrimary = true,
+                    onClick = onConfirmedClick
+                )
             }
         }
     }
 }
 
 @Composable
-fun CommentInputSection(
-    text: String,
-    onTextChange: (String) -> Unit,
-    onSend: () -> Unit,
-    onCancel: () -> Unit
-) {
-    val charLimit = 500
+private fun IconLabel(icon: ImageVector, label: String, tint: Color = Color.White) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(label, color = Color.White, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    }
+}
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+@Composable
+private fun ActionButton(
+    text: String,
+    icon: ImageVector,
+    isSelected: Boolean,
+    isPrimary: Boolean = false,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth().height(38.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isSelected || isPrimary) Color.White else Color.Transparent,
+            contentColor = if (isSelected || isPrimary) MaterialTheme.colorScheme.primary else Color.White
+        ),
+        border = if (!isSelected && !isPrimary) BorderStroke(1.dp, Color.White) else null,
+        contentPadding = PaddingValues(horizontal = 8.dp),
+        shape = RoundedCornerShape(8.dp)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            OutlinedTextField(
-                value = text,
-                onValueChange = onTextChange,
-                placeholder = { Text(stringResource(R.string.view_event_share_opinion), fontSize = 14.sp) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                maxLines = 6,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = Color.Transparent
-                ),
-                trailingIcon = {
-                    if (text.isNotBlank()) {
-                        IconButton(onClick = onSend) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.Send,
-                                contentDescription = stringResource(R.string.view_event_send),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-                },
-                leadingIcon = {
-                    IconButton(onClick = onCancel) {
-                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.view_event_close), tint = Color.Gray, modifier = Modifier.size(20.dp))
-                    }
-                }
-            )
-            
-            Text(
-                text = "${text.length} / $charLimit",
-                style = MaterialTheme.typography.labelSmall,
-                color = if (text.length > 450) MaterialTheme.colorScheme.error else Color.Gray,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp, end = 8.dp),
-                textAlign = TextAlign.End
-            )
+        Icon(icon, null, modifier = Modifier.size(14.dp))
+        Spacer(Modifier.width(4.dp))
+        Text(text, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+private fun EventDescription(description: String) {
+    Column(modifier = Modifier.padding(24.dp)) {
+        Text("Descripción", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(description, style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Justify)
+    }
+}
+
+@Composable
+private fun EventMapPlaceholder() {
+    Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+        Text("Ubicación", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(12.dp))
+        Box(
+            modifier = Modifier.fillMaxWidth().height(150.dp).clip(RoundedCornerShape(16.dp)).background(Color.LightGray),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Mapa próximamente", color = Color.DarkGray)
         }
     }
 }
+
+@Composable
+private fun ErrorState(message: String) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = "Error: $message", color = MaterialTheme.colorScheme.error)
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable
-fun ViewEventScreenPreview() {
-    ProyectoFinalDisenoMovilTheme {
-        ViewEventScreen(
-            eventId = "1",
-            onBackClick = {},
-        )
-    }
+fun ViewEventScreenPreview(){
+    ViewEventScreen(eventId = "evt_001", onBackClick = {})
 }

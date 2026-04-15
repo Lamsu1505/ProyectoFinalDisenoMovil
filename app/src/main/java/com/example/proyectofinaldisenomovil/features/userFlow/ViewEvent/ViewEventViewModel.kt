@@ -1,11 +1,23 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.R
+import com.example.proyectofinaldisenomovil.core.utils.RequestResult
+import com.example.proyectofinaldisenomovil.data.repository.EventRepository
+import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.domain.model.Event.Event
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.util.UUID
+import javax.inject.Inject
 
 data class CommentUiModel(
     val id: String,
@@ -15,100 +27,60 @@ data class CommentUiModel(
     val text: String
 )
 
-data class ViewEventUiState(
-    val title: String = "Partido de la paz (Real Madrid vs Universidad del Quindío)",
-    val category: String = "Deportes",
-    val date: String = "Jueves 28 de febrero",
-    val time: String = "6:00 pm",
-    val location: String = "Estadio centenario Armenia.",
-    val distance: String = "2 km",
-    val likes: Int = 200,
-    val currentAttendees: Int = 10500,
-    val maxAttendees: Int = 30000,
-    val creatorName: String = "AndresZuniga0fdefd fsf fd5",
-    val description: String = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing",
-    val imageRes: Int = R.mipmap.fut_img,
-    val totalImages: Int = 8,
-    val currentImageIndex: Int = 1,
-    val comments: List<CommentUiModel> = listOf(
-        CommentUiModel(
-            id = "1",
-            authorName = "Andres Perez",
-            initials = "AP",
-            timeAgo = "Ahora",
-            text = "Hola quiero saber precio y lugar. Muchas gracias. Nos vemos allí."
-        ),
-        CommentUiModel(
-            id = "2",
-            authorName = "Natalia Tejada",
-            initials = "NT",
-            timeAgo = "Hace 1h",
-            text = "Es un evento no apto para mascotas, es muy lamentableeee. s un evento no apto para mascotas, es muy lamentableeee. s un evento no apto para mascotas, es muy lamentableeee. s un evento no apto para mascotas, es muy lamentableeee. s un evento no apto para mascotas, es muy lamentableeee. s un evento no apto para mascotas, es muy lamentableeee."
-        ),
-        CommentUiModel(
-            id = "3",
-            authorName = "Santiago Londoño",
-            initials = "SL",
-            timeAgo = "Hace 2h",
-            text = "Soy londoño."
-        )
-    )
-)
 
-class ViewEventViewModel : ViewModel() {
+@HiltViewModel
+class ViewEventViewModel @Inject constructor(
+    private val repository: EventRepository
+): ViewModel() {
 
-    var uiState by mutableStateOf(ViewEventUiState())
-        private set
 
-    var isInterested by mutableStateOf(false)
-        private set
 
-    var isConfirmed by mutableStateOf(false)
-        private set
+    private val _detailResult = MutableStateFlow<RequestResult?>(null)
+    val detailResult: StateFlow<RequestResult?> = _detailResult.asStateFlow()
 
-    // UI state for commenting
-    var isAddingComment by mutableStateOf(false)
-        private set
+    private val _currentEvent = MutableStateFlow<Event?>(null)
+    val currentEvent: StateFlow<Event?> = _currentEvent.asStateFlow()
 
-    var newCommentText by mutableStateOf("")
-        private set
+
+    private val _isInterested = MutableStateFlow(false)
+    val isInterested: StateFlow<Boolean> = _isInterested.asStateFlow()
+
+    private val _isConfirmed = MutableStateFlow(false)
+    val isConfirmed: StateFlow<Boolean> = _isConfirmed.asStateFlow()
+
+
+    fun findEventById (eventId : String){
+        viewModelScope.launch {
+            _currentEvent.value = null
+            _detailResult.value = RequestResult.Loading
+            _detailResult.value = runCatching {
+                repository.getEventById(eventId)?.also {
+                    Log.e("EVENT", it.toString())
+                    _currentEvent.value = it
+                }
+            }.fold(
+                onSuccess = { RequestResult.Success(R.string.detail_success.toString()) },
+                onFailure = { RequestResult.Failure(it.message.toString()?: R.string.error_unknown.toString()) }
+            )
+        }
+
+    }
 
     fun toggleInterested() {
-        isInterested = !isInterested
+        val eventId = _currentEvent.value?.id ?: return
+        val userId = MockDataRepository.getLoggedInUser()?.uid ?: return
+        _isInterested.value = MockDataRepository.toggleLikeEvent(userId, eventId)
     }
 
     fun toggleConfirmed() {
-        isConfirmed = !isConfirmed
-    }
+        val eventId = _currentEvent.value?.id ?: return
+        val userId = MockDataRepository.getLoggedInUser()?.uid ?: return
 
-    fun startAddingComment() {
-        isAddingComment = true
-    }
-
-    fun onCommentTextChange(text: String) {
-        if (text.length <= 500) {
-            newCommentText = text
+        if (_isConfirmed.value) {
+            if (MockDataRepository.leaveEvent(userId, eventId)) _isConfirmed.value = false
+        } else {
+            if (MockDataRepository.attendEvent(userId, eventId)) _isConfirmed.value = true
         }
     }
 
-    fun cancelAddingComment() {
-        isAddingComment = false
-        newCommentText = ""
-    }
-
-    fun sendComment() {
-        if (newCommentText.isNotBlank()) {
-            val newComment = CommentUiModel(
-                id = UUID.randomUUID().toString(),
-                authorName = "Tú", // In real app, get from user profile
-                initials = "YO",
-                timeAgo = "Ahora",
-                text = newCommentText
-            )
-            uiState = uiState.copy(
-                comments = uiState.comments + newComment
-            )
-            cancelAddingComment()
-        }
-    }
 }
