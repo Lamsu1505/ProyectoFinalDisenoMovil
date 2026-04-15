@@ -243,19 +243,23 @@ fun ProfileScreen(
                 border = BorderStroke(1.dp, Color.LightGray)
             ) {
                 Column {
-                    MenuItem(Icons.Default.Edit, stringResource(R.string.profile_edit)) {}
+                    MenuItem(Icons.Default.Edit, stringResource(R.string.profile_edit) , false) {}
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
-                    MenuItem(Icons.Default.Language, stringResource(R.string.profile_language)) {
+                    MenuItem(Icons.Default.Language, stringResource(R.string.profile_language) , false) {
                         showLanguageDialog = true
                     }
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
-                    MenuItem(Icons.Default.Article, stringResource(R.string.profile_terms)) { /* Navigate */ }
+                    MenuItem(Icons.Default.Article, stringResource(R.string.profile_terms) , false) { /* Navigate */ }
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
-                    MenuItem(Icons.AutoMirrored.Filled.ExitToApp, stringResource(R.string.profile_logout), isLogout = true) {
-                        viewModel.onLogout()
+                    MenuItem(
+                        icon = Icons.AutoMirrored.Filled.ExitToApp,
+                        text = stringResource(R.string.profile_logout),
+                        isLogout = true
+                    ) {
+                        onLogout()
                     }
                 }
             }
@@ -319,7 +323,12 @@ fun BadgeItem(icon: ImageVector?, label: String, tint: Color, isRating: Boolean 
 }
 
 @Composable
-fun MenuItem(icon: ImageVector, text: String, isLogout: Boolean = false, onClick: () -> Unit) {
+fun MenuItem(
+    icon: ImageVector,
+    text: String,
+    isLogout: Boolean,
+    onClick: () -> Unit
+) {
     TextButton(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),

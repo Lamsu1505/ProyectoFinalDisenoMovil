@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.core.navigation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.local.SessionManager
@@ -28,38 +29,56 @@ class AuthViewModel @Inject constructor(
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
     init {
-        checkAuthState()
+        //checkAuthState()
+        observeAuthState()
     }
 
-    private fun checkAuthState() {
+    private fun observeAuthState() {
         viewModelScope.launch {
-            val isLoggedIn = sessionManager.isLoggedIn.first()
-            if (isLoggedIn) {
-                val userId = sessionManager.userId.first()
-                val userRole = sessionManager.userRole.first()
-                if (userId != null && userRole != null) {
-                    val user = MockDataRepository.getUserById(userId)
-                    if (user != null) {
-                        MockDataRepository.setLoggedInUser(user)
+            sessionManager.isLoggedIn.collect { isLoggedIn ->
+                if (isLoggedIn) {
+                    val userId = sessionManager.userId.first()
+                    val userRole = sessionManager.userRole.first()
+                    if (userId != null && userRole != null) {
                         _authState.value = AuthState.Authenticated(UserRole.valueOf(userRole))
-                    } else {
-                        sessionManager.clearSession()
-                        _authState.value = AuthState.NotAuthenticated
                     }
                 } else {
                     _authState.value = AuthState.NotAuthenticated
                 }
-            } else {
-                _authState.value = AuthState.NotAuthenticated
             }
         }
     }
+//    private fun checkAuthState() {
+//        viewModelScope.launch {
+//            val isLoggedIn = sessionManager.isLoggedIn.first()
+//            if (isLoggedIn) {
+//                val userId = sessionManager.userId.first()
+//                val userRole = sessionManager.userRole.first()
+//                if (userId != null && userRole != null) {
+//                    val user = MockDataRepository.getUserById(userId)
+//                    if (user != null) {
+//                        MockDataRepository.setLoggedInUser(user)
+//                        _authState.value = AuthState.Authenticated(UserRole.valueOf(userRole))
+//                    } else {
+//                        sessionManager.clearSession()
+//                        _authState.value = AuthState.NotAuthenticated
+//                    }
+//                } else {
+//                    _authState.value = AuthState.NotAuthenticated
+//                }
+//            } else {
+//                _authState.value = AuthState.NotAuthenticated
+//            }
+//        }
+//    }
 
     fun logout() {
         viewModelScope.launch {
+            Log.i("DEBUG", "Iniciando proceso de Logout")
             sessionManager.clearSession()
             MockDataRepository.logout()
             _authState.value = AuthState.NotAuthenticated
+            Log.i("DEBUG", "authState cambiado a NotAuthenticated")
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.proyectofinaldisenomovil.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -27,6 +28,17 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = hiltViewModel()
     val authState by authViewModel.authState.collectAsState()
+
+    // Lógica para reaccionar al cambio de estado de autenticación
+    LaunchedEffect(authState) {
+        if (authState is AuthState.NotAuthenticated) {
+            if (navController.currentDestination?.route != LoginRoutes.Login::class.qualifiedName) {
+                navController.navigate(LoginRoutes.Login) {
+                    popUpTo(0) { inclusive = true }
+                }
+            }
+        }
+    }
 
     val onLogout: () -> Unit = {
         authViewModel.logout()
@@ -85,7 +97,9 @@ fun AppNavigation() {
         }
 
         composable<AppRoute.UserFlow> {
-            UserNavigation(onLogout = onLogout)
+            UserNavigation(
+                onLogout = onLogout
+            )
         }
 
         composable<AppRoute.ModeratorFlow> {

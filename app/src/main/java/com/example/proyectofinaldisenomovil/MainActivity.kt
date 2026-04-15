@@ -50,7 +50,6 @@ class MainActivity : ComponentActivity() {
     val config = Configuration(newBase.resources.configuration)
     config.setLocale(locale) // funciona en todas las versiones relevantes
 
-    // ✅ Crear el nuevo contexto con la configuración y pasarlo a super
     super.attachBaseContext(newBase.createConfigurationContext(config))
 }
 
