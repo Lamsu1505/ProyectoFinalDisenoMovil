@@ -4,10 +4,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.features.LikedEvents.SavedEventsScreen
@@ -15,6 +17,7 @@ import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.Create
 import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.LikedEventsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.Notifications.NotificationsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.Profile.ProfileScreen
+import com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent.ViewEventScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.home.HomeScreen
 
 object UserRoutes {
@@ -24,6 +27,7 @@ object UserRoutes {
     const val LIKED_EVENTS = "likedEvents"
     const val PROFILE = "profile"
     const val NOTIFICATIONS = "notifications"
+    const val EVENT_DETAIL = "eventDetail"
 }
 
 @Composable
@@ -76,6 +80,9 @@ fun UserNavigation(
                     paddingValues = paddingValues,
                     onNotificationClick = {
                         userNavController.navigate(UserRoutes.NOTIFICATIONS)
+                    },
+                    onEventClick = { eventId ->
+                        userNavController.navigate("${UserRoutes.EVENT_DETAIL}/$eventId")
                     }
                 )
             }
@@ -129,6 +136,17 @@ fun UserNavigation(
             composable(UserRoutes.NOTIFICATIONS) {
                 NotificationsScreen(
                     paddingValues = paddingValues,
+                    onBackClick = { userNavController.popBackStack() }
+                )
+            }
+
+            composable(
+                route = "${UserRoutes.EVENT_DETAIL}/{eventId}",
+                arguments = listOf(navArgument("eventId") { type = NavType.StringType })) { backStackEntry ->
+                val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+                // Aquí llamas a tu pantalla de detalle (ej: EventDetailScreen)
+                ViewEventScreen(
+                    eventId = eventId,
                     onBackClick = { userNavController.popBackStack() }
                 )
             }

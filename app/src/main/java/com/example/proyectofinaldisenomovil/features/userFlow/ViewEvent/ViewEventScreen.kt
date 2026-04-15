@@ -49,7 +49,8 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ViewEventScreen(
-    navController: NavController,
+    eventId: String,
+    onBackClick: () -> Unit,
     viewEventViewModel: ViewEventViewModel = viewModel()
 ) {
     val state = viewEventViewModel.uiState
@@ -609,7 +610,7 @@ fun CommentInputSection(
     onCancel: () -> Unit
 ) {
     val charLimit = 500
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -667,6 +668,9 @@ fun CommentInputSection(
 @Composable
 fun ViewEventScreenPreview() {
     ProyectoFinalDisenoMovilTheme {
-        ViewEventScreen(navController = rememberNavController())
+        ViewEventScreen(
+            eventId = "1",
+            onBackClick = {},
+        )
     }
 }

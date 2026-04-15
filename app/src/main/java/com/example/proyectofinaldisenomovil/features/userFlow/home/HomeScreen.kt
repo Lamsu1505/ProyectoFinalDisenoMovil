@@ -66,7 +66,8 @@ import com.example.proyectofinaldisenomovil.R
 fun HomeScreen(
     homeViewModel: HomeViewModel = viewModel(),
     paddingValues: PaddingValues,
-    onNotificationClick: () -> Unit
+    onNotificationClick: () -> Unit,
+    onEventClick : (String) -> Unit
 ) {
     var query by remember { mutableStateOf("") }
 
@@ -105,7 +106,6 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.size(7.dp))
 
-        // ✅ LazyColumn con la lista real de eventos
         if (events.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -127,7 +127,11 @@ fun HomeScreen(
                     items = events,
                     key = { it.id }
                 ) { event ->
-                    EventCard(event = event)
+                    EventCard(
+                        event = event,
+                        onEventClick = onEventClick,
+                        onLikeClick = {}
+                    )
                 }
             }
         }
@@ -295,7 +299,7 @@ fun DistanceComboBox() {
 @Composable
 fun EventCard(
     event: Event,
-    onClick: () -> Unit = {},
+    onEventClick: (String) -> Unit,
     onLikeClick: () -> Unit = {}
 ) {
 
@@ -320,7 +324,7 @@ fun EventCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 8.dp)
-            .clickable { onClick() },
+            .clickable { onEventClick(event.id) },
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(6.dp),
         colors = CardDefaults.cardColors(
@@ -504,7 +508,8 @@ fun HomeScreenPreview() {
     ProyectoFinalDisenoMovilTheme {
         HomeScreen(
             paddingValues = PaddingValues(0.dp),
-            onNotificationClick = {}
+            onNotificationClick = {},
+            onEventClick = {}
         )
     }
 }

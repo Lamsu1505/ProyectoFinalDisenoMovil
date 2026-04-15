@@ -59,8 +59,6 @@ fun ModeratorPanelScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    printEvents()
-
     Column(modifier = modifier.fillMaxSize()) {
         ModeratorTopBar(
             navController = navController,
