@@ -52,6 +52,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryEventsSelectorBar
@@ -64,7 +65,7 @@ import com.example.proyectofinaldisenomovil.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel = viewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel(),
     paddingValues: PaddingValues,
     onNotificationClick: () -> Unit,
     onEventClick : (String) -> Unit
@@ -72,7 +73,7 @@ fun HomeScreen(
     var query by remember { mutableStateOf("") }
 
     // Observa el estado del ViewModel
-    val events by homeViewModel.events.collectAsState()
+    val events by homeViewModel.events.collectAsState(initial = emptyList())
     val orderBy by homeViewModel.orderBy.collectAsState()
 
     Column(

@@ -1,17 +1,24 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val repository: EventRepository
+): ViewModel() {
 
+    private var allEvents: List<Event> = emptyList()
     private val _events = MutableStateFlow<List<Event>>(emptyList())
     val events: StateFlow<List<Event>> = _events.asStateFlow()
 
@@ -33,7 +40,14 @@ class HomeViewModel : ViewModel() {
     fun loadEvents() {
         viewModelScope.launch {
             _isLoading.value = true
+
+            //Realmente la que carga los eventos
+            val verifiedEvents = repository.getVerifiedEvents()
+            Log.d("HOME", "Eventos recibidos: ${verifiedEvents.size}")
+            allEvents = verifiedEvents
+
             applyFilters()
+
             _isLoading.value = false
         }
     }
@@ -53,8 +67,8 @@ class HomeViewModel : ViewModel() {
         applyFilters()
     }
 
-    private fun applyFilters() {
-        var result = MockDataRepository.getVerifiedEvents()
+    private  fun applyFilters() {
+        var result = allEvents
 
         _selectedCategory.value?.let { category ->
             result = result.filter { it.category == category }
@@ -63,8 +77,8 @@ class HomeViewModel : ViewModel() {
         if (currentSearchQuery.isNotBlank()) {
             result = result.filter {
                 it.title.contains(currentSearchQuery, ignoreCase = true) ||
-                it.description.contains(currentSearchQuery, ignoreCase = true) ||
-                it.address.contains(currentSearchQuery, ignoreCase = true)
+                        it.description.contains(currentSearchQuery, ignoreCase = true) ||
+                        it.address.contains(currentSearchQuery, ignoreCase = true)
             }
         }
 

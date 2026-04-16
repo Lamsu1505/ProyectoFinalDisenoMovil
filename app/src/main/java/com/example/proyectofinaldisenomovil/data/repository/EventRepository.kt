@@ -52,4 +52,6 @@ interface EventRepository {
 
     /** Returns all pending events for the moderator review panel. */
     fun observePendingEvents(): Flow<List<Event>>
+
+    suspend fun getVerifiedEvents(): List<Event>
 }
