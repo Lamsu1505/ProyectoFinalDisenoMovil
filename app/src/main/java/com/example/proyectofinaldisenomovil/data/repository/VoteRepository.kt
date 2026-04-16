@@ -1,5 +1,8 @@
 package com.example.proyectofinaldisenomovil.data.repository
 
+import com.example.proyectofinaldisenomovil.domain.model.Event.Event
+import com.example.proyectofinaldisenomovil.domain.model.Vote
+
 /**
  * Contract for "Es importante / Me interesa" vote persistence.
  *
@@ -24,4 +27,7 @@ interface VoteRepository {
 
     /** Toggles the vote state based on [hasVoted]. Returns new voted state. */
     suspend fun toggleVote(eventId: String, uid: String): Boolean
+    fun fetchVotes(): List<Vote>
+
+    suspend fun getLikedEventsIdByUserID(userId: String): List<String>
 }

@@ -2,13 +2,17 @@ package com.example.proyectofinaldisenomovil.features.userFlow.SavedEvents
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.proyectofinaldisenomovil.data.repository.AttendanceRepository
+import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.FavoriteEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class SavedEventsUiState(
     val savedEvents: List<FavoriteEvent> = emptyList(),
@@ -17,7 +21,12 @@ data class SavedEventsUiState(
     val searchQuery: String = ""
 )
 
-class SavedEventsViewModel : ViewModel() {
+@HiltViewModel
+class SavedEventsViewModel @Inject constructor(
+    private val eventRepository: EventRepository,
+    private val attendanceRepository: AttendanceRepository
+)
+    : ViewModel() {
     private val _uiState = MutableStateFlow(SavedEventsUiState())
     val uiState: StateFlow<SavedEventsUiState> = _uiState.asStateFlow()
 
@@ -29,7 +38,8 @@ class SavedEventsViewModel : ViewModel() {
         viewModelScope.launch {
             val currentUser = MockDataRepository.getLoggedInUser()
             if (currentUser != null) {
-                val savedEvents = MockDataRepository.getSavedEvents(currentUser.uid)
+                val idSavedEvents = attendanceRepository.getEventsIdByUserID(currentUser.uid)
+                val savedEvents = eventRepository.getEventsByIds(idSavedEvents)
                 _uiState.value = _uiState.value.copy(
                     savedEvents = savedEvents.map { it.toFavoriteEvent() }
                 )

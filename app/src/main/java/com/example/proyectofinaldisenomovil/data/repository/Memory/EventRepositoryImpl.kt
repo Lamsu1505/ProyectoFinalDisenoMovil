@@ -286,4 +286,8 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
     override suspend fun getVerifiedEvents(): List<Event> {
        return _events.value.filter { it.status == EventStatus.VERIFIED }
     }
+
+    override suspend fun getEventsByIds(ids: List<String>): List<Event> {
+        return _events.value.filter { ids.contains(it.id) }
+    }
 }

@@ -145,6 +145,7 @@ private fun EventDetailContent(
             )
         }
         item { EventDescription(event.description) }
+
         item { EventMapPlaceholder() }
 
         // ── SECCIÓN COMENTARIOS ──────────────────
@@ -338,6 +339,7 @@ private fun EventInfoSection(
             }
         }
     }
+    Spacer(modifier = Modifier.height(20.dp))
 }
 
 
@@ -401,10 +403,10 @@ private fun IconLabel(
 private fun EventDescription(description: String) {
     Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
         Text(
-            "Descripción del evento",
+            text = stringResource(R.string.view_event_description_title),
             style      = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color      = MaterialTheme.colorScheme.onBackground
+            color      = MaterialTheme.colorScheme.onSurface
         )
         Spacer(Modifier.height(8.dp))
         Text(
@@ -414,6 +416,7 @@ private fun EventDescription(description: String) {
             color     = MaterialTheme.colorScheme.onSurface
         )
     }
+    Spacer(modifier = Modifier.height(20.dp))
 }
 
 // ─────────────────────────────────────────────
@@ -423,9 +426,10 @@ private fun EventDescription(description: String) {
 private fun EventMapPlaceholder() {
     Column(modifier = Modifier.padding(horizontal = 20.dp)) {
         Text(
-            "Ubicación exacta",
+            text      = stringResource(R.string.view_event_location),
             style      = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color      = MaterialTheme.colorScheme.onSurface
         )
         Spacer(Modifier.height(10.dp))
         Box(
@@ -439,6 +443,7 @@ private fun EventMapPlaceholder() {
             Text("Mapa próximamente", color = Color.DarkGray)
         }
     }
+    Spacer(modifier = Modifier.height(20.dp))
 }
 
 // ─────────────────────────────────────────────
@@ -448,10 +453,10 @@ private fun EventMapPlaceholder() {
 private fun CommentsSection(comments: List<Comment>) {
     Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
         Text(
-            text       = "Comentarios",
+            text       = stringResource(R.string.view_event_comments),
             style      = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color      = MaterialTheme.colorScheme.onBackground
+            color      = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(Modifier.height(12.dp))

@@ -54,4 +54,6 @@ interface EventRepository {
     fun observePendingEvents(): Flow<List<Event>>
 
     suspend fun getVerifiedEvents(): List<Event>
+
+    suspend fun getEventsByIds(ids: List<String>): List<Event>
 }
