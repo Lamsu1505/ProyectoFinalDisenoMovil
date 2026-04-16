@@ -107,6 +107,9 @@ fun UserNavigation(
                     paddingValues = paddingValues,
                     onNotificationClick = {
                         userNavController.navigate(UserRoutes.NOTIFICATIONS)
+                    },
+                    onEventClick = { eventId ->
+                        userNavController.navigate("${UserRoutes.EVENT_DETAIL}/$eventId")
                     }
                 )
             }
@@ -116,6 +119,9 @@ fun UserNavigation(
                     paddingValues = paddingValues,
                     onNotificationClick = {
                         userNavController.navigate(UserRoutes.NOTIFICATIONS)
+                    },
+                    onEventClick = { eventId ->
+                        userNavController.navigate("${UserRoutes.EVENT_DETAIL}/$eventId")
                     }
                 )
             }

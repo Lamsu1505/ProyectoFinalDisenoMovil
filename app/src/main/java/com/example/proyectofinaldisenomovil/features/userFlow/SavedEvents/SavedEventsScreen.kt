@@ -2,6 +2,7 @@ package com.example.proyectofinaldisenomovil.features.LikedEvents
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -44,7 +45,8 @@ import java.util.Locale
 fun SavedEventsScreen(
     viewModel: SavedEventsViewModel = hiltViewModel(),
     paddingValues: PaddingValues,
-    onNotificationClick: () -> Unit = {}
+    onNotificationClick: () -> Unit = {},
+    onEventClick: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -86,7 +88,8 @@ fun SavedEventsScreen(
                     event = event,
                     onUnsave = {
                         viewModel.onUnsaveEvent(event.id)
-                    }
+                    },
+                    onEventClick = onEventClick
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -152,14 +155,16 @@ fun SavedEventsFilters() {
 @Composable
 fun SavedEventCard(
     event: FavoriteEvent,
-    onUnsave: () -> Unit
+    onUnsave: () -> Unit,
+    onEventClick : (String) -> Unit
 ) {
     val numberFormat = NumberFormat.getNumberInstance(Locale("es", "CO"))
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            .clickable {onEventClick(event.id)},
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -276,12 +281,3 @@ fun IconInfoRowSavedEvents(icon: ImageVector, text: String) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SavedEventsScreenPreview() {
-    ProyectoFinalDisenoMovilTheme {
-        SavedEventsScreen(
-            paddingValues = PaddingValues()
-        )
-    }
-}
