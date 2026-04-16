@@ -2,6 +2,7 @@ package com.example.proyectofinaldisenomovil.data.repository.Memory
 
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
@@ -10,9 +11,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.filter
 import kotlin.collections.filter
 
 @Singleton
@@ -133,6 +136,103 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                 status = EventStatus.VERIFIED,
                 importantVotes = 88,
                 isResolved = false,
+                startDate = null,
+                endDate = null,
+                createdAt = null,
+                updatedAt = null
+            ),
+            Event(
+                id = "evt_012",
+                authorUid = "user_012",
+                authorName = "Natalia Duque",
+                title = "Feria de emprendedores locales",
+                description = "Más de 50 emprendedores del Quindío exhibirán productos artesanales, gastronómicos y de moda. Habrá shows musicales, zona de comidas y actividades para niños. Entrada libre.",
+                category = EventCategory.SOCIAL,
+                imageUrls = listOf(
+                    "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800",
+                    "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800"
+                ),
+                latitude = 4.5378,
+                longitude = -75.6820,
+                address = "Plaza de Bolívar, Armenia, Quindío",
+                maxAttendees = null,
+                currentAttendees = 312,
+                status = EventStatus.VERIFIED,
+                importantVotes = 156,
+                isResolved = false,
+                startDate = null,
+                endDate = null,
+                createdAt = null,
+                updatedAt = null
+            ),
+
+            Event(
+                id = "evt_013",
+                authorUid = "user_013",
+                authorName = "David Quintero",
+                title = "Bazar navideño barrio El Bosque",
+                description = "Bazar comunitario con venta de comidas típicas, artesanías navideñas, ropa y más. Las ganancias apoyan el alumbrado navideño del barrio. ¡Ven en familia!",
+                category = EventCategory.SOCIAL,
+                imageUrls = listOf(
+                    "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=800"
+                ),
+                latitude = 4.5445,
+                longitude = -75.6703,
+                address = "Parque El Bosque, Armenia, Quindío",
+                maxAttendees = null,
+                currentAttendees = 175,
+                status = EventStatus.VERIFIED,
+                importantVotes = 67,
+                isResolved = false,
+                startDate = null,
+                endDate = null,
+                createdAt = null,
+                updatedAt = null
+            ),
+
+            Event(
+                id = "evt_014",
+                authorUid = "user_014",
+                authorName = "Sara Vargas",
+                title = "Encuentro de colectivos juveniles del Quindío",
+                description = "Espacio de diálogo y conexión entre colectivos culturales, ambientales y sociales del departamento. Networking, presentaciones y cocreación de proyectos comunes.",
+                category = EventCategory.SOCIAL,
+                imageUrls = listOf(
+                    "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800"
+                ),
+                latitude = 4.5290,
+                longitude = -75.6840,
+                address = "Centro Cultural Comfenalco, Armenia, Quindío",
+                maxAttendees = 120,
+                currentAttendees = 77,
+                status = EventStatus.PENDING_REVIEW,
+                importantVotes = 23,
+                isResolved = false,
+                startDate = null,
+                endDate = null,
+                createdAt = null,
+                updatedAt = null
+            ),
+
+            // ─── EVENTO RESUELTO (para estadísticas) ────────────────────────────────
+            Event(
+                id = "evt_015",
+                authorUid = "user_001",
+                authorName = "Camilo Torres",
+                title = "Maratón 5K por la paz",
+                description = "Carrera pedestre de 5 kilómetros por las principales vías de Armenia. Evento ya realizado con gran éxito y participación ciudadana.",
+                category = EventCategory.DEPORTES,
+                imageUrls = listOf(
+                    "https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=800"
+                ),
+                latitude = 4.5339,
+                longitude = -75.6811,
+                address = "Avenida Bolívar, Armenia, Quindío",
+                maxAttendees = 500,
+                currentAttendees = 487,
+                status = EventStatus.VERIFIED,
+                importantVotes = 203,
+                isResolved = true,
                 startDate = null,
                 endDate = null,
                 createdAt = null,
@@ -282,6 +382,9 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun getVerifiedEvents(): List<Event> {
+       return _events.value.filter { it.status == EventStatus.VERIFIED }
+    }
     override suspend fun getVerifiedEvents(): List<Event> {
        return _events.value.filter { it.status == EventStatus.VERIFIED }
     }
