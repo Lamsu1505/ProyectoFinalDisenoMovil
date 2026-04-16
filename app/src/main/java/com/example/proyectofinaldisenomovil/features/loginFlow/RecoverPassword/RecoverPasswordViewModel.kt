@@ -1,6 +1,10 @@
 package com.example.proyectofinaldisenomovil.features.loginFlow.RecoverPassword
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class RecoverPasswordViewModel : ViewModel() {
+@HiltViewModel
+class RecoverPasswordViewModel @Inject constructor(
+): ViewModel() {
 }

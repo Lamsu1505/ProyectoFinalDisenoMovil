@@ -5,6 +5,7 @@ import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.data.repository.VoteRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
+import com.example.proyectofinaldisenomovil.domain.model.User.User
 import com.example.proyectofinaldisenomovil.domain.model.Vote
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -120,5 +121,4 @@ class VoteRepositoryImpl @Inject constructor(
         // 3. Devolvemos la lista de IDs de eventos
         return eventIds
     }
-
 }

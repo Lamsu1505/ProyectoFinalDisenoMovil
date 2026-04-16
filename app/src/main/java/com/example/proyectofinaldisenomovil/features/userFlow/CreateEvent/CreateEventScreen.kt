@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.DatePickerModal
@@ -56,7 +57,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CreateEventScreen(
-    viewModel: CreateEventViewModel = viewModel(),
+    viewModel: CreateEventViewModel = hiltViewModel(),
     paddingValues: PaddingValues,
     onBackClick: () -> Unit = {},
     onNotificationClick: () -> Unit = {},

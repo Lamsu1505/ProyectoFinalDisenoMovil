@@ -3,6 +3,7 @@ package com.example.proyectofinaldisenomovil.data.repository.Memory
 import com.example.proyectofinaldisenomovil.data.repository.AttendanceRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Attendance
+import com.example.proyectofinaldisenomovil.domain.model.User.User
 import com.example.proyectofinaldisenomovil.domain.model.Vote
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
@@ -11,6 +12,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.collections.map
+import kotlin.collections.mutableSetOf
+import kotlin.collections.set
 
 @Singleton
 class AttendanceRepositoryImpl @Inject constructor(): AttendanceRepository {

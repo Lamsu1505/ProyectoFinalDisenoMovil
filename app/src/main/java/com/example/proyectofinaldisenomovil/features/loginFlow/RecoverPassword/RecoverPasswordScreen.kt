@@ -24,19 +24,22 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppSnackbarHost
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SnackbarController
 import com.example.proyectofinaldisenomovil.core.component.login.HeaderSectionNonLogued
 import com.example.proyectofinaldisenomovil.core.component.login.TopBarRegister
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
 fun RecoverPasswordScreen(
     email: String = "",
     onBackClick: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
-    onSubmit: () -> Unit = {}
+    onSubmit: () -> Unit = {},
+    recoverPasswordViewModel: RecoverPasswordViewModel = hiltViewModel()
 ) {
     var code by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }

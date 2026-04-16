@@ -240,7 +240,7 @@ fun LoginForm(
 
         Button(
             enabled = loginViewModel.validateForm(),
-            onClick = { loginViewModel.login() },
+            onClick = {loginViewModel.login()},
             modifier = Modifier.height(50.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(

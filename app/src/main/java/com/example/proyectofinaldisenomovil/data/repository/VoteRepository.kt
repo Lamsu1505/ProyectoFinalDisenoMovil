@@ -1,6 +1,7 @@
 package com.example.proyectofinaldisenomovil.data.repository
 
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
+import com.example.proyectofinaldisenomovil.domain.model.User.User
 import com.example.proyectofinaldisenomovil.domain.model.Vote
 
 /**

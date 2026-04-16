@@ -16,4 +16,14 @@ interface UserRepository {
     fun observeUser(uid: String): Flow<User?>
 
     suspend fun saveFcmToken(uid: String, token: String)
+
+    fun registerUser (
+        firstName: String,
+        lastName: String,
+        email: String,
+        password: String
+    ): User?
+
+    fun validateCredentials(email: String, password: String) : User?
+    fun getAllUsers() : List<User>
 }

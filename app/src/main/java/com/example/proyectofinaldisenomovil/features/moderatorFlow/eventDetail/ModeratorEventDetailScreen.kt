@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -68,7 +69,7 @@ fun ModeratorEventDetailScreen(
     onLogout: () -> Unit,
     modifier: Modifier = Modifier,
     navController: NavController = rememberNavController(),
-    viewModel: ModeratorEventDetailViewModel = viewModel(),
+    viewModel: ModeratorEventDetailViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

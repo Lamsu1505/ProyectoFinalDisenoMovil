@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.features.loginFlow.login
 
+import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.local.SessionDataStore
 import com.example.proyectofinaldisenomovil.data.local.SessionManager
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
 import com.example.proyectofinaldisenomovil.domain.model.UserSession
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +29,8 @@ sealed class LoginResult {
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val sessionDataStore: SessionDataStore
+    private val sessionDataStore: SessionDataStore,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     var email by mutableStateOf("")
@@ -72,12 +75,13 @@ class LoginViewModel @Inject constructor(
     }
 
     fun login() {
+        Log.i("Login", "La lista actual de usuarios es: " + userRepository.getAllUsers().toString())
         if (!validateForm()) return
-        
         _loginResult.value = LoginResult.Loading
-        
-        val user = MockDataRepository.validateCredentials(email, password)
-        
+
+        val user = userRepository.validateCredentials(email, password)
+        //val user = MockDataRepository.validateCredentials(email, password)
+
         if (user != null) {
             viewModelScope.launch {
                 val mappedRole = when (user.role) {
@@ -91,7 +95,7 @@ class LoginViewModel @Inject constructor(
                     )
                 )
             }
-            MockDataRepository.setLoggedInUser(user)
+            MockDataRepository.setLoggedInUser(user) //TODO{Cambiar esto al repositorio}
             _loginResult.value = LoginResult.Success(user.uid, user.role)
         } else {
             _loginResult.value = LoginResult.Error

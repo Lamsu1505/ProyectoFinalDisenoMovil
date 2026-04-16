@@ -7,8 +7,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class ForgotPasswordViewModel : ViewModel() {
+@HiltViewModel
+class ForgotPasswordViewModel @Inject constructor(
+
+) : ViewModel() {
 
 
     private val auth: FirebaseAuth? =

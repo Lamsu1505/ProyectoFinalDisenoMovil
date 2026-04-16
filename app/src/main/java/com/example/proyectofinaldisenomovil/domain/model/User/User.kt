@@ -12,6 +12,7 @@ data class User(
     val firstName: String = "",
     val lastName: String = "",
     val email: String = "",
+    val password: String = "",
     val profileImageUrl: String? = null,
     /** Latitude of the user's home / reference location */
     val location : Location?,

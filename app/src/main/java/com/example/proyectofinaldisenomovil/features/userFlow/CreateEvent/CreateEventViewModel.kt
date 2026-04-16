@@ -7,6 +7,7 @@ import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.google.firebase.Timestamp
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,8 +15,12 @@ import kotlinx.coroutines.flow.update
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-sealed class CreateEventResult {
+@HiltViewModel
+sealed class CreateEventResult @Inject constructor(
+
+) {
     data object Idle : CreateEventResult()
     data object Loading : CreateEventResult()
     data object Success : CreateEventResult()

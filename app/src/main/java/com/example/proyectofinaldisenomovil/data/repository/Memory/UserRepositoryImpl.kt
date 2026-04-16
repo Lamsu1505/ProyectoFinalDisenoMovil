@@ -29,6 +29,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             firstName = "Camilo",
             lastName = "Torres",
             email = "a@g.com",
+            password = MOCK_PASSWORD,
             profileImageUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200",
             location = defaultLocation,
             city = "Armenia, Quindío",
@@ -43,6 +44,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             firstName = "Laura",
             lastName = "Gómez",
             email = "laura@example.com",
+            password = MOCK_PASSWORD,
             profileImageUrl = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
             location = defaultLocation,
             city = "Armenia, Quindío",
@@ -57,6 +59,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             firstName = "Sebastián",
             lastName = "Ríos",
             email = "sebastian@example.com",
+            password = MOCK_PASSWORD,
             profileImageUrl = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200",
             location = Location(latitude = 4.5667, longitude = -75.7500),
             city = "Montenegro, Quindío",
@@ -71,6 +74,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             firstName = "Valentina",
             lastName = "Ospina",
             email = "valentina@example.com",
+            password = MOCK_PASSWORD,
             profileImageUrl = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200",
             location = defaultLocation,
             city = "Armenia, Quindío",
@@ -85,6 +89,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             firstName = "Juan",
             lastName = "Pérez",
             email = "moderator1@example.com",
+            password = MOCK_PASSWORD,
             profileImageUrl = "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200",
             location = defaultLocation,
             city = "Armenia, Quindío",
@@ -99,6 +104,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             firstName = "María",
             lastName = "López",
             email = "moderator2@example.com",
+            password = MOCK_PASSWORD,
             profileImageUrl = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200",
             location = defaultLocation,
             city = "Armenia, Quindío",
@@ -127,7 +133,43 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
         TODO("Not yet implemented")
     }
 
-    fun getAllUsers(): List<User> = _users.toList()
+    override fun registerUser(
+        firstName: String,
+        lastName: String,
+        email: String,
+        password: String
+    ) : User?
+    {
+        if (_users.any { it.email.equals(email, ignoreCase = true) }) {
+            return null
+        }
+        val newUser = User(
+            uid = "user_${UUID.randomUUID().toString().take(8)}",
+            firstName = firstName,
+            lastName = lastName,
+            email = email,
+            password = password,
+            location = defaultLocation,
+            city = "Armenia, Quindío",
+            role = UserRole.USER,
+            reputationPoints = 0,
+            level = UserLevel.ESPECTADOR,
+            badges = emptyList(),
+            isActive = true,
+            createdAt = Timestamp.now()
+        )
+        _users.add(newUser)
+        return newUser
+    }
+
+    override fun validateCredentials(
+        email: String,
+        password: String
+    ): User? {
+        return _users.firstOrNull { it.email == email && it.password == password }
+    }
+
+    override fun getAllUsers(): List<User> = _users.toList()
 
     override suspend fun getUserById(uid: String): User? = _users.firstOrNull { it.uid == uid }
 
