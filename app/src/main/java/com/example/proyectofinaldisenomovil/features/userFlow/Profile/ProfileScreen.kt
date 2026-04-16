@@ -1,9 +1,21 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.Profile
 
+import android.app.Activity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,9 +31,17 @@ import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.StarHalf
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,34 +52,41 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.core.theme.*
-import com.example.proyectofinaldisenomovil.R
+import com.example.proyectofinaldisenomovil.features.settings.SettingsViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel = viewModel(),
-    paddingValues: PaddingValues,
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel(),
+    paddingValues: PaddingValues = PaddingValues(),
     onLogout: () -> Unit,
     onNotificationClick: () -> Unit = {},
     onBackClick: () -> Unit = {}
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by profileViewModel.uiState.collectAsState()
+    val currentLanguage by settingsViewModel.currentLanguage.collectAsState()
+    val context = LocalContext.current
 
     var showLanguageDialog by remember { mutableStateOf(false) }
-    var selectedLanguage by remember { mutableStateOf("es") }
+
+    LaunchedEffect(Unit) {
+        profileViewModel.loadUserProfile()
+    }
 
     Scaffold(
         topBar = {
@@ -69,9 +96,7 @@ fun ProfileScreen(
                 onBackClick = onBackClick
             )
         },
-        bottomBar = { AppBottomBar(
-            selectedRoute = ""
-        ) },
+        bottomBar = { AppBottomBar(selectedRoute = "") },
         containerColor = whiteBackground
     ) { paddingValues ->
         Column(
@@ -81,7 +106,6 @@ fun ProfileScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Header Section
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -93,8 +117,6 @@ fun ProfileScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-
-                    // Profile Image (Initials)
                     Box(
                         modifier = Modifier
                             .size(120.dp)
@@ -136,8 +158,8 @@ fun ProfileScreen(
                 }
             }
 
-            // Points Section
             Spacer(modifier = Modifier.height(20.dp))
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -184,7 +206,6 @@ fun ProfileScreen(
                 }
             }
 
-            // Mis eventos section
             Spacer(modifier = Modifier.height(20.dp))
             SectionTitle(stringResource(R.string.profile_my_events))
             Card(
@@ -202,14 +223,13 @@ fun ProfileScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     EventStat(Icons.Default.DateRange, stringResource(R.string.profile_active), uiState.activeEvents.toString(), blue)
-                    VerticalDivider(modifier = Modifier.height(50.dp), color = Color.LightGray)
+                    Box(modifier = Modifier.width(1.dp).height(50.dp).background(Color.LightGray))
                     EventStat(Icons.Default.CheckCircle, stringResource(R.string.profile_completed), uiState.completedEvents.toString(), green)
-                    VerticalDivider(modifier = Modifier.height(50.dp), color = Color.LightGray)
+                    Box(modifier = Modifier.width(1.dp).height(50.dp).background(Color.LightGray))
                     EventStat(Icons.Default.DateRange, stringResource(R.string.profile_pending), uiState.pendingEvents.toString(), Color(0xFFFFA000))
                 }
             }
 
-            // Insignias section
             SectionTitle(stringResource(R.string.profile_badges))
             Card(
                 modifier = Modifier
@@ -232,7 +252,6 @@ fun ProfileScreen(
                 }
             }
 
-            // Menu Options
             Spacer(modifier = Modifier.height(24.dp))
             Card(
                 modifier = Modifier
@@ -243,40 +262,45 @@ fun ProfileScreen(
                 border = BorderStroke(1.dp, Color.LightGray)
             ) {
                 Column {
-                    MenuItem(Icons.Default.Edit, stringResource(R.string.profile_edit) , false) {}
+                    MenuItem(Icons.Default.Edit, stringResource(R.string.profile_edit), false) {}
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
-                    MenuItem(Icons.Default.Language, stringResource(R.string.profile_language) , false) {
+                    MenuItem(Icons.Default.Language, stringResource(R.string.profile_language), false) {
                         showLanguageDialog = true
                     }
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
-                    MenuItem(Icons.Default.Article, stringResource(R.string.profile_terms) , false) { /* Navigate */ }
+                    MenuItem(Icons.Default.Article, stringResource(R.string.profile_terms), false) {}
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
                     MenuItem(
                         icon = Icons.AutoMirrored.Filled.ExitToApp,
                         text = stringResource(R.string.profile_logout),
                         isLogout = true
-                    ) {
-                        onLogout()
-                    }
+                    ) { onLogout() }
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))
         }
+    }
 
-        if (showLanguageDialog) {
-            LanguageDialog(
-                currentLanguage = selectedLanguage,
-                onLanguageSelected = { code ->
-                    selectedLanguage = code
-                    showLanguageDialog = false
-                    // aquí llamas tu lógica para cambiar el idioma
-                },
-                onDismiss = { showLanguageDialog = false }
-            )
-        }
+    if (showLanguageDialog) {
+        LanguageChangeDialog(
+            currentLanguage = currentLanguage,
+            onLanguageSelected = { code ->
+                settingsViewModel.setLanguage(code)
+                profileViewModel.setLanguage(code)
+                showLanguageDialog = false
+                (context as? Activity)?.let { activity ->
+                    val locale = java.util.Locale(code)
+                    val config = android.content.res.Configuration(context.resources.configuration)
+                    config.setLocale(locale)
+                    context.resources.updateConfiguration(config, context.resources.displayMetrics)
+                    activity.recreate()
+                }
+            },
+            onDismiss = { showLanguageDialog = false }
+        )
     }
 }
 
@@ -358,9 +382,8 @@ fun MenuItem(
     }
 }
 
-
 @Composable
-fun LanguageDialog(
+fun LanguageChangeDialog(
     currentLanguage: String,
     onLanguageSelected: (String) -> Unit,
     onDismiss: () -> Unit
@@ -368,6 +391,11 @@ fun LanguageDialog(
     val languages = listOf(
         Pair("es", "Español"),
         Pair("en", "English"),
+    )
+
+    val flagEmojis = mapOf(
+        "es" to "\uD83C\uDDEA\uD83C\uDDF8",
+        "en" to "\uD83C\uDDFA\uD83C\uDDF8"
     )
 
     AlertDialog(
@@ -390,7 +418,11 @@ fun LanguageDialog(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(text = name, fontSize = 16.sp)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = flagEmojis[code] ?: "", fontSize = 24.sp)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(text = name, fontSize = 16.sp)
+                        }
                         if (code == currentLanguage) {
                             Icon(
                                 imageVector = Icons.Default.CheckCircle,

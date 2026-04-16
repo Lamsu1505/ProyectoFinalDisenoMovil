@@ -359,4 +359,21 @@
     <string name="logout_button">Log out</string>
     <string name="dialog_confirm">Confirm</string>
     <string name="dialog_close">Close</string>
+
+    <!-- Language Settings -->
+    <string name="language_spanish">Español</string>
+    <string name="language_english">English</string>
+    <string name="language_change_success">Language changed successfully</string>
+    <string name="language_current">Current language</string>
+    <string name="language_login_title">Change language</string>
+
+    <!-- Profile Messages -->
+    <string name="profile_success_load">Profile loaded successfully</string>
+    <string name="profile_error_load">Error loading profile</string>
+    <string name="profile_save_success">Changes saved</string>
+    <string name="profile_save_error">Error saving changes</string>
+
+    <!-- Login Messages -->
+    <string name="login_success">Login successful</string>
+    <string name="login_error_credentials">Invalid email or password</string>
 </resources>

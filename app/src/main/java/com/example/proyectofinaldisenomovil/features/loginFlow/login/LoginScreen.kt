@@ -59,23 +59,23 @@ import com.example.proyectofinaldisenomovil.core.component.login.LoginHeaderSect
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.core.theme.green
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
+import com.example.proyectofinaldisenomovil.features.settings.SettingsViewModel
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
+    loginViewModel: LoginViewModel = hiltViewModel(),
     onNavigateToForgotPassword : () -> Unit,
     onNavigateToRegister : () -> Unit,
     onNavigateToModeratorFlow : () -> Unit,
     onNavigateToUserFlow : () -> Unit,
     onLoginSuccess: (String, com.example.proyectofinaldisenomovil.domain.model.UserRole) -> Unit = { _, _ -> }
 ) {
-
-    val loginResult by viewModel.loginResult.collectAsState()
+    val loginResult by loginViewModel.loginResult.collectAsState()
+    val currentLanguage by settingsViewModel.currentLanguage.collectAsState()
     val context = LocalContext.current
     
     var showLanguageDialog by remember { mutableStateOf(false) }
-    var selectedLanguage by remember { mutableStateOf("es") }
-    var languageChanged by remember { mutableStateOf(false) }
 
     LaunchedEffect(loginResult) {
         when (val result = loginResult) {
@@ -87,30 +87,20 @@ fun LoginScreen(
                 onLoginSuccess(result.userId, mappedRole)
                 if (result.role == UserRole.MODERATOR) onNavigateToModeratorFlow()
                 else onNavigateToUserFlow()
-                viewModel.resetResult()
+                loginViewModel.resetResult()
             }
             else -> Unit
         }
     }
 
-    LaunchedEffect(languageChanged) {
-        if (languageChanged) {
-            languageChanged = false
-            (context as? Activity)?.recreate()
-        }
-    }
-
     Scaffold(
-    ) {
-        paddingValues ->
-
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
         ) {
-
             LoginHeaderSection(
                 onLanguageClick = { showLanguageDialog = true }
             )
@@ -127,7 +117,6 @@ fun LoginScreen(
                     containerColor = MaterialTheme.colorScheme.background
                 )
             ) {
-
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -137,7 +126,7 @@ fun LoginScreen(
                     verticalArrangement = Arrangement.spacedBy(50.dp)
                 ) {
                     LoginForm(
-                        viewModel,
+                        loginViewModel,
                         onNavigateToForgotPassword,
                         onNavigateToRegister
                     )
@@ -148,11 +137,17 @@ fun LoginScreen(
 
     if (showLanguageDialog) {
         LanguageLoginDialog(
-            currentLanguage = selectedLanguage,
+            currentLanguage = currentLanguage,
             onLanguageSelected = { code ->
-                selectedLanguage = code
-                languageChanged = true
+                settingsViewModel.setLanguage(code)
                 showLanguageDialog = false
+                (context as? Activity)?.let { activity ->
+                    val locale = java.util.Locale(code)
+                    val config = android.content.res.Configuration(context.resources.configuration)
+                    config.setLocale(locale)
+                    context.resources.updateConfiguration(config, context.resources.displayMetrics)
+                    activity.recreate()
+                }
             },
             onDismiss = { showLanguageDialog = false }
         )
@@ -166,7 +161,6 @@ fun LoginForm(
     onNavigateToForgotPassword: () -> Unit,
     onNavigateToRegister: () -> Unit
 ){
-
     var passwordVisible by remember { mutableStateOf(false) }
 
     Text(
@@ -176,26 +170,17 @@ fun LoginForm(
         color = MaterialTheme.colorScheme.primary
     )
 
-    //Formulario de login
     Column(
         verticalArrangement = Arrangement.spacedBy(15.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        // ---------------- EMAIL ----------------
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             OutlinedTextField(
                 singleLine = true,
                 shape = RoundedCornerShape(15.dp),
                 value = loginViewModel.email,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = {
-                    loginViewModel.onEmailChange(it)
-                },
+                onValueChange = { loginViewModel.onEmailChange(it) },
                 label = { Text(stringResource(R.string.login_email)) },
                 isError = loginViewModel.emailError.isNotEmpty()
             )
@@ -211,20 +196,13 @@ fun LoginForm(
             }
         }
 
-        // ---------------- PASSWORD ----------------
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             OutlinedTextField(
                 singleLine = true,
                 shape = RoundedCornerShape(15.dp),
                 value = loginViewModel.password,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = {
-                    loginViewModel.onPasswordChange(it)
-                },
+                onValueChange = { loginViewModel.onPasswordChange(it) },
                 label = { Text(stringResource(R.string.login_password)) },
                 isError = loginViewModel.passwordError.isNotEmpty(),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -254,10 +232,7 @@ fun LoginForm(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.secondary,
                 textDecoration = TextDecoration.Underline,
-                modifier = Modifier.align(Alignment.End).
-                    clickable( onClick = {
-                        onNavigateToForgotPassword()
-                    })
+                modifier = Modifier.align(Alignment.End).clickable { onNavigateToForgotPassword() }
             )
         }
 
@@ -265,9 +240,7 @@ fun LoginForm(
 
         Button(
             enabled = loginViewModel.validateForm(),
-            onClick = {
-                loginViewModel.login()
-            },
+            onClick = { loginViewModel.login() },
             modifier = Modifier.height(50.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
@@ -275,10 +248,7 @@ fun LoginForm(
                 disabledContentColor = MaterialTheme.colorScheme.onSurface
             )
         ) {
-            Text(
-                text = stringResource(R.string.login_button),
-                fontSize = 20.sp
-            )
+            Text(text = stringResource(R.string.login_button), fontSize = 20.sp)
         }
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -295,15 +265,11 @@ fun LoginForm(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.secondary,
                 textDecoration = TextDecoration.Underline,
-                modifier = Modifier.clickable {
-                    onNavigateToRegister()
-                }
+                modifier = Modifier.clickable { onNavigateToRegister() }
             )
         }
     }
-
 }
-
 
 @Preview(showBackground = true)
 @Composable
@@ -338,7 +304,7 @@ fun LanguageLoginDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = stringResource(R.string.profile_select_language),
+                text = stringResource(R.string.language_login_title),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )
@@ -355,10 +321,7 @@ fun LanguageLoginDialog(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = flagEmojis[code] ?: "",
-                                fontSize = 24.sp
-                            )
+                            Text(text = flagEmojis[code] ?: "", fontSize = 24.sp)
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(text = name, fontSize = 16.sp)
                         }

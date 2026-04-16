@@ -363,4 +363,21 @@
     <string name="logout_button">Cerrar sesion</string>
     <string name="dialog_confirm">Confirmar</string>
     <string name="dialog_close">Cerrar</string>
+
+    <!-- Language Settings -->
+    <string name="language_spanish">Español</string>
+    <string name="language_english">English</string>
+    <string name="language_change_success">Idioma cambiado correctamente</string>
+    <string name="language_current">Idioma actual</string>
+    <string name="language_login_title">Cambiar idioma</string>
+
+    <!-- Profile Messages -->
+    <string name="profile_success_load">Perfil cargado correctamente</string>
+    <string name="profile_error_load">Error al cargar el perfil</string>
+    <string name="profile_save_success">Cambios guardados</string>
+    <string name="profile_save_error">Error al guardar los cambios</string>
+
+    <!-- Login Messages -->
+    <string name="login_success">Inicio de sesión exitoso</string>
+    <string name="login_error_credentials">Email o contraseña incorrectos</string>
 </resources>
