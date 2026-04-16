@@ -65,7 +65,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
             ),
 
             Event(
-                id = "evt_002",
+                id = "event_002",
                 authorUid = "user_002",
                 authorName = "Laura Gómez",
                 title = "Torneo relámpago de microfútbol",
@@ -89,7 +89,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
             ),
 
             Event(
-                id = "evt_003",
+                id = "event_003",
                 authorUid = "user_003",
                 authorName = "Sebastián Ríos",
                 title = "Caminata ecológica Parque Miracielos",
@@ -139,7 +139,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                 updatedAt = null
             ),
             Event(
-                id = "evt_012",
+                id = "event_012",
                 authorUid = "user_012",
                 authorName = "Natalia Duque",
                 title = "Feria de emprendedores locales",
@@ -164,7 +164,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
             ),
 
             Event(
-                id = "evt_013",
+                id = "event_013",
                 authorUid = "user_013",
                 authorName = "David Quintero",
                 title = "Bazar navideño barrio El Bosque",
@@ -188,7 +188,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
             ),
 
             Event(
-                id = "evt_014",
+                id = "event_014",
                 authorUid = "user_014",
                 authorName = "Sara Vargas",
                 title = "Encuentro de colectivos juveniles del Quindío",
@@ -213,7 +213,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
 
             // ─── EVENTO RESUELTO (para estadísticas) ────────────────────────────────
             Event(
-                id = "evt_015",
+                id = "event_015",
                 authorUid = "user_001",
                 authorName = "Camilo Torres",
                 title = "Maratón 5K por la paz",
