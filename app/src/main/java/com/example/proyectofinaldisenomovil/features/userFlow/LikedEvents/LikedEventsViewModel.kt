@@ -1,13 +1,18 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.proyectofinaldisenomovil.data.repository.EventRepository
+import com.example.proyectofinaldisenomovil.data.repository.Memory.VoteRepositoryImpl
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class FavoriteEvent(
     val id: String,
@@ -28,19 +33,30 @@ data class FavoritesUiState(
     val searchQuery: String = ""
 )
 
-class FavoritesViewModel : ViewModel() {
+@HiltViewModel
+class FavoritesViewModel @Inject constructor(
+    private val eventRepository: EventRepository,
+    private val voteRepositoryImpl: VoteRepositoryImpl
+): ViewModel() {
     private val _uiState = MutableStateFlow(FavoritesUiState())
     val uiState: StateFlow<FavoritesUiState> = _uiState.asStateFlow()
 
     init {
+        Log.i("liked events screen" , "llego al init")
         loadLikedEvents()
     }
 
     private fun loadLikedEvents() {
         viewModelScope.launch {
+            Log.i("liked events screen" , "entro al launch")
             val currentUser = MockDataRepository.getLoggedInUser()
+            Log.i("liked events screen" , "capturo al usuario " + currentUser.toString())
+
             if (currentUser != null) {
-                val likedEvents = MockDataRepository.getLikedEvents(currentUser.uid)
+                val idLikedEvents = voteRepositoryImpl.getLikedEventsIdByUserID(currentUser.uid)
+                Log.i("Liked events" , "el usuario " + currentUser.uid + " tiene " + idLikedEvents.size.toString() + " eventos favoritos")
+
+                val likedEvents = eventRepository.getEventsByIds(idLikedEvents)
                 _uiState.value = _uiState.value.copy(
                     favoriteEvents = likedEvents.map { it.toFavoriteEvent() }
                 )

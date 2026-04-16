@@ -82,28 +82,19 @@ class ViewEventViewModel @Inject constructor(
     }
 
     fun toggleInterested() {
-        Log.i("toggleInterested", "llego al toggleViewModel")
         viewModelScope.launch {
-            Log.i("toggleInterested", "llego al launch")
-            Log.i("toggleInterested", "id evento " + _currentEvent.value?.id)
-            Log.i("toggleInterested", "id user " + MockDataRepository.getLoggedInUser()?.uid)
-
             val eventId = _currentEvent.value?.id ?: return@launch
             val userId = MockDataRepository.getLoggedInUser()?.uid ?: return@launch
 
-            // 1. Llamar al repositorio para PERSISTIR el cambio
-            val success = voteRepository.toggleVote(eventId, userId)
+            // 1. Ejecutamos el cambio y obtenemos el nuevo estado (true o false)
+            val isNowInterested = voteRepository.toggleVote(eventId, userId)
 
-            // 2. Sincronizar el estado de la UI con la realidad del repositorio
-            if (success) {
-                // Consultamos el nuevo estado directamente al repo para asegurar consistencia
-                _isInterested.value = voteRepository.hasVoted(eventId, userId)
-                Log.i("toggleInterested", "Finaliza en " + _isInterested.value.toString())
+            // 2. Sincronizamos los estados del ViewModel sin importar si es true o false
+            _isInterested.value = isNowInterested
 
-                // Refrescar el evento para actualizar el contador de likes en pantalla
-                eventRepository.getEventById(eventId)?.let { updatedEvent ->
-                    _currentEvent.value = updatedEvent
-                }
+            // 3. Refrescamos el evento para que el contador de likes se actualice en la tarjeta
+            eventRepository.getEventById(eventId)?.let { updatedEvent ->
+                _currentEvent.value = updatedEvent
             }
         }
     }

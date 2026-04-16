@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
@@ -37,7 +38,7 @@ import java.util.Locale
 
 @Composable
 fun LikedEventsScreen(
-    viewModel: FavoritesViewModel = viewModel(),
+    viewModel: FavoritesViewModel = hiltViewModel(),
     paddingValues: PaddingValues,
     onNotificationClick: () -> Unit = {}
 ) {
