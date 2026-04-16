@@ -144,7 +144,9 @@
     <string name="view_event_location_map">Ubicación en mapa</string>
     <string name="view_event_created_by">Creado por:</string>
     <string name="view_event_interested">Estoy interesado</string>
+    <string name="view_event_uninterested">Me interesa</string>
     <string name="view_event_confirm_attendance">Confirmar asistencia</string>
+    <string name="view_event_confirmed_attendance">Estas confirmado</string>
     <string name="view_event_show_more">Mostrar más</string>
     <string name="view_event_show_less">Mostrar menos</string>
     <string name="view_event_share_opinion">Comparte tu opinión con la comunidad...</string>

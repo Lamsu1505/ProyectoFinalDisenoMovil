@@ -3,6 +3,7 @@ package com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -69,7 +70,7 @@ fun ViewEventScreen(
     Scaffold(
         topBar = {
             AppTopBar(
-                title = event?.title ?: stringResource(R.string.view_event_title),
+                title = stringResource(R.string.view_event_title),
                 onBackClick = onBackClick
             )
         },
@@ -94,8 +95,8 @@ fun ViewEventScreen(
                             event        = safeEvent,
                             isInterested = isInterested,
                             isConfirmed  = isConfirmed,
-                            onInterestedClick = viewEventViewModel::toggleInterested,
-                            onConfirmedClick  = viewEventViewModel::toggleConfirmed,
+                            onInterestedClick = { viewEventViewModel.toggleInterested() },
+                            onConfirmedClick  = {viewEventViewModel.toggleConfirmed()},
                             listState    = listState
                         )
                     }
@@ -235,7 +236,12 @@ private fun EventInfoSection(
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
             .background(MaterialTheme.colorScheme.background)
+            .border(1.dp, MaterialTheme.colorScheme.outline)
+
+
+
     ) {
         Column(
             modifier = Modifier
@@ -256,7 +262,7 @@ private fun EventInfoSection(
             )
 
             Spacer(Modifier.height(16.dp))
-            HorizontalDivider(color = Color.White.copy(alpha = 0.25f))
+            HorizontalDivider(color = Color.Gray.copy(alpha = 0.6f))
             Spacer(Modifier.height(16.dp))
 
             Row(
@@ -276,8 +282,7 @@ private fun EventInfoSection(
                     IconLabel(Icons.Default.LocationOn, event.address)
                     IconLabel(
                         icon  = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        label = "${event.importantVotes} interesados",
-                        tint  = if (isInterested) Color(0xFFFF6B6B) else Color.White
+                        label = "${event.importantVotes} interesados"
                     )
                     // Asistentes confirmados  (ícono Personas)
                     IconLabel(
@@ -294,13 +299,13 @@ private fun EventInfoSection(
                     horizontalAlignment = Alignment.End
                 ) {
                     Text(
-                        text  = "Organizado por:",
-                        color = Color.White.copy(alpha = 0.75f),
+                        text  = stringResource(R.string.view_event_created_by),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
                         fontSize = 11.sp
                     )
                     Text(
                         text       = event.authorName,
-                        color      = Color.White,
+                        color      = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
                         maxLines   = 1,
                         overflow   = TextOverflow.Ellipsis,
@@ -309,23 +314,24 @@ private fun EventInfoSection(
 
                     Spacer(Modifier.height(14.dp))
 
+                    Log.i("Btn antes" , isInterested.toString())
                     // Botón "Me interesa" / "Interesado"
                     ActionButton(
-                        text       = if (isInterested) "Interesado" else "Me interesa",
+                        text       = if (!isInterested) stringResource(R.string.view_event_uninterested)  else stringResource(R.string.view_event_interested),
                         icon       = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         isSelected = isInterested,
-                        isPrimary  = false,
+                        isSecondary = false,
                         onClick    = onInterestedClick
                     )
 
                     Spacer(Modifier.height(8.dp))
 
-                    // Botón "Confirmar" / "Confirmado"  – siempre fondo blanco (isPrimary=true)
+                    // Botón "Confirmar" / "Confirmado"
                     ActionButton(
-                        text       = if (isConfirmed) "Estás confirmado" else "Confirmar",
-                        icon       = Icons.Default.Check,
+                        text       = if (!isConfirmed) stringResource(R.string.view_event_confirm_attendance) else stringResource(R.string.view_event_confirmed_attendance),
+                        icon       = if (isConfirmed) Icons.Default.CheckCircle else Icons.Default.Check,
                         isSelected = isConfirmed,
-                        isPrimary  = true,
+                        isSecondary = true,
                         onClick    = onConfirmedClick
                     )
                 }
@@ -334,28 +340,30 @@ private fun EventInfoSection(
     }
 }
 
-// ─────────────────────────────────────────────
-//  BOTÓN DE ACCIÓN  (Me interesa / Confirmar)
-// ─────────────────────────────────────────────
+
 @Composable
 private fun ActionButton(
     text: String,
     icon: ImageVector,
     isSelected: Boolean,
-    isPrimary: Boolean = false,
+    isSecondary: Boolean = false,
     onClick: () -> Unit
 ) {
-    val filled = isSelected || isPrimary
+
+    Log.i("Boton de like" , isSelected.toString())
     Button(
         onClick         = onClick,
         modifier        = Modifier
             .fillMaxWidth()
             .height(40.dp),
-        colors          = ButtonDefaults.buttonColors(
-            containerColor = if (filled) Color.White else Color.Transparent,
-            contentColor   = if (filled) MaterialTheme.colorScheme.primary else Color.White
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (!isSelected) {
+                MaterialTheme.colorScheme.surfaceVariant
+            } else {
+                if (isSecondary) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+            },
+            contentColor  = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
         ),
-        border          = if (!filled) BorderStroke(1.5.dp, Color.White) else null,
         contentPadding  = PaddingValues(horizontal = 10.dp),
         shape           = RoundedCornerShape(10.dp),
         elevation       = ButtonDefaults.buttonElevation(0.dp)
@@ -366,21 +374,19 @@ private fun ActionButton(
     }
 }
 
-// ─────────────────────────────────────────────
-//  ICONO + ETIQUETA
-// ─────────────────────────────────────────────
+
 @Composable
 private fun IconLabel(
     icon: ImageVector,
     label: String,
-    tint: Color = Color.White
+    tint: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(15.dp))
         Spacer(Modifier.width(7.dp))
         Text(
             text     = label,
-            color    = Color.White,
+            color    = MaterialTheme.colorScheme.onSurface,
             fontSize = 12.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
