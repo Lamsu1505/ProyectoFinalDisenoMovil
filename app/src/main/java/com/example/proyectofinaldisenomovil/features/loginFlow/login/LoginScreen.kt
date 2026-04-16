@@ -1,9 +1,6 @@
 package com.example.proyectofinaldisenomovil.features.loginFlow.login
 
 import android.app.Activity
-import android.content.Context
-import android.os.Build
-import android.os.LocaleList
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -57,7 +54,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.login.LoginHeaderSection
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
@@ -66,12 +62,12 @@ import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
 
 @Composable
 fun LoginScreen(
-        viewModel: LoginViewModel = hiltViewModel(),
-        onNavigateToForgotPassword : () -> Unit,
-        onNavigateToRegister : () -> Unit,
-        onNavigateToModeratorFlow : () -> Unit,
-        onNavigateToUserFLow : () -> Unit,
-        onLoginSuccess: (String, com.example.proyectofinaldisenomovil.domain.model.UserRole) -> Unit = { _, _ -> }
+    viewModel: LoginViewModel = hiltViewModel(),
+    onNavigateToForgotPassword : () -> Unit,
+    onNavigateToRegister : () -> Unit,
+    onNavigateToModeratorFlow : () -> Unit,
+    onNavigateToUserFlow : () -> Unit,
+    onLoginSuccess: (String, com.example.proyectofinaldisenomovil.domain.model.UserRole) -> Unit = { _, _ -> }
 ) {
 
     val loginResult by viewModel.loginResult.collectAsState()
@@ -90,7 +86,7 @@ fun LoginScreen(
                 }
                 onLoginSuccess(result.userId, mappedRole)
                 if (result.role == UserRole.MODERATOR) onNavigateToModeratorFlow()
-                else onNavigateToUserFLow()
+                else onNavigateToUserFlow()
                 viewModel.resetResult()
             }
             else -> Unit
@@ -317,7 +313,7 @@ fun LoginScreenPreview() {
             onNavigateToForgotPassword = {},
             onNavigateToRegister = {},
             onNavigateToModeratorFlow = {},
-            onNavigateToUserFLow = {}
+            onNavigateToUserFlow = {}
         )
     }
 }
