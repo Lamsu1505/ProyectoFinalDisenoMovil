@@ -22,7 +22,11 @@ import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -39,12 +43,26 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var sessionManager: SessionManager
 
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface MainActivityEntryPoint {
+        fun settingsDataStore(): SettingsDataStore
+        fun sessionManager(): SessionManager
+    }
+
     override fun attachBaseContext(newBase: Context) {
+        val entryPoint = EntryPointAccessors.fromApplication(
+            newBase.applicationContext,
+            MainActivityEntryPoint::class.java
+        )
+        val hiltSettingsDataStore = entryPoint.settingsDataStore()
+        val hiltSessionManager = entryPoint.sessionManager()
+
         val languageCode = runBlocking {
             try {
-                settingsDataStore.languageFlow.first()
+                hiltSettingsDataStore.languageFlow.first()
             } catch (e: Exception) {
-                sessionManager.appLanguage.first()
+                hiltSessionManager.appLanguage.first()
             }
         }
 
