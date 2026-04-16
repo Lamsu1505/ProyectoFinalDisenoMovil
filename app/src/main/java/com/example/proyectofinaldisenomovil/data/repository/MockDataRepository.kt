@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.data.repository
 
+import android.util.Log
 import com.example.proyectofinaldisenomovil.domain.model.AppNotification
 import com.example.proyectofinaldisenomovil.domain.model.BadgeType
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
@@ -23,7 +24,7 @@ object MockDataRepository {
             uid = "user_001",
             firstName = "Camilo",
             lastName = "Torres",
-            email = "camilo@example.com",
+            email = "a@g.com",
             profileImageUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200",
             location = defaultLocation,
             city = "Armenia, Quindío",
@@ -255,10 +256,15 @@ object MockDataRepository {
     
     private var currentUser: User? = null
     
-    const val MOCK_PASSWORD = "password123"
+    const val MOCK_PASSWORD = "12345678"
     
     fun validateCredentials(email: String, password: String): User? {
-        if (password != MOCK_PASSWORD) return null
+        Log.i("Login" , email + " " + password)
+        if (password != MOCK_PASSWORD){
+            Log.i("Login" , "Password incorrecta")
+            return null
+        }
+        Log.i("Login" , "Password correcta")
         return _users.firstOrNull { it.email.equals(email, ignoreCase = true) }
     }
     

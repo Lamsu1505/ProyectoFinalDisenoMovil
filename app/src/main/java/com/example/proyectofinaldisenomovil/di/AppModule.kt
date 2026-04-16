@@ -2,6 +2,9 @@ package com.example.proyectofinaldisenomovil.di
 
 import android.content.Context
 import com.example.proyectofinaldisenomovil.data.local.SessionManager
+import com.example.proyectofinaldisenomovil.data.repository.EventRepository
+import com.example.proyectofinaldisenomovil.data.repository.Memory.EventRepositoryImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,13 +14,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
-
-    @Provides
+abstract class AppModule {
+    @Binds
     @Singleton
-    fun provideSessionManager(
-        @ApplicationContext context: Context
-    ): SessionManager {
-        return SessionManager(context)
-    }
+    abstract fun bindEventRepository(
+        impl: EventRepositoryImpl
+    ): EventRepository
 }
