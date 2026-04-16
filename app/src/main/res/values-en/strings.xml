@@ -141,7 +141,8 @@
     <string name="view_event_location_title">Exact Location</string>
     <string name="view_event_location_map">Location on map</string>
     <string name="view_event_created_by">Created by:</string>
-    <string name="view_event_interested">I\'m interested</string>
+    <string name="view_event_interested">I liked</string>
+    <string name="view_event_uninterested">Do i like?</string>
     <string name="view_event_confirm_attendance">Confirm attendance</string>
     <string name="view_event_show_more">Show more</string>
     <string name="view_event_show_less">Show less</string>
