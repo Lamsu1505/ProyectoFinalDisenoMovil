@@ -70,7 +70,8 @@ fun LoginScreen(
         onNavigateToForgotPassword : () -> Unit,
         onNavigateToRegister : () -> Unit,
         onNavigateToModeratorFlow : () -> Unit,
-        onNavigateToUserFLow : () -> Unit
+        onNavigateToUserFLow : () -> Unit,
+        onLoginSuccess: (String, com.example.proyectofinaldisenomovil.domain.model.UserRole) -> Unit = { _, _ -> }
 ) {
 
     val loginResult by viewModel.loginResult.collectAsState()
@@ -81,12 +82,16 @@ fun LoginScreen(
     var languageChanged by remember { mutableStateOf(false) }
 
     LaunchedEffect(loginResult) {
-        when (loginResult) {
+        when (val result = loginResult) {
             is LoginResult.Success -> {
-                val role = (loginResult as LoginResult.Success).role
-                viewModel.resetResult()
-                if (role == UserRole.MODERATOR) onNavigateToModeratorFlow()
+                val mappedRole = when (result.role) {
+                    UserRole.USER -> com.example.proyectofinaldisenomovil.domain.model.UserRole.USER
+                    UserRole.MODERATOR -> com.example.proyectofinaldisenomovil.domain.model.UserRole.ADMIN
+                }
+                onLoginSuccess(result.userId, mappedRole)
+                if (result.role == UserRole.MODERATOR) onNavigateToModeratorFlow()
                 else onNavigateToUserFLow()
+                viewModel.resetResult()
             }
             else -> Unit
         }
@@ -151,7 +156,6 @@ fun LoginScreen(
             onLanguageSelected = { code ->
                 selectedLanguage = code
                 languageChanged = true
-                viewModel.onLanguageSelected(code)
                 showLanguageDialog = false
             },
             onDismiss = { showLanguageDialog = false }

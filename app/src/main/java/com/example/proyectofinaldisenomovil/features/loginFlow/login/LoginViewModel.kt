@@ -6,9 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.proyectofinaldisenomovil.data.local.SessionDataStore
 import com.example.proyectofinaldisenomovil.data.local.SessionManager
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
+import com.example.proyectofinaldisenomovil.domain.model.UserSession
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,12 +22,12 @@ sealed class LoginResult {
     data object Idle : LoginResult()
     data object Error : LoginResult()
     data object Loading : LoginResult()
-    data class Success(val role: UserRole) : LoginResult()
+    data class Success(val userId: String, val role: UserRole) : LoginResult()
 }
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val sessionManager: SessionManager
+    private val sessionDataStore: SessionDataStore
 ) : ViewModel() {
 
     var email by mutableStateOf("")
@@ -78,15 +80,19 @@ class LoginViewModel @Inject constructor(
         
         if (user != null) {
             viewModelScope.launch {
-                sessionManager.saveSession(
-                    userId = user.uid,
-                    email = user.email,
-                    name = user.fullName,
-                    role = user.role.name
+                val mappedRole = when (user.role) {
+                    UserRole.USER -> com.example.proyectofinaldisenomovil.domain.model.UserRole.USER
+                    UserRole.MODERATOR -> com.example.proyectofinaldisenomovil.domain.model.UserRole.ADMIN
+                }
+                sessionDataStore.saveSession(
+                    UserSession(
+                        userId = user.uid,
+                        role = mappedRole
+                    )
                 )
             }
             MockDataRepository.setLoggedInUser(user)
-            _loginResult.value = LoginResult.Success(user.role)
+            _loginResult.value = LoginResult.Success(user.uid, user.role)
         } else {
             _loginResult.value = LoginResult.Error
         }
@@ -94,11 +100,5 @@ class LoginViewModel @Inject constructor(
 
     fun resetResult() {
         _loginResult.value = LoginResult.Idle
-    }
-
-    fun onLanguageSelected(languageCode: String) {
-        viewModelScope.launch {
-            sessionManager.setAppLanguage(languageCode)
-        }
     }
 }
