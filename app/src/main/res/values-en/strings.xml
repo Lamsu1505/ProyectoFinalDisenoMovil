@@ -144,6 +144,7 @@
     <string name="view_event_interested">I liked</string>
     <string name="view_event_uninterested">Do i like?</string>
     <string name="view_event_confirm_attendance">Confirm attendance</string>
+    <string name="view_event_confirmed_attendance">You are confirmed</string>
     <string name="view_event_show_more">Show more</string>
     <string name="view_event_show_less">Show less</string>
     <string name="view_event_share_opinion">Share your opinion with the community...</string>

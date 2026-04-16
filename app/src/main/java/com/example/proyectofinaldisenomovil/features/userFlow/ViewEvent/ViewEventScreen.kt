@@ -80,7 +80,7 @@ fun ViewEventScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(MaterialTheme.colorScheme.secondary)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             when (detailResult) {
                 is RequestResult.Loading -> {
@@ -95,8 +95,8 @@ fun ViewEventScreen(
                             event        = safeEvent,
                             isInterested = isInterested,
                             isConfirmed  = isConfirmed,
-                            onInterestedClick = viewEventViewModel::toggleInterested,
-                            onConfirmedClick  = viewEventViewModel::toggleConfirmed,
+                            onInterestedClick = { viewEventViewModel.toggleInterested() },
+                            onConfirmedClick  = {viewEventViewModel.toggleConfirmed()},
                             listState    = listState
                         )
                     }
@@ -247,7 +247,7 @@ private fun EventInfoSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
-                .background(MaterialTheme.colorScheme.primary)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(start = 24.dp, end = 24.dp, top = 20.dp, bottom = 28.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -314,26 +314,25 @@ private fun EventInfoSection(
 
                     Spacer(Modifier.height(14.dp))
 
+                    Log.i("Btn antes" , isInterested.toString())
                     // Botón "Me interesa" / "Interesado"
                     ActionButton(
-                        text       = if (isInterested) stringResource(R.string.view_event_uninterested)  else stringResource(R.string.view_event_interested),
+                        text       = if (!isInterested) stringResource(R.string.view_event_uninterested)  else stringResource(R.string.view_event_interested),
                         icon       = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         isSelected = isInterested,
-                        isPrimary  = false,
-                        onClick    = onInterestedClick,
-                        isLikeBtn  = true
+                        isSecondary = false,
+                        onClick    = onInterestedClick
                     )
 
                     Spacer(Modifier.height(8.dp))
 
-                    // Botón "Confirmar" / "Confirmado"  – siempre fondo blanco (isPrimary=true)
+                    // Botón "Confirmar" / "Confirmado"
                     ActionButton(
-                        text       = if (isConfirmed) "Estás confirmado" else "Confirmar",
-                        icon       = Icons.Default.Check,
+                        text       = if (!isConfirmed) stringResource(R.string.view_event_confirm_attendance) else stringResource(R.string.view_event_confirmed_attendance),
+                        icon       = if (isConfirmed) Icons.Default.CheckCircle else Icons.Default.Check,
                         isSelected = isConfirmed,
-                        isPrimary  = true,
-                        onClick    = onConfirmedClick,
-                        isLikeBtn  = false
+                        isSecondary = true,
+                        onClick    = onConfirmedClick
                     )
                 }
             }
@@ -347,21 +346,24 @@ private fun ActionButton(
     text: String,
     icon: ImageVector,
     isSelected: Boolean,
-    isPrimary: Boolean = false,
-    onClick: () -> Unit,
-    isLikeBtn : Boolean
+    isSecondary: Boolean = false,
+    onClick: () -> Unit
 ) {
-    val filled = isSelected
+
+    Log.i("Boton de like" , isSelected.toString())
     Button(
         onClick         = onClick,
         modifier        = Modifier
             .fillMaxWidth()
             .height(40.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if(isLikeBtn && !filled) MaterialTheme.colorScheme.surfaceVariant else if (isPrimary) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary ,
-            contentColor  = if (isPrimary) Color.White else Color.Black
+            containerColor = if (!isSelected) {
+                MaterialTheme.colorScheme.surfaceVariant
+            } else {
+                if (isSecondary) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+            },
+            contentColor  = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
         ),
-        border          = if (!filled) BorderStroke(1.5.dp, Color.White) else null,
         contentPadding  = PaddingValues(horizontal = 10.dp),
         shape           = RoundedCornerShape(10.dp),
         elevation       = ButtonDefaults.buttonElevation(0.dp)
