@@ -40,9 +40,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSessionManager(
-        @ApplicationContext context: Context
-    ): SessionManager {
-        return SessionManager(context)
-    }
+    abstract fun bindEventRepository(
+        impl: EventRepositoryImpl
+    ): EventRepository
 }
