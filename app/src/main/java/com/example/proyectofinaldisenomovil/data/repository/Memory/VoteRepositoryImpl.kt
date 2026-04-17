@@ -43,6 +43,12 @@ class VoteRepositoryImpl @Inject constructor(
                 eventId = "event_001",
                 uid = "user_003",
                 createdAt = Timestamp.now()
+            ),
+            Vote(
+                id = "vote_004",
+                eventId = "event_001",
+                uid = "user_002",
+                createdAt = Timestamp.now()
             )
         )
     }
