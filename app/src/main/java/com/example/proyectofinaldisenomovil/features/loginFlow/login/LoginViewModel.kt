@@ -95,6 +95,7 @@ class LoginViewModel @Inject constructor(
                     )
                 )
             }
+            Log.i("Login", "Se pondra como currentUser a " + user.firstName)
             MockDataRepository.setLoggedInUser(user) //TODO{Cambiar esto al repositorio}
             _loginResult.value = LoginResult.Success(user.uid, user.role)
         } else {

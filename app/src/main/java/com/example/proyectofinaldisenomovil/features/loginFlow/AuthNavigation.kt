@@ -17,6 +17,8 @@ import com.example.proyectofinaldisenomovil.features.loginFlow.register.Register
 @Composable
 fun AuthNavigation(
     onSessionSaved: (UserSession) -> Unit,
+    onNavigateToUser: () -> Unit,
+    onNavigateToModerator: () -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
     NavHost(
@@ -34,16 +36,8 @@ fun AuthNavigation(
                 onLoginSuccess = { userId, role ->
                     onSessionSaved(UserSession(userId = userId, role = role))
                 },
-                onNavigateToUserFlow = {
-                    navController.navigate(LoginRoutes.UserFlow) {
-                        popUpTo<LoginRoutes.Login> { inclusive = true }
-                    }
-                },
-                onNavigateToModeratorFlow = {
-                    navController.navigate(LoginRoutes.ModeratorFlow) {
-                        popUpTo<LoginRoutes.Login> { inclusive = true }
-                    }
-                }
+                onNavigateToUserFlow = onNavigateToUser,
+                onNavigateToModeratorFlow = onNavigateToModerator
             )
         }
 
