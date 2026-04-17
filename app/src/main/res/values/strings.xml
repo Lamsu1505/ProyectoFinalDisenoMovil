@@ -288,7 +288,7 @@
     <string name="profile_first_publication">Primera\npublicación</string>
     <string name="profile_10_completed">+10\nFinalizados</string>
     <string name="profile_50_completed">+50\nFinalizados</string>
-    <string name="profile_rating">+4,7\nProm.\nCalificación</string>
+    <string name="profile_rating">Prom.\nCalificación</string>
     <string name="profile_terms">Terminos y condiciones</string>
 
     <!-- Create Event Screen Extended -->

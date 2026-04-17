@@ -297,7 +297,7 @@ object MockDataRepository {
         return newUser
     }
     
-    fun getLoggedInUser(): User? = getUserById("user_001")//currentUser
+    fun getLoggedInUser(): User? = getUserById("user_001")
     
     fun setLoggedInUser(user: User?) {
         currentUser = user

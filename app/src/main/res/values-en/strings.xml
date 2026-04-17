@@ -284,7 +284,7 @@
     <string name="profile_first_publication">First\npublication</string>
     <string name="profile_10_completed">+10\nCompleted</string>
     <string name="profile_50_completed">+50\nCompleted</string>
-    <string name="profile_rating">+4,7\nRating\nAvg.</string>
+    <string name="profile_rating">Rating\nAvg.</string>
     <string name="profile_terms">Terms and conditions</string>
 
     <!-- Create Event Screen Extended -->

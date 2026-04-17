@@ -1,6 +1,7 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.Profile
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -125,7 +126,7 @@ fun ProfileScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "AZ",
+                            text = "img",
                             fontSize = 48.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF37474F)
@@ -134,12 +135,15 @@ fun ProfileScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Text(
-                        text = uiState.name,
-                        color = Color.White,
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+                    uiState.name?.let {
+                        Log.i("ProfileScreen", "Nombre en perfil: $it")
+                        Text(
+                            text = it,
+                            color = Color.White,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
@@ -149,11 +153,13 @@ fun ProfileScreen(
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = uiState.location,
-                            color = Color.White.copy(alpha = 0.8f),
-                            fontSize = 14.sp
-                        )
+                        uiState.location?.let {
+                            Text(
+                                text = it,
+                                color = Color.White.copy(alpha = 0.8f),
+                                fontSize = 14.sp
+                            )
+                        }
                     }
                 }
             }
@@ -177,19 +183,23 @@ fun ProfileScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = stringResource(R.string.profile_level, uiState.level, uiState.levelName),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 12.sp
-                        )
+                        uiState.level?.let {
+                            uiState.levelName?.let { it1 ->
+                                Text(
+                                    text = stringResource(R.string.profile_level, it, it1),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFD700), modifier = Modifier.size(20.dp))
-                            Text(text = stringResource(R.string.profile_points, uiState.points), fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                            uiState.points?.let { Text(text = stringResource(R.string.profile_points, it), fontWeight = FontWeight.Bold, fontSize = 12.sp) }
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     LinearProgressIndicator(
-                        progress = { uiState.points.toFloat() / (uiState.points + uiState.pointsToNextLevel) },
+                        progress = { 50.0F },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(8.dp)
@@ -198,11 +208,13 @@ fun ProfileScreen(
                         trackColor = Color.LightGray,
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = stringResource(R.string.profile_points_remaining, uiState.pointsToNextLevel),
-                        fontSize = 10.sp,
-                        color = blue
-                    )
+                    uiState.pointsToNextLevel?.let {
+                        Text(
+                            text = stringResource(R.string.profile_points_remaining, it),
+                            fontSize = 10.sp,
+                            color = blue
+                        )
+                    }
                 }
             }
 
@@ -245,10 +257,10 @@ fun ProfileScreen(
                         .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    BadgeItem(Icons.Default.EmojiEvents, stringResource(R.string.profile_first_publication), Color(0xFFFFD700))
-                    BadgeItem(Icons.Default.CheckCircle, stringResource(R.string.profile_10_completed), Color.Gray)
-                    BadgeItem(Icons.Default.Star, stringResource(R.string.profile_50_completed), Color.LightGray)
-                    BadgeItem(null, stringResource(R.string.profile_rating), Color.Black, isRating = true)
+                    BadgeItem(Icons.Default.EmojiEvents, stringResource(R.string.profile_first_publication), Color(0xFFFFD700) , uiState = uiState)
+                    BadgeItem(Icons.Default.CheckCircle, stringResource(R.string.profile_10_completed), Color.Gray , uiState = uiState)
+                    BadgeItem(Icons.Default.Star, stringResource(R.string.profile_50_completed), Color.LightGray , uiState = uiState)
+                    BadgeItem(null, stringResource(R.string.profile_rating), Color.Black, isRating = true , uiState = uiState)
                 }
             }
 
@@ -330,15 +342,15 @@ fun EventStat(icon: ImageVector, label: String, count: String, color: Color) {
 }
 
 @Composable
-fun BadgeItem(icon: ImageVector?, label: String, tint: Color, isRating: Boolean = false) {
+fun BadgeItem(icon: ImageVector?, label: String, tint: Color, isRating: Boolean = false , uiState: ProfileUiState) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         if (isRating) {
-            Text(text = "+4,7", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(text = ("+" + uiState.rating), fontSize = 25.sp, fontWeight = FontWeight.Bold)
         } else if (icon != null) {
             Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(32.dp))
         }
         Text(
-            text = label,
+            text = ("+" + uiState.rating +" "+ label),
             fontSize = 8.sp,
             textAlign = TextAlign.Center,
             lineHeight = 10.sp

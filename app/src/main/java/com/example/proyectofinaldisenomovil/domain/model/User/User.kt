@@ -19,6 +19,7 @@ data class User(
     val city: String = "",
     val role: UserRole = UserRole.USER,
     val reputationPoints: Int = 0,
+    val pointsToNextLevel: Int = 0,
     val level: UserLevel = UserLevel.ESPECTADOR,
     val badges: List<BadgeType> = emptyList(),
     /** Firebase Cloud Messaging device token — updated on every app launch */
@@ -27,6 +28,7 @@ data class User(
     val isActive: Boolean = true,
     val createdAt: Timestamp? = null,
     val updatedAt: Timestamp? = null,
+    val rating : Double? = null,
 ) {
     /** Full display name convenience property */
     val fullName: String get() = "$firstName $lastName".trim()

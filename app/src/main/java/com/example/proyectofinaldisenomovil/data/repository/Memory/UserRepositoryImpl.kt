@@ -37,7 +37,8 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             reputationPoints = 450,
             level = UserLevel.CREADOR,
             badges = listOf(BadgeType.FOUNDER, BadgeType.EARLY_ADOPTER),
-            isActive = true
+            isActive = true,
+            rating = 4.5
         ),
         User(
             uid = "user_002",
@@ -52,7 +53,8 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             reputationPoints = 280,
             level = UserLevel.ORGANIZADOR,
             badges = listOf(BadgeType.SOCIAL_BUTTERFLY),
-            isActive = true
+            isActive = true,
+            rating = 4.7
         ),
         User(
             uid = "user_003",
@@ -67,22 +69,8 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             reputationPoints = 120,
             level = UserLevel.ESPECTADOR,
             badges = emptyList(),
-            isActive = true
-        ),
-        User(
-            uid = "user_004",
-            firstName = "Valentina",
-            lastName = "Ospina",
-            email = "valentina@example.com",
-            password = MOCK_PASSWORD,
-            profileImageUrl = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200",
-            location = defaultLocation,
-            city = "Armenia, Quindío",
-            role = UserRole.USER,
-            reputationPoints = 520,
-            level = UserLevel.CREADOR,
-            badges = listOf(BadgeType.CULTURE_VIP),
-            isActive = true
+            isActive = true,
+            rating = 3.5
         ),
         User(
             uid = "mod_001",
