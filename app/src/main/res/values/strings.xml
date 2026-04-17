@@ -266,7 +266,7 @@
     <string name="validation_passwords_not_match">Las contraseñas no coinciden</string>
 
     <!-- Forgot Password -->
-    <string name="forgot_password_title">Recupera tu Contraseña</string>
+    <string name="forgot_password_title">Olvidaste tu Contraseña</string>
     <string name="forgot_password_description">Ingresa el correo asosicado a tu cuenta y recibe un codigo para cambiar tu contraseña</string>
     <string name="forgot_password_send_code">Enviar codigo</string>
     <string name="forgot_password_back_login">Regresar a Iniciar sesion</string>
@@ -276,6 +276,12 @@
     <string name="recover_password_code">Código de verificación</string>
     <string name="recover_password_continue">Continuar</string>
     <string name="recover_password_success">La contraseña ha sido recuperada correctamente</string>
+    <string name="recover_password_enter_code">Ingresa el código de verificación</string>
+    <string name="recover_password_invalid_code">Código incorrecto. Intenta de nuevo.</string>
+
+    <!-- Forgot Password Extended -->
+    <string name="forgot_password_email_not_found">No se encontró una cuenta con este correo</string>
+    <string name="forgot_password_code_sent">Código de recuperación enviado</string>
 
     <!-- Profile Screen Extended -->
     <string name="profile_level">Nivel %1$s: %2$s</string>

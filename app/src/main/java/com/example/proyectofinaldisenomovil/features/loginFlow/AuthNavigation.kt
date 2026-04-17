@@ -52,8 +52,8 @@ fun AuthNavigation(
             ForgotPasswordScreen(
                 onBackClick = { navController.popBackStack() },
                 onNavigateToLogin = { navController.popBackStack() },
-                onNavigateToRecoverPassword = { email ->
-                    navController.navigate(LoginRoutes.RecoverPassword(email))
+                onNavigateToRecoverPassword = { email, sentCode ->
+                    navController.navigate(LoginRoutes.RecoverPassword(email, sentCode))
                 }
             )
         }
@@ -62,9 +62,10 @@ fun AuthNavigation(
             val route = backStackEntry.toRoute<LoginRoutes.RecoverPassword>()
             RecoverPasswordScreen(
                 email = route.email,
+                sentCode = route.sentCode,
                 onBackClick = { navController.popBackStack() },
                 onNavigateToLogin = { navController.navigate(LoginRoutes.Login) },
-                onSubmit = { navController.navigate(LoginRoutes.Login) }
+                onPasswordResetSuccess = { navController.navigate(LoginRoutes.Login) }
             )
         }
     }

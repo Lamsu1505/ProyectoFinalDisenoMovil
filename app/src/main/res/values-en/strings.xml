@@ -255,14 +255,14 @@
     <string name="register_complete_fields">Please fill in all fields correctly</string>
 
     <!-- Validation -->
-    <string name="validation_name_short">Name is too short</string>
-    <string name="validation_lastname_short">Lastname is too short</string>
+    <string name="validation_name_short">Name too short</string>
+    <string name="validation_lastname_short">Last name too short</string>
     <string name="validation_password_uppercase">Password must contain at least one uppercase letter</string>
     <string name="validation_password_digit">Password must contain at least one number</string>
     <string name="validation_passwords_not_match">Passwords do not match</string>
 
     <!-- Forgot Password -->
-    <string name="forgot_password_title">Recover Your Password</string>
+    <string name="forgot_password_title">Forgot Your Password</string>
     <string name="forgot_password_description">Enter the email associated with your account and receive a code to change your password</string>
     <string name="forgot_password_send_code">Send code</string>
     <string name="forgot_password_back_login">Back to sign in</string>
@@ -272,6 +272,12 @@
     <string name="recover_password_code">Verification code</string>
     <string name="recover_password_continue">Continue</string>
     <string name="recover_password_success">Password has been recovered successfully</string>
+    <string name="recover_password_enter_code">Enter the verification code</string>
+    <string name="recover_password_invalid_code">Incorrect code. Please try again.</string>
+
+    <!-- Forgot Password Extended -->
+    <string name="forgot_password_email_not_found">No account found with this email</string>
+    <string name="forgot_password_code_sent">Recovery code sent</string>
 
     <!-- Profile Screen Extended -->
     <string name="profile_level">Level %1$s: %2$s</string>

@@ -171,4 +171,23 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             }
         }
     }
+
+    override suspend fun resetPassword(email: String, newPassword: String): Boolean {
+        val index = _users.indexOfFirst { it.email.equals(email, ignoreCase = true) }
+        return if (index != -1) {
+            val user = _users[index]
+            val updatedUser = user.copy(password = newPassword)
+            _users[index] = updatedUser
+            if (currentUser?.uid == user.uid) {
+                currentUser = updatedUser
+            }
+            true
+        } else {
+            false
+        }
+    }
+
+    override fun findUserByEmail(email: String): User? {
+        return _users.firstOrNull { it.email.equals(email, ignoreCase = true) }
+    }
 }
