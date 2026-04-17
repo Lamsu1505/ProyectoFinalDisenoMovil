@@ -17,10 +17,7 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
-@HiltViewModel
-sealed class CreateEventResult @Inject constructor(
-
-) {
+sealed class CreateEventResult {
     data object Idle : CreateEventResult()
     data object Loading : CreateEventResult()
     data object Success : CreateEventResult()
@@ -43,8 +40,10 @@ data class CreateEventUiState(
     val addressError: String = "",
     val dateError: String = ""
 )
+@HiltViewModel
+class CreateEventViewModel @Inject constructor(
 
-class CreateEventViewModel : ViewModel() {
+): ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateEventUiState())
     val uiState: StateFlow<CreateEventUiState> = _uiState.asStateFlow()
