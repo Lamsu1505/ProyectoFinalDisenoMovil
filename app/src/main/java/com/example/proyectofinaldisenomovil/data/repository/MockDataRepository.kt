@@ -347,10 +347,11 @@ object MockDataRepository {
         endDate: Timestamp,
         maxAttendees: Int?
     ): Event {
+        Log.i("Crear evento" , "Info que llego a crear evento: Titulo: $title Descripcion: $description Categoria: $category Direccion: $address Url imagenes: $imageUrls FechaInicio: $startDate Fecha fin:$endDate Max attendees: $maxAttendees")
         val newEvent = Event(
             id = "event_${UUID.randomUUID().toString().take(8)}",
-            authorUid = currentUser?.uid ?: "",
-            authorName = currentUser?.fullName ?: "",
+            authorUid = getLoggedInUser()?.uid ?: "",
+            authorName = getLoggedInUser()?.fullName ?: "",
             title = title,
             description = description,
             category = category,
@@ -360,9 +361,10 @@ object MockDataRepository {
             endDate = endDate,
             maxAttendees = maxAttendees,
             currentAttendees = 0,
-            status = EventStatus.PENDING_REVIEW,
+            status = EventStatus.VERIFIED,
             createdAt = Timestamp.now()
         )
+        Log.i("Crear evento" , "Evento creado: ${newEvent.toString()}")
         _events.add(newEvent)
         
         getModerators().forEach { mod ->

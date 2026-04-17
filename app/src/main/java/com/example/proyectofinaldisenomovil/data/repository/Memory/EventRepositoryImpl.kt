@@ -1,9 +1,12 @@
 package com.example.proyectofinaldisenomovil.data.repository.Memory
 
+import android.util.Log
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
+import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.collections.filter
@@ -25,7 +29,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
         _events.value = fetchEvents()
     }
 
-     suspend fun save(event: Event) {
+    fun save(event: Event) {
         _events.value += event
     }
 
@@ -251,10 +255,6 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
         return events.value.firstOrNull{ it.id == id }
     }
 
-    override suspend fun createEvent(event: Event): String {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun updateEvent(event: Event) {
         TODO("Not yet implemented")
     }
@@ -289,5 +289,37 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
 
     override suspend fun getEventsByIds(ids: List<String>): List<Event> {
         return _events.value.filter { ids.contains(it.id) }
+    }
+
+    override suspend fun createEvent(
+        title: String,
+        description: String,
+        category: EventCategory,
+        address: String,
+        imageUrls: List<String>,
+        startDate: Timestamp,
+        endDate: Timestamp,
+        maxAttendees: Int?
+    ): Event {
+        Log.i("Crear evento" , "Info que llego a crear evento: Titulo: $title Descripcion: $description Categoria: $category Direccion: $address Url imagenes: $imageUrls FechaInicio: $startDate Fecha fin:$endDate Max attendees: $maxAttendees")
+        val newEvent = Event(
+            id = "event_${UUID.randomUUID().toString().take(8)}",
+            authorUid = MockDataRepository.getLoggedInUser()?.uid ?: "",
+            authorName = MockDataRepository.getLoggedInUser()?.fullName ?: "",
+            title = title,
+            description = description,
+            category = category,
+            address = address,
+            imageUrls = imageUrls,
+            startDate = startDate,
+            endDate = endDate,
+            maxAttendees = maxAttendees,
+            currentAttendees = 0,
+            status = EventStatus.VERIFIED, //TODO: Cambiar a pendiente de revisión
+            createdAt = Timestamp.now()
+        )
+        Log.i("Crear evento" , "Evento creado: ${newEvent.toString()}")
+        save(newEvent)
+        return newEvent
     }
 }

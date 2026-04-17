@@ -1,6 +1,7 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent
 
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -51,6 +52,7 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottom
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.theme.*
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
+import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -65,37 +67,81 @@ fun CreateEventScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val createResult by viewModel.createResult.collectAsState()
+    
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    val handleBack = {
+        if (uiState.title.isNotEmpty() || uiState.description.isNotEmpty() || uiState.address.isNotEmpty()) {
+            showExitDialog = true
+        } else {
+            onBackClick()
+        }
+    }
+
+    BackHandler(onBack = handleBack)
 
     LaunchedEffect(createResult) {
         when (createResult) {
             is CreateEventResult.Success -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar("Evento creado exitosamente")
+                }
                 viewModel.resetResult()
                 onEventCreated()
             }
             is CreateEventResult.Error -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar((createResult as CreateEventResult.Error).message)
+                }
                 viewModel.resetResult()
             }
             else -> {}
         }
     }
 
+    if (showExitDialog) {
+        AlertDialog(
+            onDismissRequest = { showExitDialog = false },
+            title = { Text(stringResource(R.string.create_event_info)) },
+            text = { Text(stringResource(R.string.create_event_info)) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showExitDialog = false
+                        onBackClick()
+                    }
+                ) {
+                    Text(stringResource(R.string.create_event_info))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExitDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             AppTopBar(
                 title = stringResource(R.string.create_event_new_title),
                 onNotificationsClick = onNotificationClick,
-                onBackClick = onBackClick
+                onBackClick = handleBack
             )
         },
         bottomBar = { AppBottomBar(
             selectedRoute = ""
         ) },
         containerColor = whiteBackground
-    ) { paddingValues ->
+    ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(innerPadding),
             contentPadding = PaddingValues(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -683,8 +729,12 @@ fun ButtonsSection(
 ) {
     Button(
         onClick = { viewModel.createEvent() },
+        enabled = uiState.isFormValid,
         modifier = Modifier.fillMaxWidth().height(50.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = orange),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.secondary,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
         shape = RoundedCornerShape(20.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
