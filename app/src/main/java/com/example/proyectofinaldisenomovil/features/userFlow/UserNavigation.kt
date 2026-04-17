@@ -128,11 +128,7 @@ fun UserNavigation(
 
             composable(UserRoutes.PROFILE) {
                 ProfileScreen(
-                    paddingValues = paddingValues,
                     onLogout = onLogout,
-                    onNotificationClick = {
-                        userNavController.navigate(UserRoutes.NOTIFICATIONS)
-                    },
                     onBackClick = {
                         userNavController.popBackStack()
                     }

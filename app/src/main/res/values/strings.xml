@@ -116,6 +116,7 @@
     <string name="edit_profile_name">Nombre</string>
     <string name="edit_profile_lastname">Apellido</string>
     <string name="edit_profile_city">Ciudad</string>
+    <string name="edit_profile_address">Dirección</string>
     <string name="edit_profile_save">Guardar Cambios</string>
     <string name="edit_profile_success">Perfil actualizado</string>
     <string name="edit_profile_error">Error al actualizar el perfil</string>
@@ -296,6 +297,12 @@
     <string name="profile_50_completed">+50\nFinalizados</string>
     <string name="profile_rating">Prom.\nCalificación</string>
     <string name="profile_terms">Terminos y condiciones</string>
+    <string name="profile_phone">Teléfono</string>
+    <string name="profile_address">Dirección</string>
+    <string name="profile_select_photo">Seleccionar foto de perfil</string>
+    <string name="profile_camera">Cámara</string>
+    <string name="profile_gallery">Galería</string>
+    <string name="profile_password_change_message">Por seguridad, el cambio de contraseña debe realizarse a través del flujo de recuperación en la pantalla de inicio de sesión.</string>
 
     <!-- Create Event Screen Extended -->
     <string name="create_event_new_title">Crear Nuevo Evento</string>
@@ -377,13 +384,9 @@
     <string name="language_current">Idioma actual</string>
     <string name="language_login_title">Cambiar idioma</string>
 
-    <!-- Profile Messages -->
+<!-- Profile Messages -->
     <string name="profile_success_load">Perfil cargado correctamente</string>
     <string name="profile_error_load">Error al cargar el perfil</string>
     <string name="profile_save_success">Cambios guardados</string>
     <string name="profile_save_error">Error al guardar los cambios</string>
-
-    <!-- Login Messages -->
-    <string name="login_success">Inicio de sesión exitoso</string>
-    <string name="login_error_credentials">Email o contraseña incorrectos</string>
 </resources>
