@@ -16,6 +16,7 @@ import com.example.proyectofinaldisenomovil.features.LikedEvents.SavedEventsScre
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.LikedEventsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.Notifications.NotificationsScreen
+import com.example.proyectofinaldisenomovil.features.userFlow.EditProfile.EditProfileScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.Profile.ProfileScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent.ViewEventScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.home.HomeScreen
@@ -26,6 +27,7 @@ object UserRoutes {
     const val CREATE_EVENT = "createEvent"
     const val LIKED_EVENTS = "likedEvents"
     const val PROFILE = "profile"
+    const val EDIT_PROFILE = "editProfile"
     const val NOTIFICATIONS = "notifications"
     const val EVENT_DETAIL = "eventDetail"
 }
@@ -129,6 +131,17 @@ fun UserNavigation(
             composable(UserRoutes.PROFILE) {
                 ProfileScreen(
                     onLogout = onLogout,
+                    onBackClick = {
+                        userNavController.popBackStack()
+                    },
+                    onEditProfileClick = {
+                        userNavController.navigate(UserRoutes.EDIT_PROFILE)
+                    }
+                )
+            }
+
+            composable(UserRoutes.EDIT_PROFILE) {
+                EditProfileScreen(
                     onBackClick = {
                         userNavController.popBackStack()
                     }

@@ -3,20 +3,41 @@ package com.example.proyectofinaldisenomovil.features.userFlow.Profile
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.proyectofinaldisenomovil.R
+import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
 import com.example.proyectofinaldisenomovil.core.utils.ValidatedField
-import com.example.proyectofinaldisenomovil.data.repository.Memory.UserRepositoryImpl
+import com.example.proyectofinaldisenomovil.data.local.SettingsDataStore
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.User.User
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ProfileUiState(
+    val name: String?,
+    val location: String?,
+    val level: Int?,
+    val levelName: String?,
+    val points: Int?,
+    val pointsToNextLevel: Int?,
+    val activeEvents: Int?,
+    val completedEvents: Int?,
+    val pendingEvents: Int?,
+    val rating: Double?,
+    val isLoading: Boolean?,
+    val successMessage: String?,
+    val errorMessage: String?
+)
+
+data class EditProfileUiState(
     val user: User? = null,
     val isLoading: Boolean = true,
     val isEditMode: Boolean = false,
@@ -35,11 +56,37 @@ data class ProfileUiState(
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
+    private val resourceProvider: ResourceProvider,
+    private val settingsDataStore: SettingsDataStore,
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ProfileUiState())
+    private val _uiState = MutableStateFlow(ProfileUiState(
+        name = null,
+        location = null,
+        level = null,
+        levelName = null,
+        points = null,
+        pointsToNextLevel = null,
+        activeEvents = null,
+        completedEvents = null,
+        pendingEvents = null,
+        rating = null,
+        isLoading = true,
+        successMessage = null,
+        errorMessage = null
+    ))
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
+
+    private val _editUiState = MutableStateFlow(EditProfileUiState())
+    val editUiState: StateFlow<EditProfileUiState> = _editUiState.asStateFlow()
+
+    val currentLanguage: StateFlow<String> = settingsDataStore.languageFlow
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = SettingsDataStore.DEFAULT_LANGUAGE
+        )
 
     val cities = listOf(
         "Armenia, Quindío",
@@ -52,38 +99,49 @@ class ProfileViewModel @Inject constructor(
         "Barranquilla, Atlántico"
     )
 
-    fun loadUser(userId: String) {
+    init {
+        loadUserProfile()
+    }
+
+    fun loadUserProfile() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val user = userRepository.getUserById(userId)
+            _uiState.value = _uiState.value.copy(isLoading = true)
+
+            delay(500)
+
+            val loggedInUser = MockDataRepository.getLoggedInUser()
+            val user = loggedInUser?.let { userRepository.getUserById(it.uid) }
             if (user != null) {
-                _uiState.update {
-                    it.copy(
-                        user = user,
-                        isLoading = false,
-                        name = ValidatedField(value = user.firstName, isValid = true),
-                        lastName = ValidatedField(value = user.lastName, isValid = true),
-                        email = ValidatedField(value = user.email, isValid = true),
-                        city = ValidatedField(value = user.city, isValid = true),
-                        address = ValidatedField(value = user.location?.let { loc -> "Lat: ${loc.latitude}, Lon: ${loc.longitude}" } ?: ""),
-                        phone = ValidatedField(value = ""),
-                        photoUri = user.profileImageUrl?.let { Uri.parse(it) }
-                    )
-                }
+                _uiState.value = _uiState.value.copy(
+                    name = user.fullName,
+                    location = user.city,
+                    level = 1,
+                    levelName = user.level.toString(),
+                    points = user.reputationPoints,
+                    pointsToNextLevel = user.pointsToNextLevel() ?: 0,
+                    activeEvents = 10,
+                    completedEvents = 13,
+                    pendingEvents = 20,
+                    rating = user.rating,
+                    isLoading = false
+                )
             } else {
-                _uiState.update { it.copy(isLoading = false, errorMessage = "User not found") }
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = resourceProvider.getString(R.string.profile_error_load)
+                )
             }
         }
     }
 
     fun loadCurrentUser() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _editUiState.update { it.copy(isLoading = true) }
             val currentUser = MockDataRepository.getLoggedInUser()
             if (currentUser != null) {
                 val user = userRepository.getUserById(currentUser.uid)
                 if (user != null) {
-                    _uiState.update {
+                    _editUiState.update {
                         it.copy(
                             user = user,
                             isLoading = false,
@@ -97,41 +155,41 @@ class ProfileViewModel @Inject constructor(
                         )
                     }
                 } else {
-                    _uiState.update { it.copy(isLoading = false, errorMessage = "User not found") }
+                    _editUiState.update { it.copy(isLoading = false, errorMessage = "User not found") }
                 }
             } else {
-                _uiState.update { it.copy(isLoading = false, errorMessage = "No user logged in") }
+                _editUiState.update { it.copy(isLoading = false, errorMessage = "No user logged in") }
             }
         }
     }
 
     fun onEditModeToggle() {
-        _uiState.update { it.copy(isEditMode = !it.isEditMode) }
+        _editUiState.update { it.copy(isEditMode = !it.isEditMode) }
     }
 
     fun onNameChange(value: String) {
         val error = if (value.isBlank()) "Name is required" else null
-        _uiState.update {
+        _editUiState.update {
             it.copy(name = ValidatedField(value = value, error = error, isValid = error == null))
         }
     }
 
     fun onLastNameChange(value: String) {
         val error = if (value.isBlank()) "Last name is required" else null
-        _uiState.update {
+        _editUiState.update {
             it.copy(lastName = ValidatedField(value = value, error = error, isValid = error == null))
         }
     }
 
     fun onCityChange(value: String) {
         val error = if (value.isBlank()) "City is required" else null
-        _uiState.update {
+        _editUiState.update {
             it.copy(city = ValidatedField(value = value, error = error, isValid = error == null))
         }
     }
 
     fun onAddressChange(value: String) {
-        _uiState.update {
+        _editUiState.update {
             it.copy(address = ValidatedField(value = value, isValid = true))
         }
     }
@@ -140,39 +198,39 @@ class ProfileViewModel @Inject constructor(
         val error = if (value.isNotBlank() && !value.all { it.isDigit() || it == '-' || it == ' ' }) {
             "Invalid phone format"
         } else null
-        _uiState.update {
+        _editUiState.update {
             it.copy(phone = ValidatedField(value = value, error = error, isValid = error == null))
         }
     }
 
     fun onShowImagePicker() {
-        _uiState.update { it.copy(showImagePickerSheet = true) }
+        _editUiState.update { it.copy(showImagePickerSheet = true) }
     }
 
     fun onDismissImagePicker() {
-        _uiState.update { it.copy(showImagePickerSheet = false) }
+        _editUiState.update { it.copy(showImagePickerSheet = false) }
     }
 
     fun onPhotoSelected(uri: Uri) {
-        _uiState.update { it.copy(photoUri = uri, showImagePickerSheet = false) }
+        _editUiState.update { it.copy(photoUri = uri, showImagePickerSheet = false) }
     }
 
     fun onShowPasswordDialog() {
-        _uiState.update { it.copy(showPasswordDialog = true) }
+        _editUiState.update { it.copy(showPasswordDialog = true) }
     }
 
     fun onDismissPasswordDialog() {
-        _uiState.update { it.copy(showPasswordDialog = false) }
+        _editUiState.update { it.copy(showPasswordDialog = false) }
     }
 
     fun onSave() {
-        val state = _uiState.value
+        val state = _editUiState.value
         val nameValid = state.name.value.isNotBlank()
         val lastNameValid = state.lastName.value.isNotBlank()
         val cityValid = state.city.value.isNotBlank()
 
         if (!nameValid || !lastNameValid || !cityValid) {
-            _uiState.update {
+            _editUiState.update {
                 it.copy(
                     name = it.name.copy(error = if (!nameValid) "Name required" else null, isValid = nameValid),
                     lastName = it.lastName.copy(error = if (!lastNameValid) "Last name required" else null, isValid = lastNameValid),
@@ -192,20 +250,21 @@ class ProfileViewModel @Inject constructor(
                 )
                 userRepository.updateUser(updatedUser)
                 MockDataRepository.setLoggedInUser(updatedUser)
-                _uiState.update {
+                _editUiState.update {
                     it.copy(
                         user = updatedUser,
                         isEditMode = false,
                         saveSuccess = true
                     )
                 }
+                loadUserProfile()
             }
         }
     }
 
     fun onCancel() {
-        val user = _uiState.value.user
-        _uiState.update {
+        val user = _editUiState.value.user
+        _editUiState.update {
             it.copy(
                 isEditMode = false,
                 name = ValidatedField(value = user?.firstName ?: "", isValid = true),
@@ -218,6 +277,30 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun clearSaveSuccess() {
-        _uiState.update { it.copy(saveSuccess = false) }
+        _editUiState.update { it.copy(saveSuccess = false) }
+    }
+
+    fun setLanguage(languageCode: String) {
+        viewModelScope.launch {
+            settingsDataStore.setLanguage(languageCode)
+            _uiState.value = _uiState.value.copy(
+                successMessage = resourceProvider.getString(R.string.language_change_success)
+            )
+        }
+    }
+
+    fun clearMessages() {
+        _uiState.value = _uiState.value.copy(
+            successMessage = null,
+            errorMessage = null
+        )
+    }
+
+    fun getLanguageDisplayName(languageCode: String): String {
+        return when (languageCode) {
+            "es" -> resourceProvider.getString(R.string.language_spanish)
+            "en" -> resourceProvider.getString(R.string.language_english)
+            else -> languageCode
+        }
     }
 }
