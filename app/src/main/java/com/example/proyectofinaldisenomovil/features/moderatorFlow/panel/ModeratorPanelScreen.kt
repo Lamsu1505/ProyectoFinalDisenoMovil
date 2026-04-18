@@ -155,7 +155,7 @@ fun ModeratorPanelScreen(
                                 navController = navController,
                                 event = event,
                                 onCardClick = { onEventClick(event.id) },
-                                onAccept = viewModel::onEventReverify,
+                                onAccept = { viewModel.onEventAccept(event) },
                                 onReject = viewModel::onEventRejectAgain,
                             )
                         }
@@ -216,17 +216,6 @@ private fun EmptyState(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             textAlign = TextAlign.Center,
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ModeratorPanelScreenPreview() {
-    ProyectoFinalDisenoMovilTheme {
-        ModeratorPanelScreen(
-            onEventClick = {},
-            onLogout = {},
         )
     }
 }

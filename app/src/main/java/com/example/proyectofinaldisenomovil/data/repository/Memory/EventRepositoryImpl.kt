@@ -3,9 +3,11 @@ package com.example.proyectofinaldisenomovil.data.repository.Memory
 import android.util.Log
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.domain.model.AppNotification
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
+import com.example.proyectofinaldisenomovil.domain.model.NotificationType
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +21,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.collections.filter
 import kotlin.collections.filter
+import kotlin.collections.indexOfFirst
 
 @Singleton
 class EventRepositoryImpl @Inject constructor(): EventRepository {
@@ -176,7 +179,8 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                 description = "Bazar comunitario con venta de comidas típicas, artesanías navideñas, ropa y más. Las ganancias apoyan el alumbrado navideño del barrio. ¡Ven en familia!",
                 category = EventCategory.SOCIAL,
                 imageUrls = listOf(
-                    "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=800"
+                    "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=800",
+                    "https://thesavvyimg.co.uk/wp-content/uploads/2019/03/Main-Pathway-pic-ThesavvyIMG-1024x476.jpg"
                 ),
                 latitude = 4.5445,
                 longitude = -75.6703,
@@ -326,5 +330,21 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
     override fun getAllEvents(): List<Event> {
         Log.i("Moderator events" , "Los eventos son : ${events.value}")
         return events.value
+    }
+
+    override fun onEventAccept(event: Event) {
+        val currentList = _events.value.toMutableList()
+        val index = currentList.indexOfFirst { it.id == event.id }
+
+        if (index != -1) {
+            // Actualizamos el elemento en la copia mutable
+            currentList[index] = currentList[index].copy(
+                status = EventStatus.VERIFIED,
+                moderatorUid = MockDataRepository.getLoggedInUser()?.uid,
+                updatedAt = Timestamp.now()
+            )
+            // Asignamos la nueva lista al StateFlow para notificar a la UI
+            _events.value = currentList
+        }
     }
 }

@@ -91,7 +91,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             uid = "mod_002",
             firstName = "María",
             lastName = "López",
-            email = "moderator2@example.com",
+            email = "m@g.com",
             password = MOCK_PASSWORD,
             profileImageUrl = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200",
             location = defaultLocation,

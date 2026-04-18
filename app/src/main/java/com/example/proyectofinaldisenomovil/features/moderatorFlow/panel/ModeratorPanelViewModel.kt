@@ -96,7 +96,7 @@ class ModeratorPanelViewModel @Inject constructor(
     }
 
     fun onEventAccept(event: Event) {
-        MockDataRepository.approveEvent(event.id)
+        eventRepository.onEventAccept(event)
         loadEvents()
     }
 

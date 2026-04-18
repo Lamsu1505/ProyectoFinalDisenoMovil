@@ -2,11 +2,14 @@ package com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -172,20 +175,30 @@ private fun EventDetailContent(
 }
 
 // ─────────────────────────────────────────────
-//  CABECERA  – Imagen + badge categoría
+//  CABECERA  – Carrusel de Imagen + badge categoría
 // ─────────────────────────────────────────────
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun EventImageHeader(event: Event) {
+    val pagerState = rememberPagerState(pageCount = { event.imageUrls.size.coerceAtLeast(1) })
+
     Box(modifier = Modifier
         .fillMaxWidth()
         .height(220.dp)) {
-        AsyncImage(
-            model              = event.imageUrls.firstOrNull(),
-            contentDescription = null,
-            modifier           = Modifier.fillMaxSize(),
-            contentScale       = ContentScale.Crop
-        )
-        // Badge categoría – color secondary (naranja) igual que mockup
+        
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { page ->
+            AsyncImage(
+                model              = event.imageUrls.getOrNull(page),
+                contentDescription = null,
+                modifier           = Modifier.fillMaxSize(),
+                contentScale       = ContentScale.Crop
+            )
+        }
+
+        // Badge categoría
         Surface(
             modifier = Modifier
                 .padding(16.dp)
@@ -201,7 +214,29 @@ private fun EventImageHeader(event: Event) {
                 fontWeight = FontWeight.Bold
             )
         }
-        // Indicador de fotos  "1 / 5"
+
+        // Indicadores de puntos (Dots)
+        if (event.imageUrls.size > 1) {
+            Row(
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 12.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                repeat(event.imageUrls.size) { iteration ->
+                    val color = if (pagerState.currentPage == iteration) Color.White else Color.White.copy(alpha = 0.5f)
+                    Box(
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .clip(CircleShape)
+                            .background(color)
+                            .size(8.dp)
+                    )
+                }
+            }
+        }
+
+        // Indicador numérico  "1 / 5"
         Surface(
             modifier = Modifier
                 .padding(12.dp)
@@ -210,7 +245,7 @@ private fun EventImageHeader(event: Event) {
             shape    = RoundedCornerShape(6.dp)
         ) {
             Text(
-                text     = "1 / ${event.imageUrls.size.coerceAtLeast(1)}",
+                text     = "${pagerState.currentPage + 1} / ${event.imageUrls.size.coerceAtLeast(1)}",
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                 color    = Color.White,
                 fontSize = 11.sp

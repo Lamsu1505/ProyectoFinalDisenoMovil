@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.features.moderatorFlow.eventDetail
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,7 +52,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -218,6 +220,7 @@ fun ModeratorEventDetailScreenContent(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun EventDetailContent(
     event: com.example.proyectofinaldisenomovil.domain.model.Event.Event,
@@ -230,6 +233,13 @@ private fun EventDetailContent(
     val scrollState = rememberScrollState()
     val dateFormatter = SimpleDateFormat("EEEE d 'de' MMMM", Locale("es"))
     val timeFormatter = SimpleDateFormat("h:mm a", Locale.getDefault())
+
+    val pagerState = rememberPagerState(pageCount = { event.imageUrls.size.coerceAtLeast(1) })
+
+    // Sincronizar el estado del ViewModel con el carrusel
+    LaunchedEffect(pagerState.currentPage) {
+        onImageIndexChange(pagerState.currentPage)
+    }
 
     val statusColor = when (event.status) {
         EventStatus.PENDING_REVIEW -> Color(0xFFFFA000)
@@ -252,12 +262,17 @@ private fun EventDetailContent(
                 .fillMaxWidth()
                 .height(220.dp),
         ) {
-            AsyncImage(
-                model = event.imageUrls.getOrNull(currentImageIndex) ?: "",
-                contentDescription = event.title,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize(),
-            )
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
+                AsyncImage(
+                    model = event.imageUrls.getOrNull(page) ?: "",
+                    contentDescription = event.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
 
             Surface(
                 modifier = Modifier
@@ -301,10 +316,10 @@ private fun EventDetailContent(
                     event.imageUrls.forEachIndexed { index, _ ->
                         Box(
                             modifier = Modifier
-                                .size(if (index == currentImageIndex) 10.dp else 8.dp)
+                                .size(if (index == pagerState.currentPage) 10.dp else 8.dp)
                                 .clip(CircleShape)
                                 .background(
-                                    if (index == currentImageIndex)
+                                    if (index == pagerState.currentPage)
                                         MaterialTheme.colorScheme.primary
                                     else
                                         Color.White.copy(alpha = 0.5f)
