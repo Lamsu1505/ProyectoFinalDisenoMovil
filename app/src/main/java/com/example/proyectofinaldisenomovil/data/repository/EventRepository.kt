@@ -65,4 +65,5 @@ interface EventRepository {
 
     fun getAllEvents() : List<Event>
     fun onEventAccept(event: Event)
+    fun onEventReject(event: Event, reason: String)
 }

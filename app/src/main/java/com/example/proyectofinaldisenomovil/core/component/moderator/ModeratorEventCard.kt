@@ -35,7 +35,7 @@ fun ModeratorEventCard(
     event: Event,
     onCardClick: (String) -> Unit,
     onAccept: (Event) -> Unit,
-    onReject: (Event) -> Unit,
+    onReject: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val statusColor = when (event.status) {
@@ -160,7 +160,7 @@ fun ModeratorEventCard(
                                     label = "Rechazar",
                                     color = Color(0xFFF44336),
                                     icon = Icons.Filled.Close,
-                                    onClick = { onReject(event) },
+                                    onClick = { onReject(event.id) },
                                 )
                             }
                             EventStatus.VERIFIED -> {
@@ -168,7 +168,7 @@ fun ModeratorEventCard(
                                     label = "Rechazar",
                                     color = Color(0xFFF44336),
                                     icon = Icons.Filled.Close,
-                                    onClick = { onReject(event) },
+                                    onClick = { onReject(event.id) },
                                 )
                             }
                             EventStatus.REJECTED -> {

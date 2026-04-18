@@ -49,6 +49,7 @@ import com.example.proyectofinaldisenomovil.core.component.moderator.SortDistanc
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.R
+import com.example.proyectofinaldisenomovil.core.component.moderator.ConfirmationDialog
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository.printEvents
 
 @Composable
@@ -156,7 +157,7 @@ fun ModeratorPanelScreen(
                                 event = event,
                                 onCardClick = { onEventClick(event.id) },
                                 onAccept = { viewModel.onEventAccept(event) },
-                                onReject = viewModel::onEventRejectAgain,
+                                onReject = {onEventClick(event.id)},
                             )
                         }
                     }

@@ -104,13 +104,9 @@ class ModeratorPanelViewModel @Inject constructor(
         _uiState.update { it.copy(showRejectDialog = true, eventToReject = event) }
     }
 
-    fun onRejectDialogDismiss() {
-        _uiState.update { it.copy(showRejectDialog = false, eventToReject = null) }
-    }
-
     fun onRejectConfirm(reason: String) {
         val event = _uiState.value.eventToReject ?: return
-        MockDataRepository.rejectEvent(event.id, reason)
+        eventRepository.onEventReject(event, reason)
         _uiState.update { it.copy(showRejectDialog = false, eventToReject = null) }
         loadEvents()
     }

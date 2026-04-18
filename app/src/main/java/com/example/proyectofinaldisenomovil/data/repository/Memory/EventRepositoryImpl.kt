@@ -347,4 +347,21 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
             _events.value = currentList
         }
     }
+
+    override fun onEventReject(event: Event , reason: String) {
+        val currentList = _events.value.toMutableList()
+        val index = currentList.indexOfFirst { it.id == event.id }
+
+        if (index != -1) {
+            // Actualizamos el elemento en la copia mutable
+            currentList[index] = currentList[index].copy(
+                status = EventStatus.REJECTED,
+                moderatorUid = MockDataRepository.getLoggedInUser()?.uid,
+                updatedAt = Timestamp.now(),
+                rejectionReason = reason
+            )
+            // Asignamos la nueva lista al StateFlow para notificar a la UI
+            _events.value = currentList
+        }
+    }
 }
