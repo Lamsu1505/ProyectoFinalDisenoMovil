@@ -18,6 +18,7 @@ import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.Create
 import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.LikedEventsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.Notifications.NotificationsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.EditProfile.EditProfileScreen
+import com.example.proyectofinaldisenomovil.features.userFlow.EditEvent.EditEventScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.MyEvents.MyEventsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.Profile.ProfileScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent.ViewEventScreen
@@ -33,6 +34,7 @@ object UserRoutes {
     const val NOTIFICATIONS = "notifications"
     const val EVENT_DETAIL = "eventDetail"
     const val MY_EVENTS = "myEvents"
+    const val EDIT_EVENT = "editEvent"
 }
 
 @Composable
@@ -158,7 +160,9 @@ fun UserNavigation(
                 MyEventsScreen(
                     paddingValues = paddingValues,
                     onNotificationClick = { userNavController.navigate(UserRoutes.NOTIFICATIONS) },
-                    onEditClick = { /* Navegar a editar */ },
+                    onEditClick = { eventId ->
+                        userNavController.navigate("${UserRoutes.EDIT_EVENT}/$eventId")
+                    },
                     onEventClick = { eventId ->
                         userNavController.navigate("${UserRoutes.EVENT_DETAIL}/$eventId")
                     }
@@ -177,6 +181,17 @@ fun UserNavigation(
                 arguments = listOf(navArgument("eventId") { type = NavType.StringType })) { backStackEntry ->
                 val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
                 ViewEventScreen(
+                    eventId = eventId,
+                    onBackClick = { userNavController.popBackStack() }
+                )
+            }
+
+            composable(
+                route = "${UserRoutes.EDIT_EVENT}/{eventId}",
+                arguments = listOf(navArgument("eventId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+                EditEventScreen(
                     eventId = eventId,
                     onBackClick = { userNavController.popBackStack() }
                 )
