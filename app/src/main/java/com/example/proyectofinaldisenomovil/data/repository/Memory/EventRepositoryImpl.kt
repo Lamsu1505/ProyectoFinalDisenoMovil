@@ -243,6 +243,53 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                 endDate = null,
                 createdAt = null,
                 updatedAt = null
+            ),
+            Event(
+                id = "event_016",
+                authorUid = "user_001",
+                authorName = "Camilo Torres",
+                title = "Concierto de quevedo",
+                description = "Es un Concierto de Quevedo",
+                category = EventCategory.DIVERSION,
+                imageUrls = listOf(
+                    "https://image.europafm.com/clipping/cmsimages02/2024/11/10/D162867D-D089-4B0D-83E8-321FC036AF75/quevedo-portada-cancion-duro_98.jpg?crop=1200,675,x0,y154&width=1900&height=1069&optimize=low&format=webply"
+                ),
+                latitude = 4.5339,
+                longitude = -75.6811,
+                address = "Avenida Bolívar, Armenia, Quindío",
+                maxAttendees = 50000,
+                currentAttendees = 100,
+                status = EventStatus.PENDING_REVIEW,
+                importantVotes = 203,
+                isResolved = true,
+                startDate = null,
+                endDate = null,
+                createdAt = null,
+                updatedAt = null
+            ),
+            Event(
+                id = "event_017",
+                authorUid = "user_001",
+                authorName = "Camilo Torres",
+                title = "Gira mundial de TINI",
+                description = "Es una gira de tinistossel",
+                category = EventCategory.SOCIAL,
+                imageUrls = listOf(
+                    "https://lumiere-a.akamaihd.net/v1/images/tini-stoessel_84546fdf.jpeg"
+                ),
+                latitude = 4.5339,
+                longitude = -75.6811,
+                address = "Avenida Bolívar, Armenia, Quindío",
+                maxAttendees = 4500,
+                currentAttendees = 100,
+                status = EventStatus.REJECTED,
+                importantVotes = 203,
+                isResolved = true,
+                startDate = null,
+                endDate = null,
+                createdAt = null,
+                updatedAt = null,
+                rejectionReason = "El concierto es muy malucooooo"
             )
         )
     }

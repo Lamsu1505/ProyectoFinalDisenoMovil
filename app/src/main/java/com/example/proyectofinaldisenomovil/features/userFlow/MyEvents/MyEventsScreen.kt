@@ -14,6 +14,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +36,7 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.SearchTop
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.core.theme.green
 import com.example.proyectofinaldisenomovil.core.theme.orange
+import com.example.proyectofinaldisenomovil.core.theme.red
 import com.example.proyectofinaldisenomovil.core.theme.whiteBackground
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
@@ -44,16 +47,17 @@ import java.util.*
 fun MyEventsScreen(
     viewModel: MyEventsViewModel = hiltViewModel(),
     paddingValues: PaddingValues,
-    onBackClick: () -> Unit,
     onNotificationClick: () -> Unit,
     onEditClick: (String) -> Unit,
     onEventClick: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    var showRejectionDialog by remember { mutableStateOf(false) }
+    var selectedRejectionReason by remember { mutableStateOf("") }
+
     Scaffold(
         topBar = {
-                // Search Bar integrated
                 SearchTopBarApp(
                     query = uiState.searchQuery,
                     onQueryChange = viewModel::onSearchQueryChange,
@@ -102,7 +106,7 @@ fun MyEventsScreen(
 
             // Summary info
             Text(
-                text = "${uiState.filteredEvents.size} Eventos están ${getStatusTextLabel(uiState.selectedStatus)}",
+                text = "${uiState.filteredEvents.size} Eventos ${getStatusTextLabel(uiState.selectedStatus)}",
                 modifier = Modifier.padding(horizontal = 16.dp),
                 fontWeight = FontWeight.Bold,
                 color = Color.DarkGray
@@ -122,11 +126,40 @@ fun MyEventsScreen(
                         MyEventCard(
                             event = event,
                             onEditClick = { onEditClick(event.id) },
-                            onEventClick = { onEventClick(event.id) }
+                            onEventClick = { onEventClick(event.id) },
+                            onShowRejectionReason = { reason ->
+                                selectedRejectionReason = reason
+                                showRejectionDialog = true
+                            }
                         )
                     }
                 }
             }
+        }
+        if (showRejectionDialog) {
+            AlertDialog(
+                onDismissRequest = { showRejectionDialog = false },
+                title = {
+                    Text(
+                        "Motivo del descarte",
+                        fontWeight = FontWeight.Bold,
+                        color = red
+                    )
+                },
+                text = {
+                    Text(
+                        selectedRejectionReason.ifBlank { "No se proporcionó un motivo detallado." },
+                        fontSize = 16.sp
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = { showRejectionDialog = false }) {
+                        Text("Entendido", color = green, fontWeight = FontWeight.Bold)
+                    }
+                },
+                shape = RoundedCornerShape(24.dp),
+                containerColor = Color.White
+            )
         }
     }
 }
@@ -151,7 +184,8 @@ fun StatusTab(label: String, isSelected: Boolean, onClick: () -> Unit) {
 fun MyEventCard(
     event: Event,
     onEditClick: () -> Unit,
-    onEventClick: () -> Unit
+    onEventClick: () -> Unit,
+    onShowRejectionReason: (String) -> Unit
 ) {
     val dateFormat = SimpleDateFormat("EEEE d 'de' MMMM", Locale("es", "CO"))
     val timeFormat = SimpleDateFormat("h:mm a", Locale("es", "CO"))
@@ -192,16 +226,16 @@ fun MyEventCard(
 
                 // Info section
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    InfoRow(Icons.Default.CalendarToday, event.startDate?.let { dateFormat.format(it.toDate()) } ?: "Fecha no definida")
-                    InfoRow(Icons.Default.Schedule, event.startDate?.let { timeFormat.format(it.toDate()) } ?: "Hora no definida")
-                    InfoRow(Icons.Default.LocationOn, event.address)
+                    InfoRow(Icons.Default.CalendarToday, event.startDate?.let { dateFormat.format(it.toDate()) } ?: "Jueves 28 de febrero")
+                    InfoRow(Icons.Default.Schedule, event.startDate?.let { timeFormat.format(it.toDate()) } ?: "6:00 pm")
+                    InfoRow(Icons.Default.LocationOn, event.address.ifBlank { "Estadio centenario" })
                 }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = event.title,
+                text = event.title.ifBlank { "Partido de la Historia (Real Madrid vs Deportes ..." },
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
                 maxLines = 1,
@@ -210,31 +244,79 @@ fun MyEventCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // FILA INFERIOR DINÁMICA
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.FavoriteBorder, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(20.dp))
-                    Text(text = "${event.importantVotes} likes", modifier = Modifier.padding(start = 4.dp), fontSize = 12.sp, color = Color.Gray)
-                }
+                when (event.status) {
+                    EventStatus.PENDING_REVIEW -> {
+                        // Diseño para PENDIENTES
+                        Icon(
+                            imageVector = Icons.Default.PendingActions,
+                            contentDescription = null,
+                            tint = orange,
+                            modifier = Modifier.size(36.dp).padding(start = 8.dp)
+                        )
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Group, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(20.dp))
-                    Text(text = "${event.currentAttendees} / ${event.maxAttendees ?: "∞"}", modifier = Modifier.padding(start = 4.dp), fontSize = 12.sp, color = Color.Gray)
-                }
+                        Button(
+                            onClick = onEventClick,
+                            colors = ButtonDefaults.buttonColors(containerColor = orange),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                            modifier = Modifier.height(32.dp)
+                        ) {
+                            Icon(Icons.Default.Visibility, contentDescription = null, modifier = Modifier.size(14.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text("Ver evento", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
 
-                Button(
-                    onClick = onEditClick,
-                    colors = ButtonDefaults.buttonColors(containerColor = orange),
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                    modifier = Modifier.height(32.dp)
-                ) {
-                    Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(14.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text("Editar", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    EventStatus.REJECTED -> {
+                        Icon(
+                            imageVector = Icons.Default.Cancel,
+                            contentDescription = null,
+                            tint = red,
+                            modifier = Modifier.size(36.dp).padding(start = 8.dp)
+                        )
+
+                        Button(
+                            onClick = { onShowRejectionReason(event.rejectionReason ?: "") },
+                            colors = ButtonDefaults.buttonColors(containerColor = orange),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                            modifier = Modifier.height(32.dp)
+                        ) {
+                            Icon(Icons.Default.Help, contentDescription = null, modifier = Modifier.size(14.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text("Razon de descarte", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                    else -> {
+                        // Diseño para ACTIVOS / FINALIZADOS
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.FavoriteBorder, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(30.dp))
+                            Text(text = "${event.importantVotes} likes", modifier = Modifier.padding(start = 4.dp), fontSize = 12.sp, color = Color.Gray)
+                        }
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Group, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(20.dp))
+                            Text(text = "${event.currentAttendees} / ${event.maxAttendees ?: "∞"}", modifier = Modifier.padding(start = 4.dp), fontSize = 12.sp, color = Color.Gray)
+                        }
+
+                        Button(
+                            onClick = onEditClick,
+                            colors = ButtonDefaults.buttonColors(containerColor = orange),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                            modifier = Modifier.height(32.dp)
+                        ) {
+                            Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(14.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text("Editar", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
                 }
             }
         }
@@ -252,9 +334,9 @@ fun InfoRow(icon: ImageVector, text: String) {
 
 private fun getStatusTextLabel(status: EventStatus): String {
     return when(status) {
-        EventStatus.VERIFIED -> "activos"
-        EventStatus.RESOLVED -> "finalizados"
-        EventStatus.PENDING_REVIEW -> "pendientes"
-        EventStatus.REJECTED -> "descartados"
+        EventStatus.VERIFIED -> "están activos"
+        EventStatus.RESOLVED -> "fueron finalizados"
+        EventStatus.PENDING_REVIEW -> "están pendientes"
+        EventStatus.REJECTED -> "fueron Descartados"
     }
 }

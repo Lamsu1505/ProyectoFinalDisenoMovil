@@ -157,7 +157,6 @@ fun UserNavigation(
             composable(UserRoutes.MY_EVENTS) {
                 MyEventsScreen(
                     paddingValues = paddingValues,
-                    onBackClick = { userNavController.popBackStack() },
                     onNotificationClick = { userNavController.navigate(UserRoutes.NOTIFICATIONS) },
                     onEditClick = { /* Navegar a editar */ },
                     onEventClick = { eventId ->
