@@ -324,6 +324,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
     }
 
     override fun getAllEvents(): List<Event> {
+        Log.i("Moderator events" , "Los eventos son : ${events.value}")
         return events.value
     }
 }

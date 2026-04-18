@@ -33,7 +33,7 @@ import java.util.Locale
 fun ModeratorEventCard(
     navController: NavController,
     event: Event,
-    onCardClick: (Event) -> Unit,
+    onCardClick: (String) -> Unit,
     onAccept: (Event) -> Unit,
     onReject: (Event) -> Unit,
     modifier: Modifier = Modifier,
@@ -54,7 +54,7 @@ fun ModeratorEventCard(
     Card(
         modifier  = modifier
             .fillMaxWidth()
-            .clickable { onCardClick(event) },
+            .clickable { onCardClick(event.id) },
         shape     = RoundedCornerShape(12.dp),
         colors    = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),

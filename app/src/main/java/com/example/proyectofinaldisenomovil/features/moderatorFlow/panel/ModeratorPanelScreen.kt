@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.features.moderatorFlow.panel
 
+import android.util.Log
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -145,6 +146,7 @@ fun ModeratorPanelScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
+                        Log.i("Moderator events" , "Los eventos del uiState : ${uiState.filteredEvents}")
                         items(
                             items = uiState.filteredEvents,
                             key = { it.id },

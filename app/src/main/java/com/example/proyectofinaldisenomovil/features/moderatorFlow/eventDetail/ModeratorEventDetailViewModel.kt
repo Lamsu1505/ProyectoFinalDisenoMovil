@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.core.component.moderator.state.Moderatoreventdetailuistate
+import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ModeratorEventDetailViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val eventRepository: EventRepository
 ) : ViewModel() {
 
     private val eventId: String = savedStateHandle.get<String>("eventId") ?: ""
@@ -29,7 +31,7 @@ class ModeratorEventDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            val event = MockDataRepository.getEventById(eventId)
+            val event = eventRepository.getEventById(eventId)
 
             _uiState.update {
                 it.copy(
