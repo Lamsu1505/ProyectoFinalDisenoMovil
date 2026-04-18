@@ -39,6 +39,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -63,7 +65,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
+import com.example.proyectofinaldisenomovil.core.component.barReusable.AppSnackbarHost
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.core.utils.RequestResult
 import com.example.proyectofinaldisenomovil.core.theme.*
 import com.example.proyectofinaldisenomovil.features.settings.SettingsViewModel
 
@@ -80,15 +84,34 @@ fun ProfileScreen(
 ) {
     val uiState by profileViewModel.uiState.collectAsState()
     val currentLanguage by settingsViewModel.currentLanguage.collectAsState()
+    val saveProfileResult by profileViewModel.saveProfileResult.collectAsState()
     val context = LocalContext.current
 
     var showLanguageDialog by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         profileViewModel.loadUserProfile()
     }
 
+    LaunchedEffect(saveProfileResult) {
+        saveProfileResult?.let { result ->
+            when (result) {
+                is RequestResult.Success -> {
+                    snackbarHostState.showSnackbar(result.message)
+                    profileViewModel.resetSaveProfileResult()
+                }
+                is RequestResult.Failure -> {
+                    snackbarHostState.showSnackbar(result.errorMessage)
+                    profileViewModel.resetSaveProfileResult()
+                }
+                is RequestResult.Loading -> {}
+            }
+        }
+    }
+
     Scaffold(
+        snackbarHost = { AppSnackbarHost(snackbarHostState) },
         topBar = {
             AppTopBar(
                 title = stringResource(R.string.profile_title),

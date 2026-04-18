@@ -28,6 +28,18 @@
     <string name="login_forgot_password">Forgot your password?</string>
     <string name="login_error_empty">Please fill in all fields</string>
     <string name="login_error_invalid">Invalid email or password</string>
+    <string name="edit_profile_address">Address</string>
+    <string name="profile_address">Address</string>
+    <string name="profile_camera">Take Photo</string>
+    <string name="profile_gallery">Choose from Gallery</string>
+    <string name="profile_password_change_message">Password can be changed in settings.</string>
+    <string name="profile_phone">Phone</string>
+    <string name="profile_select_photo">Select Photo</string>
+    <string name="validation_name_required">Name is required</string>
+    <string name="validation_lastname_required">Last name is required</string>
+    <string name="validation_city_required">City is required</string>
+    <string name="validation_phone_invalid">Invalid phone format</string>
+    <string name="profile_update_success">Profile updated successfully</string>
 
     <!-- Register Screen -->
     <string name="register_title">Create Account</string>
@@ -381,5 +393,6 @@
 
     <!-- Login Messages -->
     <string name="login_success">Login successful</string>
+    <string name="login_error">Invalid email or password. Try again.</string>
     <string name="login_error_credentials">Invalid email or password</string>
 </resources>

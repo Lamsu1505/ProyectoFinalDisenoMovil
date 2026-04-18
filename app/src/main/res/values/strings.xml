@@ -28,6 +28,8 @@
     <string name="login_forgot_password">¿Olvidaste tu contraseña?</string>
     <string name="login_error_empty">Por favor completa todos los campos</string>
     <string name="login_error_invalid">Email o contraseña incorrectos</string>
+    <string name="login_success">¡Bienvenido! Sesión iniciada correctamente</string>
+    <string name="login_error">Credenciales incorrectas. Intenta de nuevo</string>
 
     <!-- Register Screen -->
     <string name="register_title">Crear Cuenta</string>
@@ -265,6 +267,11 @@
     <string name="validation_password_uppercase">La contraseña debe tener al menos una mayúscula</string>
     <string name="validation_password_digit">La contraseña debe tener al menos un número</string>
     <string name="validation_passwords_not_match">Las contraseñas no coinciden</string>
+    <string name="validation_name_required">El nombre es obligatorio</string>
+    <string name="validation_lastname_required">El apellido es obligatorio</string>
+    <string name="validation_city_required">La ciudad es obligatoria</string>
+    <string name="validation_phone_invalid">Formato de teléfono inválido</string>
+    <string name="profile_update_success">Perfil actualizado correctamente</string>
 
     <!-- Forgot Password -->
     <string name="forgot_password_title">Olvidaste tu Contraseña</string>

@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.R
+import com.example.proyectofinaldisenomovil.core.utils.RequestResult
 import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
 import com.example.proyectofinaldisenomovil.core.utils.ValidatedField
 import com.example.proyectofinaldisenomovil.data.local.SettingsDataStore
@@ -32,9 +33,7 @@ data class ProfileUiState(
     val completedEvents: Int?,
     val pendingEvents: Int?,
     val rating: Double?,
-    val isLoading: Boolean?,
-    val successMessage: String?,
-    val errorMessage: String?
+    val isLoading: Boolean?
 )
 
 data class EditProfileUiState(
@@ -50,8 +49,7 @@ data class EditProfileUiState(
     val phone: ValidatedField = ValidatedField(),
     val showPasswordDialog: Boolean = false,
     val showImagePickerSheet: Boolean = false,
-    val saveSuccess: Boolean = false,
-    val errorMessage: String? = null
+    val saveSuccess: Boolean = false
 )
 
 @HiltViewModel
@@ -72,14 +70,15 @@ class ProfileViewModel @Inject constructor(
         completedEvents = null,
         pendingEvents = null,
         rating = null,
-        isLoading = true,
-        successMessage = null,
-        errorMessage = null
+        isLoading = true
     ))
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     private val _editUiState = MutableStateFlow(EditProfileUiState())
     val editUiState: StateFlow<EditProfileUiState> = _editUiState.asStateFlow()
+
+    private val _saveProfileResult = MutableStateFlow<RequestResult?>(null)
+    val saveProfileResult: StateFlow<RequestResult?> = _saveProfileResult.asStateFlow()
 
     val currentLanguage: StateFlow<String> = settingsDataStore.languageFlow
         .stateIn(
@@ -126,10 +125,7 @@ class ProfileViewModel @Inject constructor(
                     isLoading = false
                 )
             } else {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = resourceProvider.getString(R.string.profile_error_load)
-                )
+                _uiState.value = _uiState.value.copy(isLoading = false)
             }
         }
     }
@@ -154,11 +150,7 @@ class ProfileViewModel @Inject constructor(
                             photoUri = user.profileImageUrl?.let { Uri.parse(it) }
                         )
                     }
-                } else {
-                    _editUiState.update { it.copy(isLoading = false, errorMessage = "User not found") }
                 }
-            } else {
-                _editUiState.update { it.copy(isLoading = false, errorMessage = "No user logged in") }
             }
         }
     }
@@ -168,21 +160,21 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun onNameChange(value: String) {
-        val error = if (value.isBlank()) "Name is required" else null
+        val error = if (value.isBlank()) resourceProvider.getString(R.string.validation_name_required) else null
         _editUiState.update {
             it.copy(name = ValidatedField(value = value, error = error, isValid = error == null))
         }
     }
 
     fun onLastNameChange(value: String) {
-        val error = if (value.isBlank()) "Last name is required" else null
+        val error = if (value.isBlank()) resourceProvider.getString(R.string.validation_lastname_required) else null
         _editUiState.update {
             it.copy(lastName = ValidatedField(value = value, error = error, isValid = error == null))
         }
     }
 
     fun onCityChange(value: String) {
-        val error = if (value.isBlank()) "City is required" else null
+        val error = if (value.isBlank()) resourceProvider.getString(R.string.validation_city_required) else null
         _editUiState.update {
             it.copy(city = ValidatedField(value = value, error = error, isValid = error == null))
         }
@@ -196,7 +188,7 @@ class ProfileViewModel @Inject constructor(
 
     fun onPhoneChange(value: String) {
         val error = if (value.isNotBlank() && !value.all { it.isDigit() || it == '-' || it == ' ' }) {
-            "Invalid phone format"
+            resourceProvider.getString(R.string.validation_phone_invalid)
         } else null
         _editUiState.update {
             it.copy(phone = ValidatedField(value = value, error = error, isValid = error == null))
@@ -232,9 +224,9 @@ class ProfileViewModel @Inject constructor(
         if (!nameValid || !lastNameValid || !cityValid) {
             _editUiState.update {
                 it.copy(
-                    name = it.name.copy(error = if (!nameValid) "Name required" else null, isValid = nameValid),
-                    lastName = it.lastName.copy(error = if (!lastNameValid) "Last name required" else null, isValid = lastNameValid),
-                    city = it.city.copy(error = if (!cityValid) "City required" else null, isValid = cityValid)
+                    name = it.name.copy(error = if (!nameValid) resourceProvider.getString(R.string.validation_name_required) else null, isValid = nameValid),
+                    lastName = it.lastName.copy(error = if (!lastNameValid) resourceProvider.getString(R.string.validation_lastname_required) else null, isValid = lastNameValid),
+                    city = it.city.copy(error = if (!cityValid) resourceProvider.getString(R.string.validation_city_required) else null, isValid = cityValid)
                 )
             }
             return
@@ -251,12 +243,9 @@ class ProfileViewModel @Inject constructor(
                 userRepository.updateUser(updatedUser)
                 MockDataRepository.setLoggedInUser(updatedUser)
                 _editUiState.update {
-                    it.copy(
-                        user = updatedUser,
-                        isEditMode = false,
-                        saveSuccess = true
-                    )
+                    it.copy(user = updatedUser, isEditMode = false, saveSuccess = true)
                 }
+                _saveProfileResult.value = RequestResult.Success(resourceProvider.getString(R.string.profile_update_success))
                 loadUserProfile()
             }
         }
@@ -276,6 +265,10 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    fun resetSaveProfileResult() {
+        _saveProfileResult.value = null
+    }
+
     fun clearSaveSuccess() {
         _editUiState.update { it.copy(saveSuccess = false) }
     }
@@ -283,17 +276,7 @@ class ProfileViewModel @Inject constructor(
     fun setLanguage(languageCode: String) {
         viewModelScope.launch {
             settingsDataStore.setLanguage(languageCode)
-            _uiState.value = _uiState.value.copy(
-                successMessage = resourceProvider.getString(R.string.language_change_success)
-            )
         }
-    }
-
-    fun clearMessages() {
-        _uiState.value = _uiState.value.copy(
-            successMessage = null,
-            errorMessage = null
-        )
     }
 
     fun getLanguageDisplayName(languageCode: String): String {

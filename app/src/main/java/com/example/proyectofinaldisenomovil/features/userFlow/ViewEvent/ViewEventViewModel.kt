@@ -1,10 +1,10 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.utils.RequestResult
+import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
 import com.example.proyectofinaldisenomovil.data.repository.AttendanceRepository
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
@@ -30,7 +30,8 @@ data class CommentUiModel(
 class ViewEventViewModel @Inject constructor(
     private val eventRepository: EventRepository,
     private val voteRepository: VoteRepository,
-    private val attendanceRepository: AttendanceRepository
+    private val attendanceRepository: AttendanceRepository,
+    private val resourceProvider: ResourceProvider
 ): ViewModel() {
 
 
@@ -63,10 +64,10 @@ class ViewEventViewModel @Inject constructor(
                     _isInterested.value = voteRepository.hasVoted(eventId, userId)
                     _isConfirmed.value = attendanceRepository.isAttending(eventId, userId)
 
-                    _detailResult.value = RequestResult.Success(R.string.detail_success.toString())
+                    _detailResult.value = RequestResult.Success(resourceProvider.getString(R.string.detail_success))
                 }
                 else{
-                    _detailResult.value = RequestResult.Failure(R.string.error_unknown.toString())
+                    _detailResult.value = RequestResult.Failure(resourceProvider.getString(R.string.error_unknown))
                 }
             } catch (e: Exception) {
                 _detailResult.value = RequestResult.Failure(e.message.toString())

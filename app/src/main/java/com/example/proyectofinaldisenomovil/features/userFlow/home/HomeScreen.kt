@@ -57,6 +57,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryEventsSelectorBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SearchTopBarApp
+import com.example.proyectofinaldisenomovil.core.utils.toDisplayDate
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
@@ -418,7 +419,7 @@ fun EventCard(
                         Spacer(modifier = Modifier.width(4.dp))
 
                         Text(
-                            text = event.startDate.toString(),
+                            text = event.startDate.toDisplayDate(),
                             fontSize = 15.sp,
                             color = Color.Gray,
                             maxLines = 1,
@@ -444,7 +445,7 @@ fun EventCard(
                             Spacer(modifier = Modifier.width(4.dp))
 
                             Text(
-                                text = event.startDate.toString(),
+                                text = event.startDate.toDisplayDate(),
                                 fontSize = 13.sp,
                                 color = Color.Gray
                             )

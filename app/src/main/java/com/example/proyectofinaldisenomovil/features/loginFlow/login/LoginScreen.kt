@@ -27,12 +27,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -56,10 +59,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.login.LoginHeaderSection
+import com.example.proyectofinaldisenomovil.core.component.barReusable.AppSnackbarHost
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.core.theme.green
+import com.example.proyectofinaldisenomovil.core.utils.RequestResult
+import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
 import com.example.proyectofinaldisenomovil.features.settings.SettingsViewModel
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun LoginScreen(
@@ -76,24 +83,39 @@ fun LoginScreen(
     val context = LocalContext.current
     
     var showLanguageDialog by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(loginResult) {
-        when (val result = loginResult) {
-            is LoginResult.Success -> {
-                val mappedRole = when (result.role) {
-                    UserRole.USER -> com.example.proyectofinaldisenomovil.domain.model.UserRole.USER
-                    UserRole.MODERATOR -> com.example.proyectofinaldisenomovil.domain.model.UserRole.ADMIN
+        loginResult?.let { result ->
+            when (result) {
+                is RequestResult.Success -> {
+                    snackbarHostState.showSnackbar(result.message)
+                    val user = MockDataRepository.getLoggedInUser()
+                    if (user != null) {
+                        val mappedRole = when (user.role) {
+                            UserRole.USER -> com.example.proyectofinaldisenomovil.domain.model.UserRole.USER
+                            UserRole.MODERATOR -> com.example.proyectofinaldisenomovil.domain.model.UserRole.ADMIN
+                        }
+                        onLoginSuccess(user.uid, mappedRole)
+                        if (user.role == UserRole.MODERATOR) onNavigateToModeratorFlow()
+                        else onNavigateToUserFlow()
+                    }
+                    loginViewModel.resetResult()
                 }
-                onLoginSuccess(result.userId, mappedRole)
-                if (result.role == UserRole.MODERATOR) onNavigateToModeratorFlow()
-                else onNavigateToUserFlow()
-                loginViewModel.resetResult()
+                is RequestResult.Failure -> {
+                    snackbarHostState.showSnackbar(result.errorMessage)
+                    loginViewModel.resetResult()
+                }
+                is RequestResult.Loading -> {
+                    // No mostrar snackbar para loading
+                }
+                else -> {}
             }
-            else -> Unit
         }
     }
 
     Scaffold(
+        snackbarHost = { AppSnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -128,7 +150,8 @@ fun LoginScreen(
                     LoginForm(
                         loginViewModel,
                         onNavigateToForgotPassword,
-                        onNavigateToRegister
+                        onNavigateToRegister,
+                        isLoading = loginResult is RequestResult.Loading
                     )
                 }
             }
@@ -159,7 +182,8 @@ fun LoginScreen(
 fun LoginForm(
     loginViewModel: LoginViewModel,
     onNavigateToForgotPassword: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    isLoading: Boolean = false
 ){
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -239,7 +263,7 @@ fun LoginForm(
         Spacer(modifier = Modifier.height(15.dp))
 
         Button(
-            enabled = loginViewModel.validateForm(),
+            enabled = loginViewModel.validateForm() && !isLoading,
             onClick = {loginViewModel.login()},
             modifier = Modifier.height(50.dp),
             shape = RoundedCornerShape(20.dp),
@@ -248,7 +272,15 @@ fun LoginForm(
                 disabledContentColor = MaterialTheme.colorScheme.onSurface
             )
         ) {
-            Text(text = stringResource(R.string.login_button), fontSize = 20.sp)
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text(text = stringResource(R.string.login_button), fontSize = 20.sp)
+            }
         }
 
         Spacer(modifier = Modifier.height(10.dp))

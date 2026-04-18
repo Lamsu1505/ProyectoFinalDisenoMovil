@@ -196,7 +196,7 @@ fun MainNavigation(
 ### Flujo de Cambio de Idioma
 
 1. Usuario abre diálogo de idioma en Login o Profile
-2. Selectiona nuevo idioma (es/en)
+2. Selecciona nuevo idioma (es/en)
 3. SettingsDataStore guarda el código persistentemente
 4. Se actualiza el Locale globalmente
 5. Se recrea la Activity
