@@ -62,4 +62,6 @@ interface EventRepository {
         endDate: Timestamp,
         maxAttendees: Int?
     ): Event
+
+    fun getAllEvents() : List<Event>
 }

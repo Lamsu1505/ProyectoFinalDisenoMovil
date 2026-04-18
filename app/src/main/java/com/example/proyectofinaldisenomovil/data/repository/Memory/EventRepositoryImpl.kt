@@ -315,11 +315,15 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
             endDate = endDate,
             maxAttendees = maxAttendees,
             currentAttendees = 0,
-            status = EventStatus.VERIFIED, //TODO: Cambiar a pendiente de revisión
+            status = EventStatus.PENDING_REVIEW,
             createdAt = Timestamp.now()
         )
         Log.i("Crear evento" , "Evento creado: ${newEvent.toString()}")
         save(newEvent)
         return newEvent
+    }
+
+    override fun getAllEvents(): List<Event> {
+        return events.value
     }
 }

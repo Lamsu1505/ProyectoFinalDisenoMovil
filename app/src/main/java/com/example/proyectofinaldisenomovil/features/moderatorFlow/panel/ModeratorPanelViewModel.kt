@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.core.component.moderator.state.ModeratorPanelUiState
 import com.example.proyectofinaldisenomovil.core.component.moderator.state.SortOption
 import com.example.proyectofinaldisenomovil.data.local.SessionDataStore
+import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
@@ -19,7 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ModeratorPanelViewModel @Inject constructor(
-    private val sessionDataStore: SessionDataStore
+    private val sessionDataStore: SessionDataStore,
+    private val eventRepository: EventRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ModeratorPanelUiState())
@@ -32,8 +34,9 @@ class ModeratorPanelViewModel @Inject constructor(
     fun loadEvents() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            
-            val allEvents = MockDataRepository.getAllEvents()
+
+            val allEvents = eventRepository.getAllEvents()
+
             val pendingEvents = allEvents.filter { it.status == EventStatus.PENDING_REVIEW }
             val verifiedEvents = allEvents.filter { it.status == EventStatus.VERIFIED }
             val rejectedEvents = allEvents.filter { it.status == EventStatus.REJECTED }
