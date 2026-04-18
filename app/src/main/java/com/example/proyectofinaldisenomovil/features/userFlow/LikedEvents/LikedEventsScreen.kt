@@ -1,6 +1,7 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents
 
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
@@ -37,9 +39,10 @@ import java.util.Locale
 
 @Composable
 fun LikedEventsScreen(
-    viewModel: FavoritesViewModel = viewModel(),
+    viewModel: FavoritesViewModel = hiltViewModel(),
     paddingValues: PaddingValues,
-    onNotificationClick: () -> Unit = {}
+    onNotificationClick: () -> Unit = {},
+    onEventClick : (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -79,7 +82,8 @@ fun LikedEventsScreen(
             items(uiState.favoriteEvents) { event ->
                 FavoriteEventCard(
                     event = event,
-                    onToggleLike = { viewModel.onToggleFavorite(event.id) }
+                    onToggleLike = { viewModel.onToggleFavorite(event.id) },
+                    onEventClick = onEventClick
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -144,14 +148,16 @@ fun FavoritesFilters() {
 @Composable
 fun FavoriteEventCard(
     event: FavoriteEvent,
-    onToggleLike: () -> Unit
+    onToggleLike: () -> Unit,
+    onEventClick : (String) -> Unit
 ) {
     val numberFormat = NumberFormat.getNumberInstance(Locale("es", "CO"))
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            .clickable{onEventClick(event.id)},
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -238,6 +244,8 @@ fun IconInfoRow(icon: ImageVector, text: String) {
 @Composable
 fun FavoritesScreenPreview() {
     ProyectoFinalDisenoMovilTheme {
-        LikedEventsScreen(paddingValues = PaddingValues())
+        LikedEventsScreen(paddingValues = PaddingValues(),
+            onNotificationClick = {}, onEventClick = {}
+        )
     }
 }

@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryBarNotifications
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
@@ -58,7 +59,7 @@ import com.example.proyectofinaldisenomovil.R
 @Composable
 fun NotificationsScreen(
     paddingValues: PaddingValues = PaddingValues(0.dp),
-    notificationsViewModel: NotificationsViewModel = viewModel(),
+    notificationsViewModel: NotificationsViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {}
 ) {
     val uiState by notificationsViewModel.uiState.collectAsState()

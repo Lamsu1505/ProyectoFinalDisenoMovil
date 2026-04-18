@@ -28,6 +28,8 @@
     <string name="login_forgot_password">¿Olvidaste tu contraseña?</string>
     <string name="login_error_empty">Por favor completa todos los campos</string>
     <string name="login_error_invalid">Email o contraseña incorrectos</string>
+    <string name="login_success">¡Bienvenido! Sesión iniciada correctamente</string>
+    <string name="login_error">Credenciales incorrectas. Intenta de nuevo</string>
 
     <!-- Register Screen -->
     <string name="register_title">Crear Cuenta</string>
@@ -116,6 +118,7 @@
     <string name="edit_profile_name">Nombre</string>
     <string name="edit_profile_lastname">Apellido</string>
     <string name="edit_profile_city">Ciudad</string>
+    <string name="edit_profile_address">Dirección</string>
     <string name="edit_profile_save">Guardar Cambios</string>
     <string name="edit_profile_success">Perfil actualizado</string>
     <string name="edit_profile_error">Error al actualizar el perfil</string>
@@ -144,7 +147,9 @@
     <string name="view_event_location_map">Ubicación en mapa</string>
     <string name="view_event_created_by">Creado por:</string>
     <string name="view_event_interested">Estoy interesado</string>
+    <string name="view_event_uninterested">Me interesa</string>
     <string name="view_event_confirm_attendance">Confirmar asistencia</string>
+    <string name="view_event_confirmed_attendance">Estas confirmado</string>
     <string name="view_event_show_more">Mostrar más</string>
     <string name="view_event_show_less">Mostrar menos</string>
     <string name="view_event_share_opinion">Comparte tu opinión con la comunidad...</string>
@@ -262,9 +267,14 @@
     <string name="validation_password_uppercase">La contraseña debe tener al menos una mayúscula</string>
     <string name="validation_password_digit">La contraseña debe tener al menos un número</string>
     <string name="validation_passwords_not_match">Las contraseñas no coinciden</string>
+    <string name="validation_name_required">El nombre es obligatorio</string>
+    <string name="validation_lastname_required">El apellido es obligatorio</string>
+    <string name="validation_city_required">La ciudad es obligatoria</string>
+    <string name="validation_phone_invalid">Formato de teléfono inválido</string>
+    <string name="profile_update_success">Perfil actualizado correctamente</string>
 
     <!-- Forgot Password -->
-    <string name="forgot_password_title">Recupera tu Contraseña</string>
+    <string name="forgot_password_title">Olvidaste tu Contraseña</string>
     <string name="forgot_password_description">Ingresa el correo asosicado a tu cuenta y recibe un codigo para cambiar tu contraseña</string>
     <string name="forgot_password_send_code">Enviar codigo</string>
     <string name="forgot_password_back_login">Regresar a Iniciar sesion</string>
@@ -274,6 +284,12 @@
     <string name="recover_password_code">Código de verificación</string>
     <string name="recover_password_continue">Continuar</string>
     <string name="recover_password_success">La contraseña ha sido recuperada correctamente</string>
+    <string name="recover_password_enter_code">Ingresa el código de verificación</string>
+    <string name="recover_password_invalid_code">Código incorrecto. Intenta de nuevo.</string>
+
+    <!-- Forgot Password Extended -->
+    <string name="forgot_password_email_not_found">No se encontró una cuenta con este correo</string>
+    <string name="forgot_password_code_sent">Código de recuperación enviado</string>
 
     <!-- Profile Screen Extended -->
     <string name="profile_level">Nivel %1$s: %2$s</string>
@@ -286,8 +302,14 @@
     <string name="profile_first_publication">Primera\npublicación</string>
     <string name="profile_10_completed">+10\nFinalizados</string>
     <string name="profile_50_completed">+50\nFinalizados</string>
-    <string name="profile_rating">+4,7\nProm.\nCalificación</string>
+    <string name="profile_rating">Prom.\nCalificación</string>
     <string name="profile_terms">Terminos y condiciones</string>
+    <string name="profile_phone">Teléfono</string>
+    <string name="profile_address">Dirección</string>
+    <string name="profile_select_photo">Seleccionar foto de perfil</string>
+    <string name="profile_camera">Cámara</string>
+    <string name="profile_gallery">Galería</string>
+    <string name="profile_password_change_message">Por seguridad, el cambio de contraseña debe realizarse a través del flujo de recuperación en la pantalla de inicio de sesión.</string>
 
     <!-- Create Event Screen Extended -->
     <string name="create_event_new_title">Crear Nuevo Evento</string>
@@ -361,4 +383,17 @@
     <string name="logout_button">Cerrar sesion</string>
     <string name="dialog_confirm">Confirmar</string>
     <string name="dialog_close">Cerrar</string>
+
+    <!-- Language Settings -->
+    <string name="language_spanish">Español</string>
+    <string name="language_english">English</string>
+    <string name="language_change_success">Idioma cambiado correctamente</string>
+    <string name="language_current">Idioma actual</string>
+    <string name="language_login_title">Cambiar idioma</string>
+
+<!-- Profile Messages -->
+    <string name="profile_success_load">Perfil cargado correctamente</string>
+    <string name="profile_error_load">Error al cargar el perfil</string>
+    <string name="profile_save_success">Cambios guardados</string>
+    <string name="profile_save_error">Error al guardar los cambios</string>
 </resources>

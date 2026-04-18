@@ -4,10 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Build
 import android.os.Bundle
-import android.os.LocaleList
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,38 +17,63 @@ import com.cloudinary.android.MediaManager
 import com.example.proyectofinaldisenomovil.core.navigation.AppNavigation
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.data.local.SessionManager
+import com.example.proyectofinaldisenomovil.data.local.SettingsDataStore
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Locale
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    override fun attachBaseContext(newBase: Context) {
-    val languageCode = runBlocking {
-        try {
-            val prefs = newBase.getSharedPreferences("session_prefs", Context.MODE_PRIVATE)
-            prefs.getString("app_language", "es") ?: "es"
-        } catch (e: Exception) {
-            "es"
-        }
+    @Inject
+    lateinit var settingsDataStore: SettingsDataStore
+
+    @Inject
+    lateinit var sessionManager: SessionManager
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface MainActivityEntryPoint {
+        fun settingsDataStore(): SettingsDataStore
+        fun sessionManager(): SessionManager
     }
 
-    val locale = Locale(languageCode)
-    Locale.setDefault(locale)
+    override fun attachBaseContext(newBase: Context) {
+        val entryPoint = EntryPointAccessors.fromApplication(
+            newBase.applicationContext,
+            MainActivityEntryPoint::class.java
+        )
+        val hiltSettingsDataStore = entryPoint.settingsDataStore()
+        val hiltSessionManager = entryPoint.sessionManager()
 
-    val config = Configuration(newBase.resources.configuration)
-    config.setLocale(locale) // funciona en todas las versiones relevantes
+        val languageCode = runBlocking {
+            try {
+                hiltSettingsDataStore.languageFlow.first()
+            } catch (e: Exception) {
+                hiltSessionManager.appLanguage.first()
+            }
+        }
 
-    super.attachBaseContext(newBase.createConfigurationContext(config))
-}
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+
+        val config = Configuration(newBase.resources.configuration)
+        config.setLocale(locale)
+
+        super.attachBaseContext(newBase.createConfigurationContext(config))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,13 +88,29 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
+            val currentLanguage by settingsDataStore.languageFlow.collectAsState(initial = SettingsDataStore.DEFAULT_LANGUAGE)
+
             ProyectoFinalDisenoMovilTheme {
                 Surface { AppNavigation() }
             }
         }
     }
-}
 
+    fun updateLanguage(languageCode: String) {
+        runOnUiThread {
+            val locale = Locale(languageCode)
+            Locale.setDefault(locale)
+
+            val config = resources.configuration
+            config.setLocale(locale)
+            config.setLayoutDirection(locale)
+
+            resources.updateConfiguration(config, resources.displayMetrics)
+
+            recreate()
+        }
+    }
+}
 
 
 @Preview (showBackground = true)

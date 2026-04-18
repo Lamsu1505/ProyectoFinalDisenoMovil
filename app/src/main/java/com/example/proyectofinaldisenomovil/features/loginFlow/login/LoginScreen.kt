@@ -27,12 +27,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -56,61 +59,70 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.login.LoginHeaderSection
+import com.example.proyectofinaldisenomovil.core.component.barReusable.AppSnackbarHost
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.core.theme.green
+import com.example.proyectofinaldisenomovil.core.utils.RequestResult
+import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
+import com.example.proyectofinaldisenomovil.features.settings.SettingsViewModel
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
+    loginViewModel: LoginViewModel = hiltViewModel(),
     onNavigateToForgotPassword : () -> Unit,
     onNavigateToRegister : () -> Unit,
     onNavigateToModeratorFlow : () -> Unit,
     onNavigateToUserFlow : () -> Unit,
     onLoginSuccess: (String, com.example.proyectofinaldisenomovil.domain.model.UserRole) -> Unit = { _, _ -> }
 ) {
-
-    val loginResult by viewModel.loginResult.collectAsState()
+    val loginResult by loginViewModel.loginResult.collectAsState()
+    val currentLanguage by settingsViewModel.currentLanguage.collectAsState()
     val context = LocalContext.current
     
     var showLanguageDialog by remember { mutableStateOf(false) }
-    var selectedLanguage by remember { mutableStateOf("es") }
-    var languageChanged by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(loginResult) {
-        when (val result = loginResult) {
-            is LoginResult.Success -> {
-                val mappedRole = when (result.role) {
-                    UserRole.USER -> com.example.proyectofinaldisenomovil.domain.model.UserRole.USER
-                    UserRole.MODERATOR -> com.example.proyectofinaldisenomovil.domain.model.UserRole.ADMIN
+        loginResult?.let { result ->
+            when (result) {
+                is RequestResult.Success -> {
+                    snackbarHostState.showSnackbar(result.message)
+                    val user = MockDataRepository.getLoggedInUser()
+                    if (user != null) {
+                        val mappedRole = when (user.role) {
+                            UserRole.USER -> com.example.proyectofinaldisenomovil.domain.model.UserRole.USER
+                            UserRole.MODERATOR -> com.example.proyectofinaldisenomovil.domain.model.UserRole.ADMIN
+                        }
+                        onLoginSuccess(user.uid, mappedRole)
+                        if (user.role == UserRole.MODERATOR) onNavigateToModeratorFlow()
+                        else onNavigateToUserFlow()
+                    }
+                    loginViewModel.resetResult()
                 }
-                onLoginSuccess(result.userId, mappedRole)
-                if (result.role == UserRole.MODERATOR) onNavigateToModeratorFlow()
-                else onNavigateToUserFlow()
-                viewModel.resetResult()
+                is RequestResult.Failure -> {
+                    snackbarHostState.showSnackbar(result.errorMessage)
+                    loginViewModel.resetResult()
+                }
+                is RequestResult.Loading -> {
+                    // No mostrar snackbar para loading
+                }
+                else -> {}
             }
-            else -> Unit
-        }
-    }
-
-    LaunchedEffect(languageChanged) {
-        if (languageChanged) {
-            languageChanged = false
-            (context as? Activity)?.recreate()
         }
     }
 
     Scaffold(
-    ) {
-        paddingValues ->
-
+        snackbarHost = { AppSnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
         ) {
-
             LoginHeaderSection(
                 onLanguageClick = { showLanguageDialog = true }
             )
@@ -127,7 +139,6 @@ fun LoginScreen(
                     containerColor = MaterialTheme.colorScheme.background
                 )
             ) {
-
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -137,9 +148,10 @@ fun LoginScreen(
                     verticalArrangement = Arrangement.spacedBy(50.dp)
                 ) {
                     LoginForm(
-                        viewModel,
+                        loginViewModel,
                         onNavigateToForgotPassword,
-                        onNavigateToRegister
+                        onNavigateToRegister,
+                        isLoading = loginResult is RequestResult.Loading
                     )
                 }
             }
@@ -148,11 +160,17 @@ fun LoginScreen(
 
     if (showLanguageDialog) {
         LanguageLoginDialog(
-            currentLanguage = selectedLanguage,
+            currentLanguage = currentLanguage,
             onLanguageSelected = { code ->
-                selectedLanguage = code
-                languageChanged = true
+                settingsViewModel.setLanguage(code)
                 showLanguageDialog = false
+                (context as? Activity)?.let { activity ->
+                    val locale = java.util.Locale(code)
+                    val config = android.content.res.Configuration(context.resources.configuration)
+                    config.setLocale(locale)
+                    context.resources.updateConfiguration(config, context.resources.displayMetrics)
+                    activity.recreate()
+                }
             },
             onDismiss = { showLanguageDialog = false }
         )
@@ -164,9 +182,9 @@ fun LoginScreen(
 fun LoginForm(
     loginViewModel: LoginViewModel,
     onNavigateToForgotPassword: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    isLoading: Boolean = false
 ){
-
     var passwordVisible by remember { mutableStateOf(false) }
 
     Text(
@@ -176,26 +194,17 @@ fun LoginForm(
         color = MaterialTheme.colorScheme.primary
     )
 
-    //Formulario de login
     Column(
         verticalArrangement = Arrangement.spacedBy(15.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        // ---------------- EMAIL ----------------
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             OutlinedTextField(
                 singleLine = true,
                 shape = RoundedCornerShape(15.dp),
                 value = loginViewModel.email,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = {
-                    loginViewModel.onEmailChange(it)
-                },
+                onValueChange = { loginViewModel.onEmailChange(it) },
                 label = { Text(stringResource(R.string.login_email)) },
                 isError = loginViewModel.emailError.isNotEmpty()
             )
@@ -211,20 +220,13 @@ fun LoginForm(
             }
         }
 
-        // ---------------- PASSWORD ----------------
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             OutlinedTextField(
                 singleLine = true,
                 shape = RoundedCornerShape(15.dp),
                 value = loginViewModel.password,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = {
-                    loginViewModel.onPasswordChange(it)
-                },
+                onValueChange = { loginViewModel.onPasswordChange(it) },
                 label = { Text(stringResource(R.string.login_password)) },
                 isError = loginViewModel.passwordError.isNotEmpty(),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -254,20 +256,15 @@ fun LoginForm(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.secondary,
                 textDecoration = TextDecoration.Underline,
-                modifier = Modifier.align(Alignment.End).
-                    clickable( onClick = {
-                        onNavigateToForgotPassword()
-                    })
+                modifier = Modifier.align(Alignment.End).clickable { onNavigateToForgotPassword() }
             )
         }
 
         Spacer(modifier = Modifier.height(15.dp))
 
         Button(
-            enabled = loginViewModel.validateForm(),
-            onClick = {
-                loginViewModel.login()
-            },
+            enabled = loginViewModel.validateForm() && !isLoading,
+            onClick = {loginViewModel.login()},
             modifier = Modifier.height(50.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
@@ -275,10 +272,15 @@ fun LoginForm(
                 disabledContentColor = MaterialTheme.colorScheme.onSurface
             )
         ) {
-            Text(
-                text = stringResource(R.string.login_button),
-                fontSize = 20.sp
-            )
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text(text = stringResource(R.string.login_button), fontSize = 20.sp)
+            }
         }
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -295,15 +297,11 @@ fun LoginForm(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.secondary,
                 textDecoration = TextDecoration.Underline,
-                modifier = Modifier.clickable {
-                    onNavigateToRegister()
-                }
+                modifier = Modifier.clickable { onNavigateToRegister() }
             )
         }
     }
-
 }
-
 
 @Preview(showBackground = true)
 @Composable
@@ -338,7 +336,7 @@ fun LanguageLoginDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = stringResource(R.string.profile_select_language),
+                text = stringResource(R.string.language_login_title),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )
@@ -355,10 +353,7 @@ fun LanguageLoginDialog(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = flagEmojis[code] ?: "",
-                                fontSize = 24.sp
-                            )
+                            Text(text = flagEmojis[code] ?: "", fontSize = 24.sp)
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(text = name, fontSize = 16.sp)
                         }

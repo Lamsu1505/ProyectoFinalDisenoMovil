@@ -2,6 +2,7 @@ package com.example.proyectofinaldisenomovil.data.repository
 
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -27,12 +28,6 @@ interface EventRepository {
     /** Single document read — returns `null` when not found. */
     suspend fun getEventById(id: String): Event?
 
-    /**
-     * Persists a new event with [EventStatus.PENDING_REVIEW].
-     * @return The Firestore-generated document ID.
-     */
-    suspend fun createEvent(event: Event): String
-
     /** Updates mutable fields of an existing event owned by the current user. */
     suspend fun updateEvent(event: Event)
 
@@ -54,4 +49,19 @@ interface EventRepository {
     fun observePendingEvents(): Flow<List<Event>>
 
     suspend fun getVerifiedEvents(): List<Event>
+
+    suspend fun getEventsByIds(ids: List<String>): List<Event>
+
+    suspend fun createEvent(
+        title: String,
+        description: String,
+        category: EventCategory,
+        address: String,
+        imageUrls: List<String>,
+        startDate: Timestamp,
+        endDate: Timestamp,
+        maxAttendees: Int?
+    ): Event
+
+    fun getAllEvents() : List<Event>
 }

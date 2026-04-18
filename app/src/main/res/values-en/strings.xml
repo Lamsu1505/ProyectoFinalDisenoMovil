@@ -28,6 +28,18 @@
     <string name="login_forgot_password">Forgot your password?</string>
     <string name="login_error_empty">Please fill in all fields</string>
     <string name="login_error_invalid">Invalid email or password</string>
+    <string name="edit_profile_address">Address</string>
+    <string name="profile_address">Address</string>
+    <string name="profile_camera">Take Photo</string>
+    <string name="profile_gallery">Choose from Gallery</string>
+    <string name="profile_password_change_message">Password can be changed in settings.</string>
+    <string name="profile_phone">Phone</string>
+    <string name="profile_select_photo">Select Photo</string>
+    <string name="validation_name_required">Name is required</string>
+    <string name="validation_lastname_required">Last name is required</string>
+    <string name="validation_city_required">City is required</string>
+    <string name="validation_phone_invalid">Invalid phone format</string>
+    <string name="profile_update_success">Profile updated successfully</string>
 
     <!-- Register Screen -->
     <string name="register_title">Create Account</string>
@@ -141,8 +153,10 @@
     <string name="view_event_location_title">Exact Location</string>
     <string name="view_event_location_map">Location on map</string>
     <string name="view_event_created_by">Created by:</string>
-    <string name="view_event_interested">I\'m interested</string>
+    <string name="view_event_interested">I liked</string>
+    <string name="view_event_uninterested">Do i like?</string>
     <string name="view_event_confirm_attendance">Confirm attendance</string>
+    <string name="view_event_confirmed_attendance">You are confirmed</string>
     <string name="view_event_show_more">Show more</string>
     <string name="view_event_show_less">Show less</string>
     <string name="view_event_share_opinion">Share your opinion with the community...</string>
@@ -253,14 +267,14 @@
     <string name="register_complete_fields">Please fill in all fields correctly</string>
 
     <!-- Validation -->
-    <string name="validation_name_short">Name is too short</string>
-    <string name="validation_lastname_short">Lastname is too short</string>
+    <string name="validation_name_short">Name too short</string>
+    <string name="validation_lastname_short">Last name too short</string>
     <string name="validation_password_uppercase">Password must contain at least one uppercase letter</string>
     <string name="validation_password_digit">Password must contain at least one number</string>
     <string name="validation_passwords_not_match">Passwords do not match</string>
 
     <!-- Forgot Password -->
-    <string name="forgot_password_title">Recover Your Password</string>
+    <string name="forgot_password_title">Forgot Your Password</string>
     <string name="forgot_password_description">Enter the email associated with your account and receive a code to change your password</string>
     <string name="forgot_password_send_code">Send code</string>
     <string name="forgot_password_back_login">Back to sign in</string>
@@ -270,6 +284,12 @@
     <string name="recover_password_code">Verification code</string>
     <string name="recover_password_continue">Continue</string>
     <string name="recover_password_success">Password has been recovered successfully</string>
+    <string name="recover_password_enter_code">Enter the verification code</string>
+    <string name="recover_password_invalid_code">Incorrect code. Please try again.</string>
+
+    <!-- Forgot Password Extended -->
+    <string name="forgot_password_email_not_found">No account found with this email</string>
+    <string name="forgot_password_code_sent">Recovery code sent</string>
 
     <!-- Profile Screen Extended -->
     <string name="profile_level">Level %1$s: %2$s</string>
@@ -282,7 +302,7 @@
     <string name="profile_first_publication">First\npublication</string>
     <string name="profile_10_completed">+10\nCompleted</string>
     <string name="profile_50_completed">+50\nCompleted</string>
-    <string name="profile_rating">+4,7\nRating\nAvg.</string>
+    <string name="profile_rating">Rating\nAvg.</string>
     <string name="profile_terms">Terms and conditions</string>
 
     <!-- Create Event Screen Extended -->
@@ -357,4 +377,22 @@
     <string name="logout_button">Log out</string>
     <string name="dialog_confirm">Confirm</string>
     <string name="dialog_close">Close</string>
+
+    <!-- Language Settings -->
+    <string name="language_spanish">Español</string>
+    <string name="language_english">English</string>
+    <string name="language_change_success">Language changed successfully</string>
+    <string name="language_current">Current language</string>
+    <string name="language_login_title">Change language</string>
+
+    <!-- Profile Messages -->
+    <string name="profile_success_load">Profile loaded successfully</string>
+    <string name="profile_error_load">Error loading profile</string>
+    <string name="profile_save_success">Changes saved</string>
+    <string name="profile_save_error">Error saving changes</string>
+
+    <!-- Login Messages -->
+    <string name="login_success">Login successful</string>
+    <string name="login_error">Invalid email or password. Try again.</string>
+    <string name="login_error_credentials">Invalid email or password</string>
 </resources>

@@ -4,10 +4,11 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
+import com.example.proyectofinaldisenomovil.core.utils.ResourceProviderImpl
 import com.example.proyectofinaldisenomovil.data.local.SessionDataStore
 import com.example.proyectofinaldisenomovil.data.local.SessionManager
-import com.example.proyectofinaldisenomovil.data.repository.EventRepository
-import com.example.proyectofinaldisenomovil.data.repository.Memory.EventRepositoryImpl
+import com.example.proyectofinaldisenomovil.data.local.SettingsDataStore
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -40,9 +41,28 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideSettingsDataStore(
+        dataStore: DataStore<Preferences>
+    ): SettingsDataStore {
+        return SettingsDataStore(dataStore)
+    }
+
+    @Provides
+    @Singleton
     fun provideSessionManager(
         @ApplicationContext context: Context
     ): SessionManager {
         return SessionManager(context)
     }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class ResourceModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindResourceProvider(
+        resourceProviderImpl: ResourceProviderImpl
+    ): ResourceProvider
 }

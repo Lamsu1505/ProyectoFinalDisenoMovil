@@ -1,22 +1,20 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent
 
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.utils.RequestResult
+import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
+import com.example.proyectofinaldisenomovil.data.repository.AttendanceRepository
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.data.repository.VoteRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.UUID
 import javax.inject.Inject
 
 data class CommentUiModel(
@@ -30,7 +28,10 @@ data class CommentUiModel(
 
 @HiltViewModel
 class ViewEventViewModel @Inject constructor(
-    private val repository: EventRepository
+    private val eventRepository: EventRepository,
+    private val voteRepository: VoteRepository,
+    private val attendanceRepository: AttendanceRepository,
+    private val resourceProvider: ResourceProvider
 ): ViewModel() {
 
 
@@ -53,33 +54,72 @@ class ViewEventViewModel @Inject constructor(
         viewModelScope.launch {
             _currentEvent.value = null
             _detailResult.value = RequestResult.Loading
-            _detailResult.value = runCatching {
-                repository.getEventById(eventId)?.also {
-                    Log.e("EVENT", it.toString())
-                    _currentEvent.value = it
+            try {
+                val event = eventRepository.getEventById(eventId)
+                if(event != null){
+                    _currentEvent.value = event
+                    val userId = MockDataRepository.getLoggedInUser()?.uid?:""
+                    
+                    // Inicializamos los estados de los botones desde los repositorios
+                    _isInterested.value = voteRepository.hasVoted(eventId, userId)
+                    _isConfirmed.value = attendanceRepository.isAttending(eventId, userId)
+
+                    _detailResult.value = RequestResult.Success(resourceProvider.getString(R.string.detail_success))
                 }
-            }.fold(
-                onSuccess = { RequestResult.Success(R.string.detail_success.toString()) },
-                onFailure = { RequestResult.Failure(it.message.toString()?: R.string.error_unknown.toString()) }
-            )
+                else{
+                    _detailResult.value = RequestResult.Failure(resourceProvider.getString(R.string.error_unknown))
+                }
+            } catch (e: Exception) {
+                _detailResult.value = RequestResult.Failure(e.message.toString())
+            }
         }
 
     }
 
+    suspend fun isInterested () : Boolean{
+        val eventId = _currentEvent.value?.id.toString()
+        val userId = MockDataRepository.getLoggedInUser()?.uid.toString()
+        return voteRepository.hasVoted(eventId , userId)
+    }
+
     fun toggleInterested() {
-        val eventId = _currentEvent.value?.id ?: return
-        val userId = MockDataRepository.getLoggedInUser()?.uid ?: return
-        _isInterested.value = MockDataRepository.toggleLikeEvent(userId, eventId)
+        viewModelScope.launch {
+            val eventId = _currentEvent.value?.id ?: return@launch
+            val userId = MockDataRepository.getLoggedInUser()?.uid ?: return@launch
+
+            // 1. Ejecutamos el cambio y obtenemos el nuevo estado (true o false)
+            val isNowInterested = voteRepository.toggleVote(eventId, userId)
+
+            // 2. Sincronizamos los estados del ViewModel sin importar si es true o false
+            _isInterested.value = isNowInterested
+
+            // 3. Refrescamos el evento para que el contador de likes se actualice en la tarjeta
+            eventRepository.getEventById(eventId)?.let { updatedEvent ->
+                _currentEvent.value = updatedEvent
+            }
+        }
     }
 
     fun toggleConfirmed() {
-        val eventId = _currentEvent.value?.id ?: return
-        val userId = MockDataRepository.getLoggedInUser()?.uid ?: return
+        viewModelScope.launch {
+            val eventId = _currentEvent.value?.id ?: return@launch
+            val userId = MockDataRepository.getLoggedInUser()?.uid ?: return@launch
 
-        if (_isConfirmed.value) {
-            if (MockDataRepository.leaveEvent(userId, eventId)) _isConfirmed.value = false
-        } else {
-            if (MockDataRepository.attendEvent(userId, eventId)) _isConfirmed.value = true
+            if (_isConfirmed.value) {
+                // Si ya está confirmado, cancelamos la asistencia
+                attendanceRepository.cancelAttendance(eventId, userId)
+            } else {
+                // Si no está confirmado, confirmamos la asistencia
+                attendanceRepository.confirmAttendance(eventId, userId)
+            }
+
+            // Actualizamos el estado de confirmación consultando al repositorio
+            _isConfirmed.value = attendanceRepository.isAttending(eventId, userId)
+
+            // Refrescamos el evento para que el contador de asistentes se actualice en la tarjeta verde
+            eventRepository.getEventById(eventId)?.let { updatedEvent ->
+                _currentEvent.value = updatedEvent
+            }
         }
     }
 

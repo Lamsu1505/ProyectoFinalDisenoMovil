@@ -16,7 +16,7 @@ sealed class LoginRoutes {
 
     @SuppressLint("UnsafeOptInUsageError")
     @Serializable
-    data class RecoverPassword(val email: String) : LoginRoutes()
+    data class RecoverPassword(val email: String, val sentCode: String) : LoginRoutes()
 
     @Serializable
     data object UserFlow : LoginRoutes()

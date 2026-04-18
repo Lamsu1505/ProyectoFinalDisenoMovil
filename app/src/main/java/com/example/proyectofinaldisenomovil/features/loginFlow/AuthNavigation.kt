@@ -17,6 +17,8 @@ import com.example.proyectofinaldisenomovil.features.loginFlow.register.Register
 @Composable
 fun AuthNavigation(
     onSessionSaved: (UserSession) -> Unit,
+    onNavigateToUser: () -> Unit,
+    onNavigateToModerator: () -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
     NavHost(
@@ -34,16 +36,8 @@ fun AuthNavigation(
                 onLoginSuccess = { userId, role ->
                     onSessionSaved(UserSession(userId = userId, role = role))
                 },
-                onNavigateToUserFlow = {
-                    navController.navigate(LoginRoutes.UserFlow) {
-                        popUpTo<LoginRoutes.Login> { inclusive = true }
-                    }
-                },
-                onNavigateToModeratorFlow = {
-                    navController.navigate(LoginRoutes.ModeratorFlow) {
-                        popUpTo<LoginRoutes.Login> { inclusive = true }
-                    }
-                }
+                onNavigateToUserFlow = onNavigateToUser,
+                onNavigateToModeratorFlow = onNavigateToModerator
             )
         }
 
@@ -58,8 +52,8 @@ fun AuthNavigation(
             ForgotPasswordScreen(
                 onBackClick = { navController.popBackStack() },
                 onNavigateToLogin = { navController.popBackStack() },
-                onNavigateToRecoverPassword = { email ->
-                    navController.navigate(LoginRoutes.RecoverPassword(email))
+                onNavigateToRecoverPassword = { email, sentCode ->
+                    navController.navigate(LoginRoutes.RecoverPassword(email, sentCode))
                 }
             )
         }
@@ -68,9 +62,10 @@ fun AuthNavigation(
             val route = backStackEntry.toRoute<LoginRoutes.RecoverPassword>()
             RecoverPasswordScreen(
                 email = route.email,
+                sentCode = route.sentCode,
                 onBackClick = { navController.popBackStack() },
                 onNavigateToLogin = { navController.navigate(LoginRoutes.Login) },
-                onSubmit = { navController.navigate(LoginRoutes.Login) }
+                onPasswordResetSuccess = { navController.navigate(LoginRoutes.Login) }
             )
         }
     }

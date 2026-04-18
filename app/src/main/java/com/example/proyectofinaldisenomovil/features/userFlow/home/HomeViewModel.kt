@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
+import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: EventRepository
+    private val repository: EventRepository,
+    private val userRepository: UserRepository
 ): ViewModel() {
 
     private var allEvents: List<Event> = emptyList()
@@ -35,6 +38,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         loadEvents()
+        Log.d("HOME", "Usuario en sesion "+ MockDataRepository.getLoggedInUser()?.firstName)
     }
 
     fun loadEvents() {

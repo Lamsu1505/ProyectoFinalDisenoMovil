@@ -43,6 +43,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.login.HeaderSectionNonLogued
@@ -51,7 +52,7 @@ import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilT
 
 @Composable
 fun RegisterScreen(
-    registerViewModel: RegisterViewModel = viewModel(),
+    registerViewModel: RegisterViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {}
 ) {
@@ -257,7 +258,7 @@ fun RegisterForm(registerViewModel: RegisterViewModel) {
 
         Button(
             enabled = registerViewModel.validateForm(),
-            onClick = { registerViewModel.register() },
+            onClick = {registerViewModel.register()},
             modifier = Modifier.height(50.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(

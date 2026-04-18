@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.AppNotification
 import com.example.proyectofinaldisenomovil.domain.model.NotificationType
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,6 +15,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 data class NotificationsUiState(
     val notifications: List<AppNotification> = emptyList(),
@@ -21,7 +23,10 @@ data class NotificationsUiState(
     val unreadCount: Int = 0
 )
 
-class NotificationsViewModel : ViewModel() {
+@HiltViewModel
+class NotificationsViewModel @Inject constructor(
+
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NotificationsUiState())
     val uiState: StateFlow<NotificationsUiState> = _uiState.asStateFlow()
