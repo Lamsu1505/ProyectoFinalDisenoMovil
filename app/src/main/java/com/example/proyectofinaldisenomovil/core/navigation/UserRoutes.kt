@@ -2,7 +2,7 @@ package com.example.proyectofinaldisenomovil.core.navigation
 
 import kotlinx.serialization.Serializable
 
-sealed class  UserRoutes {
+sealed class UserRoutes {
     @Serializable
     data object Home : UserRoutes()
 
@@ -20,4 +20,7 @@ sealed class  UserRoutes {
 
     @Serializable
     data object Notifications : UserRoutes()
+
+    @Serializable
+    data object MyEvents : UserRoutes()
 }

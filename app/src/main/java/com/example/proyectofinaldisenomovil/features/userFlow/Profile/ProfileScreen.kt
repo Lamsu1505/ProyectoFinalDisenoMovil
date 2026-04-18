@@ -80,7 +80,8 @@ fun ProfileScreen(
     onLogout: () -> Unit,
     onNotificationClick: () -> Unit = {},
     onBackClick: () -> Unit = {},
-    onEditProfileClick: () -> Unit = {}
+    onEditProfileClick: () -> Unit = {},
+    onMyEventsClick: () -> Unit = {}
 ) {
     val uiState by profileViewModel.uiState.collectAsState()
     val currentLanguage by settingsViewModel.currentLanguage.collectAsState()
@@ -245,7 +246,8 @@ fun ProfileScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
+                    .padding(horizontal = 24.dp)
+                    .clickable { onMyEventsClick() },
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 border = BorderStroke(1.dp, Color.LightGray)

@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.features.userFlow
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,6 +18,7 @@ import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.Create
 import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.LikedEventsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.Notifications.NotificationsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.EditProfile.EditProfileScreen
+import com.example.proyectofinaldisenomovil.features.userFlow.MyEvents.MyEventsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.Profile.ProfileScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent.ViewEventScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.home.HomeScreen
@@ -30,6 +32,7 @@ object UserRoutes {
     const val EDIT_PROFILE = "editProfile"
     const val NOTIFICATIONS = "notifications"
     const val EVENT_DETAIL = "eventDetail"
+    const val MY_EVENTS = "myEvents"
 }
 
 @Composable
@@ -136,6 +139,9 @@ fun UserNavigation(
                     },
                     onEditProfileClick = {
                         userNavController.navigate(UserRoutes.EDIT_PROFILE)
+                    },
+                    onMyEventsClick = {
+                        userNavController.navigate(UserRoutes.MY_EVENTS)
                     }
                 )
             }
@@ -144,6 +150,18 @@ fun UserNavigation(
                 EditProfileScreen(
                     onBackClick = {
                         userNavController.popBackStack()
+                    }
+                )
+            }
+
+            composable(UserRoutes.MY_EVENTS) {
+                MyEventsScreen(
+                    paddingValues = paddingValues,
+                    onBackClick = { userNavController.popBackStack() },
+                    onNotificationClick = { userNavController.navigate(UserRoutes.NOTIFICATIONS) },
+                    onEditClick = { /* Navegar a editar */ },
+                    onEventClick = { eventId ->
+                        userNavController.navigate("${UserRoutes.EVENT_DETAIL}/$eventId")
                     }
                 )
             }
@@ -159,7 +177,6 @@ fun UserNavigation(
                 route = "${UserRoutes.EVENT_DETAIL}/{eventId}",
                 arguments = listOf(navArgument("eventId") { type = NavType.StringType })) { backStackEntry ->
                 val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
-                // Aquí llamas a tu pantalla de detalle (ej: EventDetailScreen)
                 ViewEventScreen(
                     eventId = eventId,
                     onBackClick = { userNavController.popBackStack() }
