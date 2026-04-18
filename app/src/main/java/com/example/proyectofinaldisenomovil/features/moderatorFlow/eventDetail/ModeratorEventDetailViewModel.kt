@@ -70,21 +70,22 @@ class ModeratorEventDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isSubmittingVerification = true) }
 
-            MockDataRepository.rejectEvent(event.id, currentReason)
+            // Usar el repositorio de eventos para asegurar sincronización con el panel
+            eventRepository.onEventReject(event, currentReason)
 
-            val updatedEvent = MockDataRepository.getEventById(event.id)
+            val updatedEvent = eventRepository.getEventById(event.id)
             _uiState.update {
                 it.copy(
                     event = updatedEvent,
                     isSubmittingVerification = false,
                     showRejectDialog = false,
+                    rejectionReason = ""
                 )
             }
         }
     }
 
     fun onAcceptEvent() {
-
         val event = _uiState.value.event ?: return
 
         viewModelScope.launch {
@@ -92,7 +93,7 @@ class ModeratorEventDetailViewModel @Inject constructor(
 
             eventRepository.onEventAccept(event)
 
-            val updatedEvent = eventRepository.getEventById(eventId)
+            val updatedEvent = eventRepository.getEventById(event.id)
             _uiState.update {
                 it.copy(
                     event = updatedEvent,

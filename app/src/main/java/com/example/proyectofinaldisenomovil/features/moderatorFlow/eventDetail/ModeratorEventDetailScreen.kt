@@ -219,6 +219,20 @@ fun ModeratorEventDetailScreenContent(
             onDismiss = onLogoutDismiss,
         )
     }
+
+    if (uiState.showRejectDialog) {
+        ConfirmationDialog(
+            title = stringResource(R.string.moderator_confirm_title),
+            bodyText = stringResource(R.string.moderator_confirm_reject),
+            showReasonField = true,
+            reasonValue = uiState.rejectionReason,
+            onReasonChange = onRejectionReasonChange,
+            reasonError = uiState.rejectionReasonError,
+            isLoading = uiState.isSubmittingVerification,
+            onConfirm = onRejectConfirm,
+            onDismiss = onRejectDialogDismiss,
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
