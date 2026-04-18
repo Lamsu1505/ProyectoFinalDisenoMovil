@@ -61,6 +61,7 @@ import com.example.proyectofinaldisenomovil.core.component.moderator.state.Moder
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.R
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -86,12 +87,12 @@ fun ModeratorEventDetailScreen(
         onLogoutClick = viewModel::onLogoutClick,
         onLogoutDismiss = viewModel::onLogoutDismiss,
         onImageIndexChange = viewModel::onImageIndexChange,
-        onAcceptEvent = viewModel::onAcceptEvent,
         onRejectClick = viewModel::onRejectClick,
         onRejectionReasonChange = viewModel::onRejectionReasonChange,
         onRejectConfirm = viewModel::onRejectConfirm,
         onRejectDialogDismiss = viewModel::onRejectDialogDismiss,
-        modifier = modifier
+        modifier = modifier,
+        viewModel = viewModel,
     )
 }
 
@@ -103,12 +104,12 @@ fun ModeratorEventDetailScreenContent(
     onLogoutClick: () -> Unit,
     onLogoutDismiss: () -> Unit,
     onImageIndexChange: (Int) -> Unit,
-    onAcceptEvent: () -> Unit,
     onRejectClick: () -> Unit,
     onRejectionReasonChange: (String) -> Unit,
     onRejectConfirm: () -> Unit,
     onRejectDialogDismiss: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel:  ModeratorEventDetailViewModel
 ) {
     Column(
         modifier = modifier
@@ -176,7 +177,7 @@ fun ModeratorEventDetailScreenContent(
                         event = uiState.event,
                         currentImageIndex = uiState.currentImageIndex,
                         onImageIndexChange = onImageIndexChange,
-                        onAcceptClick = onAcceptEvent,
+                        onAcceptClick = {viewModel.onAcceptEvent() },
                         onRejectClick = onRejectClick,
                         modifier = Modifier.fillMaxSize(),
                     )
@@ -474,7 +475,7 @@ private fun EventDetailContent(
 
             if (event.status != EventStatus.VERIFIED) {
                 Button(
-                    onClick = onAcceptClick,
+                    onClick = {onAcceptClick()},
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp),
@@ -493,35 +494,5 @@ private fun EventDetailContent(
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ModeratorEventDetailScreenPreview() {
-    ProyectoFinalDisenoMovilTheme {
-        ModeratorEventDetailScreenContent(
-            uiState = Moderatoreventdetailuistate(
-                isLoading = false,
-                event = com.example.proyectofinaldisenomovil.domain.model.Event.Event(
-                    id = "1",
-                    title = "Evento de prueba",
-                    description = "Esta es una descripción de prueba para el preview.",
-                    address = "Calle Falsa 123",
-                    imageUrls = listOf("https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800"),
-                    category = com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory.CULTURA
-                )
-            ),
-            onBackClick = {},
-            onLogout = {},
-            onLogoutClick = {},
-            onLogoutDismiss = {},
-            onImageIndexChange = {},
-            onAcceptEvent = {},
-            onRejectClick = {},
-            onRejectionReasonChange = {},
-            onRejectConfirm = {},
-            onRejectDialogDismiss = {}
-        )
     }
 }

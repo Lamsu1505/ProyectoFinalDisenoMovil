@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.features.moderatorFlow.panel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.core.component.moderator.state.ModeratorPanelUiState
@@ -28,6 +29,7 @@ class ModeratorPanelViewModel @Inject constructor(
     val uiState: StateFlow<ModeratorPanelUiState> = _uiState.asStateFlow()
 
     init {
+        Log.i("Recarga de ventana" , "Recarga de ventana home moderadores")
         loadEvents()
     }
 
@@ -36,6 +38,7 @@ class ModeratorPanelViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
 
             val allEvents = eventRepository.getAllEvents()
+            Log.i("Recarga de ventana" , "Recarga de ventana home moderadores : $allEvents")
 
             val pendingEvents = allEvents.filter { it.status == EventStatus.PENDING_REVIEW }
             val verifiedEvents = allEvents.filter { it.status == EventStatus.VERIFIED }

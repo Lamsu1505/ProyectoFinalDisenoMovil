@@ -84,14 +84,15 @@ class ModeratorEventDetailViewModel @Inject constructor(
     }
 
     fun onAcceptEvent() {
+
         val event = _uiState.value.event ?: return
 
         viewModelScope.launch {
             _uiState.update { it.copy(isSubmittingVerification = true) }
 
-            MockDataRepository.approveEvent(event.id)
+            eventRepository.onEventAccept(event)
 
-            val updatedEvent = MockDataRepository.getEventById(event.id)
+            val updatedEvent = eventRepository.getEventById(eventId)
             _uiState.update {
                 it.copy(
                     event = updatedEvent,
