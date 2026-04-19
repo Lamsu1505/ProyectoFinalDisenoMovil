@@ -36,7 +36,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             role = UserRole.USER,
             reputationPoints = 450,
             level = UserLevel.CREADOR,
-            badges = listOf(BadgeType.FOUNDER, BadgeType.EARLY_ADOPTER),
+            badges = listOf(BadgeType.FUNDADOR, BadgeType.EARLY_ADOPTER),
             isActive = true,
             rating = 4.5
         ),
@@ -52,7 +52,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             role = UserRole.USER,
             reputationPoints = 280,
             level = UserLevel.ORGANIZADOR,
-            badges = listOf(BadgeType.SOCIAL_BUTTERFLY),
+            badges = listOf(BadgeType.ASISTENTE_FIEL),
             isActive = true,
             rating = 4.7
         ),
@@ -83,7 +83,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             city = "Armenia, Quindío",
             role = UserRole.MODERATOR,
             reputationPoints = 1000,
-            level = UserLevel.ADMIN,
+            level = UserLevel.LIDER_COMUNITARIO,
             badges = listOf(BadgeType.MODERATOR),
             isActive = true
         ),
@@ -98,7 +98,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             city = "Armenia, Quindío",
             role = UserRole.MODERATOR,
             reputationPoints = 1000,
-            level = UserLevel.ADMIN,
+            level = UserLevel.LIDER_COMUNITARIO,
             badges = listOf(BadgeType.MODERATOR),
             isActive = true
         )

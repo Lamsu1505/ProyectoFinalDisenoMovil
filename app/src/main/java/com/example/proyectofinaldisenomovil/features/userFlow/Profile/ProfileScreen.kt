@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Article
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
@@ -32,11 +35,27 @@ import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -69,6 +88,8 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.AppSnackb
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.core.utils.RequestResult
 import com.example.proyectofinaldisenomovil.core.theme.*
+import com.example.proyectofinaldisenomovil.domain.model.BadgeCategory
+import com.example.proyectofinaldisenomovil.domain.model.BadgeType
 import com.example.proyectofinaldisenomovil.features.settings.SettingsViewModel
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
@@ -198,7 +219,7 @@ fun ProfileScreen(
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(12.dp),
+                    modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(
@@ -206,36 +227,58 @@ fun ProfileScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        uiState.level?.let {
-                            uiState.levelName?.let { it1 ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            uiState.levelEmoji?.let { emoji ->
                                 Text(
-                                    text = stringResource(R.string.profile_level, it, it1),
+                                    text = emoji,
+                                    fontSize = 20.sp
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                            }
+                            uiState.levelName?.let { levelName ->
+                                Text(
+                                    text = levelName,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp
+                                    fontSize = 14.sp,
+                                    color = green
                                 )
                             }
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFD700), modifier = Modifier.size(20.dp))
-                            uiState.points?.let { Text(text = stringResource(R.string.profile_points, it), fontWeight = FontWeight.Bold, fontSize = 12.sp) }
+                            Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFD700), modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            uiState.points?.let { points ->
+                                Text(
+                                    text = stringResource(R.string.gamification_points, points),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    color = Color(0xFFFFD700)
+                                )
+                            }
                         }
                     }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    uiState.level?.let { level ->
+                        val progress = calculateProgress(uiState.points ?: 0, level)
+                        LinearProgressIndicator(
+                            progress = { progress },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(10.dp)
+                                .clip(RoundedCornerShape(5.dp)),
+                            color = green,
+                            trackColor = Color(0xFFE0E0E0),
+                        )
+                    }
+                    
                     Spacer(modifier = Modifier.height(8.dp))
-                    LinearProgressIndicator(
-                        progress = { 50.0F },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp)
-                            .clip(CircleShape),
-                        color = green,
-                        trackColor = Color.LightGray,
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    uiState.pointsToNextLevel?.let {
+                    
+                    uiState.pointsToNextLevel?.let { pointsRemaining ->
                         Text(
-                            text = stringResource(R.string.profile_points_remaining, it),
-                            fontSize = 10.sp,
-                            color = blue
+                            text = stringResource(R.string.gamification_points_remaining, pointsRemaining),
+                            fontSize = 12.sp,
+                            color = Color.Gray
                         )
                     }
                 }
@@ -267,26 +310,10 @@ fun ProfileScreen(
             }
 
             SectionTitle(stringResource(R.string.profile_badges))
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, Color.LightGray)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    BadgeItem(Icons.Default.EmojiEvents, stringResource(R.string.profile_first_publication), Color(0xFFFFD700) , uiState = uiState)
-                    BadgeItem(Icons.Default.CheckCircle, stringResource(R.string.profile_10_completed), Color.Gray , uiState = uiState)
-                    BadgeItem(Icons.Default.Star, stringResource(R.string.profile_50_completed), Color.LightGray , uiState = uiState)
-                    BadgeItem(null, stringResource(R.string.profile_rating), Color.Black, isRating = true , uiState = uiState)
-                }
-            }
+            BadgesCarousel(
+                badges = uiState.badges,
+                onViewAllClick = { /* TODO: Navigate to all badges screen */ }
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
             Card(
@@ -381,6 +408,168 @@ fun BadgeItem(icon: ImageVector?, label: String, tint: Color, isRating: Boolean 
             textAlign = TextAlign.Center,
             lineHeight = 10.sp
         )
+    }
+}
+
+@Composable
+fun BadgesCarousel(
+    badges: List<BadgeType>,
+    onViewAllClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, Color.LightGray)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            if (badges.isEmpty()) {
+                EmptyBadgesState()
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${badges.size} insignias",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Gray
+                    )
+                    TextButton(onClick = onViewAllClick) {
+                        Text(
+                            text = stringResource(R.string.gamification_view_all_badges),
+                            fontSize = 12.sp,
+                            color = blue
+                        )
+                        Icon(
+                            Icons.Default.ArrowForward,
+                            contentDescription = null,
+                            tint = blue,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(badges.take(6)) { badge ->
+                        BadgeCard(badge = badge)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun BadgeCard(badge: BadgeType) {
+    val (icon, tint) = getBadgeIconAndColor(badge)
+    
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(70.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(56.dp)
+                .clip(CircleShape)
+                .background(tint.copy(alpha = 0.15f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = badge.label,
+                tint = tint,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = badge.label,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            color = Color.DarkGray
+        )
+    }
+}
+
+@Composable
+fun EmptyBadgesState() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Default.EmojiEvents,
+            contentDescription = null,
+            tint = Color.LightGray,
+            modifier = Modifier.size(48.dp)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.gamification_no_badges),
+            fontSize = 14.sp,
+            color = Color.Gray
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = stringResource(R.string.gamification_earn_badges),
+            fontSize = 12.sp,
+            color = Color.LightGray
+        )
+    }
+}
+
+fun getBadgeIconAndColor(badge: BadgeType): Pair<ImageVector, Color> {
+    return when (badge.category) {
+        BadgeCategory.CREADOR -> when (badge) {
+            BadgeType.PRIMERA_PUBLICACION -> Icons.Default.Edit to Color(0xFF4CAF50)
+            BadgeType.PRODUCTOR -> Icons.Default.EmojiEvents to Color(0xFF8BC34A)
+            BadgeType.ORGANIZADOR_EXPERTO -> Icons.Default.Star to Color(0xFFFFD700)
+            BadgeType.MAESTRO_EVENTOS -> Icons.Default.WorkspacePremium to Color(0xFFFF9800)
+            else -> Icons.Default.EmojiEvents to Color(0xFF4CAF50)
+        }
+        BadgeCategory.SOCIAL -> when (badge) {
+            BadgeType.PRIMER_PASO -> Icons.Default.CheckCircle to Color(0xFF2196F3)
+            BadgeType.ASISTENTE_FIEL -> Icons.Default.Groups to Color(0xFF03A9F4)
+            BadgeType.VETERANO -> Icons.Default.Groups to Color(0xFF00BCD4)
+            BadgeType.LEYENDA -> Icons.Default.Star to Color(0xFF9C27B0)
+            else -> Icons.Default.Groups to Color(0xFF2196F3)
+        }
+        BadgeCategory.COMUNIDAD -> when (badge) {
+            BadgeType.PRIMER_COMENTARIO -> Icons.Default.Forum to Color(0xFF607D8B)
+            BadgeType.CONVERSADOR -> Icons.Default.Forum to Color(0xFF795548)
+            BadgeType.HISTORIADOR -> Icons.Default.Forum to Color(0xFF9E9E9E)
+            BadgeType.VOZ_COMUNIDAD -> Icons.Default.Forum to Color(0xFF3F51B5)
+            else -> Icons.Default.Forum to Color(0xFF607D8B)
+        }
+        BadgeCategory.POPULAR -> when (badge) {
+            BadgeType.RELEVANTE -> Icons.Default.TrendingUp to Color(0xFFE91E63)
+            BadgeType.POPULAR -> Icons.Default.TrendingUp to Color(0xFFFF5722)
+            BadgeType.ESTRELLA -> Icons.Default.Star to Color(0xFFFFD700)
+            BadgeType.ICONO -> Icons.Default.WorkspacePremium to Color(0xFFFF9800)
+            else -> Icons.Default.TrendingUp to Color(0xFFE91E63)
+        }
+        BadgeCategory.ESPECIAL -> when (badge) {
+            BadgeType.FUNDADOR -> Icons.Default.WorkspacePremium to Color(0xFFFFD700)
+            BadgeType.EARLY_ADOPTER -> Icons.Default.Star to Color(0xFF9C27B0)
+            BadgeType.MODERATOR -> Icons.Default.CheckCircle to Color(0xFF4CAF50)
+            BadgeType.VOLUNTARIO -> Icons.Default.Groups to Color(0xFF2196F3)
+            else -> Icons.Default.WorkspacePremium to Color(0xFFFFD700)
+        }
     }
 }
 
@@ -496,4 +685,26 @@ fun ProfileScreenPreview() {
             onLogout = {}
         )
     }
+}
+
+private fun calculateProgress(points: Int, level: Int): Float {
+    if (level < 1 || level > 7) return 0f
+    
+    val levels = listOf(
+        0 to 100,    // ESPECTADOR -> NOVATO (100)
+        100 to 300, // NOVATO -> PARTICIPANTE (200)
+        300 to 600, // PARTICIPANTE -> ENTUSIASTA (300)
+        600 to 1200, // ENTUSIASTA -> CREADOR (600)
+        1200 to 2500, // CREADOR -> ORGANIZADOR (1300)
+        2500 to 5000, // ORGANIZADOR -> LIDER (2500)
+        5000 to 5000  // LIDER max
+    )
+    
+    val (minPoints, maxPoints) = levels.getOrElse(level - 1) { 0 to 100 }
+    val range = maxPoints - minPoints
+    
+    if (range <= 0) return 1f
+    
+    val progress = (points - minPoints).toFloat() / range.toFloat()
+    return progress.coerceIn(0f, 1f)
 }

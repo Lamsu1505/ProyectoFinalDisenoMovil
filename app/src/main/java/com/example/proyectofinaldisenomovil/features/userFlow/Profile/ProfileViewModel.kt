@@ -10,7 +10,9 @@ import com.example.proyectofinaldisenomovil.core.utils.ValidatedField
 import com.example.proyectofinaldisenomovil.data.local.SettingsDataStore
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
+import com.example.proyectofinaldisenomovil.domain.model.BadgeType
 import com.example.proyectofinaldisenomovil.domain.model.User.User
+import com.example.proyectofinaldisenomovil.domain.model.User.UserLevel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,13 +29,15 @@ data class ProfileUiState(
     val location: String?,
     val level: Int?,
     val levelName: String?,
+    val levelEmoji: String?,
     val points: Int?,
     val pointsToNextLevel: Int?,
     val activeEvents: Int?,
     val completedEvents: Int?,
     val pendingEvents: Int?,
     val rating: Double?,
-    val isLoading: Boolean?
+    val isLoading: Boolean?,
+    val badges: List<BadgeType> = emptyList()
 )
 
 data class EditProfileUiState(
@@ -64,13 +68,15 @@ class ProfileViewModel @Inject constructor(
         location = null,
         level = null,
         levelName = null,
+        levelEmoji = null,
         points = null,
         pointsToNextLevel = null,
         activeEvents = null,
         completedEvents = null,
         pendingEvents = null,
         rating = null,
-        isLoading = true
+        isLoading = true,
+        badges = emptyList()
     ))
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
@@ -111,18 +117,21 @@ class ProfileViewModel @Inject constructor(
             val loggedInUser = MockDataRepository.getLoggedInUser()
             val user = loggedInUser?.let { userRepository.getUserById(it.uid) }
             if (user != null) {
+                val currentLevel = UserLevel.fromPoints(user.reputationPoints)
                 _uiState.value = _uiState.value.copy(
                     name = user.fullName,
                     location = user.city,
-                    level = 1,
-                    levelName = user.level.toString(),
+                    level = currentLevel.ordinal + 1,
+                    levelName = currentLevel.label,
+                    levelEmoji = currentLevel.emoji,
                     points = user.reputationPoints,
                     pointsToNextLevel = user.pointsToNextLevel() ?: 0,
                     activeEvents = 10,
                     completedEvents = 13,
                     pendingEvents = 20,
                     rating = user.rating,
-                    isLoading = false
+                    isLoading = false,
+                    badges = user.badges
                 )
             } else {
                 _uiState.value = _uiState.value.copy(isLoading = false)

@@ -390,9 +390,45 @@
     <string name="profile_error_load">Error loading profile</string>
     <string name="profile_save_success">Changes saved</string>
     <string name="profile_save_error">Error saving changes</string>
-
-    <!-- Login Messages -->
     <string name="login_success">Login successful</string>
     <string name="login_error">Invalid email or password. Try again.</string>
     <string name="login_error_credentials">Invalid email or password</string>
+
+    <!-- Gamification System -->
+    <string name="gamification_level">Level %1$d</string>
+    <string name="gamification_points">%1$d pts</string>
+    <string name="gamification_points_remaining">%1$d pts to next level</string>
+    <string name="gamification_progress">Progress</string>
+    <string name="gamification_view_all_badges">View all badges</string>
+    <string name="gamification_no_badges">You don\'t have badges yet</string>
+    <string name="gamification_earn_badges">Participate in events to earn badges!</string>
+    
+    <!-- Badge Categories -->
+    <string name="badge_category_creator">Creator</string>
+    <string name="badge_category_social">Social</string>
+    <string name="badge_category_community">Community</string>
+    <string name="badge_category_popular">Popular</string>
+    <string name="badge_category_special">Special</string>
+    
+    <!-- Badge Labels -->
+    <string name="badge_primera_publicacion">First Publication</string>
+    <string name="badge_productor">Producer</string>
+    <string name="badge_organizador_experto">Expert Organizer</string>
+    <string name="badge_maestro_eventos">Event Master</string>
+    <string name="badge_primer_paso">First Step</string>
+    <string name="badge_asistente_fiel">Faithful Attendee</string>
+    <string name="badge_veterano">Veteran</string>
+    <string name="badge_leyenda">Legend</string>
+    <string name="badge_primer_comentario">First Comment</string>
+    <string name="badge_conversador">Talker</string>
+    <string name="badge_historador">Historian</string>
+    <string name="badge_voz_comunidad">Community Voice</string>
+    <string name="badge_relevante">Relevant</string>
+    <string name="badge_popular">Popular</string>
+    <string name="badge_estrella">Star</string>
+    <string name="badge_icono">Icon</string>
+    <string name="badge_founder">Founder</string>
+    <string name="badge_early_adopter">Early Adopter</string>
+    <string name="badge_moderator">Moderator</string>
+    <string name="badge_voluntario">Volunteer</string>
 </resources>

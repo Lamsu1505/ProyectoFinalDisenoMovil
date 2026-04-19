@@ -6,9 +6,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
 import com.example.proyectofinaldisenomovil.core.utils.ResourceProviderImpl
+import com.example.proyectofinaldisenomovil.data.local.EventDataStore
 import com.example.proyectofinaldisenomovil.data.local.SessionDataStore
 import com.example.proyectofinaldisenomovil.data.local.SessionManager
 import com.example.proyectofinaldisenomovil.data.local.SettingsDataStore
+import com.example.proyectofinaldisenomovil.data.local.UserDataStore
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -17,7 +19,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "session")
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "vive_tu_zona_prefs")
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -45,6 +47,22 @@ object AppModule {
         dataStore: DataStore<Preferences>
     ): SettingsDataStore {
         return SettingsDataStore(dataStore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserDataStore(
+        dataStore: DataStore<Preferences>
+    ): UserDataStore {
+        return UserDataStore(dataStore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventDataStore(
+        dataStore: DataStore<Preferences>
+    ): EventDataStore {
+        return EventDataStore(dataStore)
     }
 
     @Provides
