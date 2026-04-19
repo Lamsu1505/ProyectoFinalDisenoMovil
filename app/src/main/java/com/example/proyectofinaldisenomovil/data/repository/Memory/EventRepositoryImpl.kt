@@ -61,7 +61,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                 status = EventStatus.VERIFIED,
                 importantVotes = 42,
                 isResolved = false,
-                startDate = null,
+                startDate = Timestamp.now(),
                 endDate = null,
                 createdAt = null,
                 updatedAt = null
@@ -85,7 +85,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                 status = EventStatus.VERIFIED,
                 importantVotes = 31,
                 isResolved = false,
-                startDate = null,
+                startDate = Timestamp.now(),
                 endDate = null,
                 createdAt = null,
                 updatedAt = null
@@ -110,7 +110,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                 status = EventStatus.VERIFIED,
                 importantVotes = 19,
                 isResolved = false,
-                startDate = null,
+                startDate = Timestamp.now(),
                 endDate = null,
                 createdAt = null,
                 updatedAt = null
@@ -136,7 +136,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                 status = EventStatus.VERIFIED,
                 importantVotes = 88,
                 isResolved = false,
-                startDate = null,
+                startDate = Timestamp.now(),
                 endDate = null,
                 createdAt = null,
                 updatedAt = null
@@ -160,7 +160,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                 status = EventStatus.VERIFIED,
                 importantVotes = 156,
                 isResolved = false,
-                startDate = null,
+                startDate = Timestamp.now(),
                 endDate = null,
                 createdAt = null,
                 updatedAt = null
@@ -185,7 +185,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                 status = EventStatus.VERIFIED,
                 importantVotes = 67,
                 isResolved = false,
-                startDate = null,
+                startDate = Timestamp.now(),
                 endDate = null,
                 createdAt = null,
                 updatedAt = null
@@ -209,7 +209,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                 status = EventStatus.PENDING_REVIEW,
                 importantVotes = 23,
                 isResolved = false,
-                startDate = null,
+                startDate = Timestamp.now(),
                 endDate = null,
                 createdAt = null,
                 updatedAt = null
@@ -234,7 +234,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                 status = EventStatus.VERIFIED,
                 importantVotes = 203,
                 isResolved = true,
-                startDate = null,
+                startDate = Timestamp.now(),
                 endDate = null,
                 createdAt = null,
                 updatedAt = null

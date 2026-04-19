@@ -430,28 +430,7 @@ fun EventCard(
 
                     Row(
                         Modifier.weight(1f)
-
                     ) {
-
-                        // Fecha (solo si existe)
-                        event.startDate?.let {
-                            Icon(
-                                Icons.Default.DateRange,
-                                contentDescription = null,
-                                tint = Color.Gray,
-                                modifier = Modifier.size(16.dp)
-                            )
-
-                            Spacer(modifier = Modifier.width(4.dp))
-
-                            Text(
-                                text = event.startDate.toDisplayDate(),
-                                fontSize = 13.sp,
-                                color = Color.Gray
-                            )
-
-                            Spacer(modifier = Modifier.width(10.dp))
-                        }
 
                         // Asistentes
                         Icon(
