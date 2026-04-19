@@ -3,23 +3,18 @@ package com.example.proyectofinaldisenomovil.data.repository.Memory
 import android.util.Log
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
-import com.example.proyectofinaldisenomovil.domain.model.AppNotification
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
-import com.example.proyectofinaldisenomovil.domain.model.NotificationType
+import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventUiState
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.firstOrNull
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.collections.filter
 import kotlin.collections.filter
 import kotlin.collections.indexOfFirst
 
@@ -410,5 +405,18 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
             // Asignamos la nueva lista al StateFlow para notificar a la UI
             _events.value = currentList
         }
+    }
+
+    override fun editEvent(
+        idEvent: String,
+        newEvent: Event
+    ) {
+        val currentList = _events.value.toMutableList()
+        val index = currentList.indexOfFirst { it.id == idEvent }
+        if (index != -1) {
+            currentList[index] = newEvent
+            _events.value = currentList
+        }
+
     }
 }

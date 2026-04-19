@@ -1,12 +1,11 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.EditEvent
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
-import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventResult
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,6 +53,7 @@ class EditEventViewModel @Inject constructor(
             event?.let { e ->
                 updateState { state ->
                     state.copy(
+                        idEvent = e.id,
                         title = e.title,
                         description = e.description,
                         category = e.category,
@@ -63,8 +63,6 @@ class EditEventViewModel @Inject constructor(
                         startTime = e.startDate?.let { timeFormatter.format(it.toDate()) } ?: "",
                         endDate = e.endDate?.let { dateFormatter.format(it.toDate()) } ?: "",
                         endTime = e.endDate?.let { timeFormatter.format(it.toDate()) } ?: "",
-                        // Note: For images, we would need to map URLs to Uris if needed, 
-                        // but here we keep them as URLs in the UI for simplicity or handle as needed.
                     )
                 }
             }
@@ -116,7 +114,35 @@ class EditEventViewModel @Inject constructor(
     }
 
     fun saveChanges() {
-        //TODO{Implementar lógica para guardar cambios} en el repositorio}
+        val state = _uiState.value
+        val eventId = state.idEvent ?: return
+        Log.i("Editar evento", "Guardando cambios del evento " + eventId)
+
+        viewModelScope.launch {
+            _editResult.value = CreateEventResult.Loading
+            try {
+                // Buscamos el original para no perder metadatos (autor, asistentes actual, etc)
+                val originalEvent = eventRepository.getEventById(eventId)
+                
+                if (originalEvent != null) {
+                    val updatedEvent = originalEvent.copy(
+                        title = state.title.trim(),
+                        description = state.description.trim(),
+                        category = state.category,
+                        address = state.address.trim(),
+                        maxAttendees = state.capacity.toIntOrNull()
+                        // Nota: images y dates se pueden añadir si el repo lo soporta
+                    )
+                    
+                    eventRepository.editEvent(eventId, updatedEvent)
+                    _editResult.value = CreateEventResult.Success
+                } else {
+                    _editResult.value = CreateEventResult.Error("No se encontró el evento original")
+                }
+            } catch (e: Exception) {
+                _editResult.value = CreateEventResult.Error("Error: ${e.message}")
+            }
+        }
     }
 
     fun resetResult() {

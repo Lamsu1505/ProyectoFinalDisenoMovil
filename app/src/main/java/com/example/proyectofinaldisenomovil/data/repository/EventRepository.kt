@@ -2,6 +2,7 @@ package com.example.proyectofinaldisenomovil.data.repository
 
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
+import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventUiState
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
 
@@ -66,4 +67,5 @@ interface EventRepository {
     fun getAllEvents() : List<Event>
     fun onEventAccept(event: Event)
     fun onEventReject(event: Event, reason: String)
+    fun editEvent(idEvent: String, newEvent: Event)
 }

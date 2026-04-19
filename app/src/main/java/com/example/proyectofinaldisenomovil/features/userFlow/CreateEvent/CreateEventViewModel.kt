@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent
 
+import android.R
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -27,6 +28,7 @@ sealed class CreateEventResult {
 }
 
 data class CreateEventUiState(
+    val idEvent: String? = null,
     val title: String = "",
     val description: String = "",
     val category: EventCategory = EventCategory.SOCIAL,
