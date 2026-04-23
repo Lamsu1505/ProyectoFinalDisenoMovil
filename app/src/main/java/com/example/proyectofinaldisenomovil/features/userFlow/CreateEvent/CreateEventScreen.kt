@@ -48,6 +48,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.DatePickerModal
+import com.example.proyectofinaldisenomovil.core.component.TimePickerModal
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.theme.*
@@ -555,7 +556,9 @@ fun dateSection(
     viewModel: CreateEventViewModel
 ) {
     var showStartDatePicker by remember { mutableStateOf(false) }
+    var showStartTimePicker by remember { mutableStateOf(false) }
     var showEndDatePicker by remember { mutableStateOf(false) }
+    var showEndTimePicker by remember { mutableStateOf(false) }
 
     if (showStartDatePicker) {
         DatePickerModal(
@@ -567,6 +570,16 @@ fun dateSection(
         )
     }
 
+    if (showStartTimePicker) {
+        TimePickerModal(
+            onTimeSelected = { hour, minute ->
+                viewModel.onStartTimeChange(hour, minute)
+                showStartTimePicker = false
+            },
+            onDismiss = { showStartTimePicker = false }
+        )
+    }
+
     if (showEndDatePicker) {
         DatePickerModal(
             onDateSelected = { 
@@ -574,6 +587,16 @@ fun dateSection(
                 showEndDatePicker = false
             },
             onDismiss = { showEndDatePicker = false }
+        )
+    }
+
+    if (showEndTimePicker) {
+        TimePickerModal(
+            onTimeSelected = { hour, minute ->
+                viewModel.onEndTimeChange(hour, minute)
+                showEndTimePicker = false
+            },
+            onDismiss = { showEndTimePicker = false }
         )
     }
 
@@ -636,18 +659,27 @@ fun dateSection(
                         color = MaterialTheme.colorScheme.outline
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    OutlinedTextField(
-                        value = uiState.startTime,
-                        onValueChange = { },
-                        trailingIcon = { Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.Gray) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = Color.Black,
-                            focusedBorderColor = Color.Black,
-                            unfocusedTextColor = Color.Gray
+                    Box {
+                        OutlinedTextField(
+                            value = uiState.startTime,
+                            onValueChange = { },
+                            readOnly = true,
+                            enabled = false,
+                            trailingIcon = { Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.Gray) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                disabledBorderColor = Color.Black,
+                                disabledTextColor = Color.Black,
+                                disabledPlaceholderColor = Color.Gray
+                            )
                         )
-                    )
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .clickable { showStartTimePicker = true }
+                        )
+                    }
                 }
             }
 
@@ -703,24 +735,33 @@ fun dateSection(
                         color = MaterialTheme.colorScheme.outline
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    OutlinedTextField(
-                        value = uiState.endTime,
-                        onValueChange = { },
-                        readOnly = true,
-                        trailingIcon = { Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.Gray) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = Color.Black,
-                            focusedBorderColor = Color.Black,
-                            unfocusedTextColor = Color.Gray
+                    Box {
+                        OutlinedTextField(
+                            value = uiState.endTime,
+                            onValueChange = { },
+                            readOnly = true,
+                            enabled = false,
+                            trailingIcon = { Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.Gray) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                disabledBorderColor = Color.Black,
+                                disabledTextColor = Color.Black,
+                                disabledPlaceholderColor = Color.Gray
+                            )
                         )
-                    )
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .clickable { showEndTimePicker = true }
+                        )
+                    }
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun ButtonsSection(

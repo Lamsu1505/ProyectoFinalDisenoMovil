@@ -369,12 +369,12 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
         return newEvent
     }
 
-    override fun getAllEvents(): List<Event> {
+    override suspend fun getAllEvents(): List<Event> {
         Log.i("Moderator events" , "Los eventos son : ${events.value}")
         return events.value
     }
 
-    override fun onEventAccept(event: Event) {
+    override suspend fun onEventAccept(event: Event) {
         val currentList = _events.value.toMutableList()
         val index = currentList.indexOfFirst { it.id == event.id }
 
@@ -390,7 +390,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
         }
     }
 
-    override fun onEventReject(event: Event , reason: String) {
+    override suspend fun onEventReject(event: Event , reason: String) {
         val currentList = _events.value.toMutableList()
         val index = currentList.indexOfFirst { it.id == event.id }
 
@@ -407,7 +407,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
         }
     }
 
-    override fun editEvent(
+    override suspend fun editEvent(
         idEvent: String,
         newEvent: Event
     ) {

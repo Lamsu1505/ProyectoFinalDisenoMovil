@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
-import com.example.proyectofinaldisenomovil.data.repository.Memory.VoteRepositoryImpl
+import com.example.proyectofinaldisenomovil.data.repository.VoteRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,7 +36,7 @@ data class FavoritesUiState(
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
     private val eventRepository: EventRepository,
-    private val voteRepositoryImpl: VoteRepositoryImpl
+    private val voteRepository: VoteRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(FavoritesUiState())
     val uiState: StateFlow<FavoritesUiState> = _uiState.asStateFlow()
@@ -53,7 +53,7 @@ class FavoritesViewModel @Inject constructor(
             Log.i("liked events screen" , "capturo al usuario " + currentUser.toString())
 
             if (currentUser != null) {
-                val idLikedEvents = voteRepositoryImpl.getLikedEventsIdByUserID(currentUser.uid)
+                val idLikedEvents = voteRepository.getLikedEventsIdByUserID(currentUser.uid)
                 Log.i("Liked events" , "el usuario " + currentUser.uid + " tiene " + idLikedEvents.size.toString() + " eventos favoritos")
 
                 val likedEvents = eventRepository.getEventsByIds(idLikedEvents)
@@ -96,7 +96,7 @@ class FavoritesViewModel @Inject constructor(
         viewModelScope.launch {
             val currentUser = MockDataRepository.getLoggedInUser()
             currentUser?.let {
-                MockDataRepository.toggleLikeEvent(it.uid, eventId)
+                voteRepository.toggleVote(eventId, it.uid)
                 loadLikedEvents()
             }
         }

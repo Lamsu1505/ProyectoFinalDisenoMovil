@@ -51,6 +51,8 @@ import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -90,6 +92,7 @@ import com.example.proyectofinaldisenomovil.core.utils.RequestResult
 import com.example.proyectofinaldisenomovil.core.theme.*
 import com.example.proyectofinaldisenomovil.domain.model.BadgeCategory
 import com.example.proyectofinaldisenomovil.domain.model.BadgeType
+import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.features.settings.SettingsViewModel
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
@@ -102,7 +105,7 @@ fun ProfileScreen(
     onNotificationClick: () -> Unit = {},
     onBackClick: () -> Unit = {},
     onEditProfileClick: () -> Unit = {},
-    onMyEventsClick: () -> Unit = {}
+    onMyEventsClick: (EventStatus?) -> Unit = {}
 ) {
     val uiState by profileViewModel.uiState.collectAsState()
     val currentLanguage by settingsViewModel.currentLanguage.collectAsState()
@@ -290,22 +293,55 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
-                    .clickable { onMyEventsClick() },
+                    .clickable { onMyEventsClick(null) },
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 border = BorderStroke(1.dp, Color.LightGray)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    EventStat(Icons.Default.DateRange, stringResource(R.string.profile_active), uiState.activeEvents.toString(), blue)
-                    Box(modifier = Modifier.width(1.dp).height(50.dp).background(Color.LightGray))
-                    EventStat(Icons.Default.CheckCircle, stringResource(R.string.profile_completed), uiState.completedEvents.toString(), green)
-                    Box(modifier = Modifier.width(1.dp).height(50.dp).background(Color.LightGray))
-                    EventStat(Icons.Default.DateRange, stringResource(R.string.profile_pending), uiState.pendingEvents.toString(), Color(0xFFFFA000))
+                Column(modifier = Modifier.padding(vertical = 12.dp)) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        EventStat(Icons.Default.DateRange, stringResource(R.string.profile_active), uiState.activeEvents.toString(), blue)
+                        Box(modifier = Modifier.width(1.dp).height(50.dp).background(Color.LightGray))
+                        EventStat(Icons.Default.CheckCircle, stringResource(R.string.profile_completed), uiState.completedEvents.toString(), green)
+                        Box(modifier = Modifier.width(1.dp).height(50.dp).background(Color.LightGray))
+                        EventStat(Icons.Default.DateRange, stringResource(R.string.profile_pending), uiState.pendingEvents.toString(), Color(0xFFFFA000))
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button(
+                            onClick = { onMyEventsClick(EventStatus.VERIFIED) },
+                            colors = ButtonDefaults.buttonColors(containerColor = blue),
+                            shape = RoundedCornerShape(20.dp)
+                        ) {
+                            Text(text = stringResource(R.string.profile_active), color = Color.White)
+                        }
+
+                        Button(
+                            onClick = { onMyEventsClick(EventStatus.RESOLVED) },
+                            colors = ButtonDefaults.buttonColors(containerColor = green),
+                            shape = RoundedCornerShape(20.dp)
+                        ) {
+                            Text(text = stringResource(R.string.profile_completed), color = Color.White)
+                        }
+
+                        Button(
+                            onClick = { onMyEventsClick(EventStatus.PENDING_REVIEW) },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA000)),
+                            shape = RoundedCornerShape(20.dp)
+                        ) {
+                            Text(text = stringResource(R.string.profile_pending), color = Color.White)
+                        }
+                    }
                 }
             }
 

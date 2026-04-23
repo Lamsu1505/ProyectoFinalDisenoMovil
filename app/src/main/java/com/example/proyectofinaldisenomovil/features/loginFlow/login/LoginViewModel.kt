@@ -16,12 +16,14 @@ import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
 import com.example.proyectofinaldisenomovil.domain.model.BadgeType
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
 import com.example.proyectofinaldisenomovil.domain.model.UserSession
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import org.json.JSONArray
 import javax.inject.Inject
 
@@ -29,7 +31,8 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val sessionDataStore: SessionDataStore,
     private val userRepository: UserRepository,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val firebaseAuth: FirebaseAuth,
 ) : ViewModel() {
 
     var email by mutableStateOf("")
@@ -77,15 +80,19 @@ class LoginViewModel @Inject constructor(
         if (!validateForm()) return
         _loginResult.value = RequestResult.Loading
 
-        val user = userRepository.validateCredentials(email, password)
+        viewModelScope.launch {
+            try {
+                val authResult = firebaseAuth.signInWithEmailAndPassword(email.trim(), password).await()
+                val uid = authResult.user?.uid ?: throw IllegalStateException("No se pudo obtener UID")
 
-        if (user != null) {
-            viewModelScope.launch {
+                val user = userRepository.getUserById(uid)
+                    ?: throw IllegalStateException("Usuario sin perfil en Firestore")
+
                 val mappedRole = when (user.role) {
                     UserRole.USER -> com.example.proyectofinaldisenomovil.domain.model.UserRole.USER
                     UserRole.MODERATOR -> com.example.proyectofinaldisenomovil.domain.model.UserRole.ADMIN
                 }
-                
+
                 sessionDataStore.saveFullUserData(
                     userId = user.uid,
                     role = mappedRole,
@@ -98,18 +105,20 @@ class LoginViewModel @Inject constructor(
                     badges = badgesToJson(user.badges),
                     profileImageUrl = user.profileImageUrl
                 )
-                
+
                 sessionDataStore.saveSession(
                     UserSession(
                         userId = user.uid,
                         role = mappedRole
                     )
                 )
+
+                MockDataRepository.setLoggedInUser(user)
+                _loginResult.value = RequestResult.Success(resourceProvider.getString(R.string.login_success))
+            } catch (e: Exception) {
+                Log.e("Login", "Error login Firebase", e)
+                _loginResult.value = RequestResult.Failure(resourceProvider.getString(R.string.login_error))
             }
-            MockDataRepository.setLoggedInUser(user)
-            _loginResult.value = RequestResult.Success(resourceProvider.getString(R.string.login_success))
-        } else {
-            _loginResult.value = RequestResult.Failure(resourceProvider.getString(R.string.login_error))
         }
     }
 

@@ -39,10 +39,10 @@ fun ModeratorEventCard(
     modifier: Modifier = Modifier,
 ) {
     val statusColor = when (event.status) {
-        EventStatus.PENDING_REVIEW -> Color(0xFFFFA000)
-        EventStatus.VERIFIED -> Color(0xFF4CAF50)
-        EventStatus.REJECTED -> Color(0xFFF44336)
-        EventStatus.RESOLVED -> Color(0xFF2196F3)
+        EventStatus.PENDING_REVIEW -> MaterialTheme.colorScheme.secondary
+        EventStatus.VERIFIED -> MaterialTheme.colorScheme.primary
+        EventStatus.REJECTED -> MaterialTheme.colorScheme.tertiary
+        EventStatus.RESOLVED -> blue
     }
     val statusLabel = when (event.status) {
         EventStatus.PENDING_REVIEW -> "Pendiente"
@@ -82,7 +82,7 @@ fun ModeratorEventCard(
                 ) {
                     Text(
                         text = event.category.label,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSecondary,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
@@ -98,7 +98,7 @@ fun ModeratorEventCard(
                 ) {
                     Text(
                         text = statusLabel,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
@@ -152,13 +152,13 @@ fun ModeratorEventCard(
                             EventStatus.PENDING_REVIEW -> {
                                 ActionButton(
                                     label = "Aceptar",
-                                    color = Color(0xFF4CAF50),
+                                    color = green,
                                     icon = Icons.Filled.CheckCircle,
                                     onClick = { onAccept(event) },
                                 )
                                 ActionButton(
                                     label = "Rechazar",
-                                    color = Color(0xFFF44336),
+                                    color = red,
                                     icon = Icons.Filled.Close,
                                     onClick = { onReject(event.id) },
                                 )
@@ -166,7 +166,7 @@ fun ModeratorEventCard(
                             EventStatus.VERIFIED -> {
                                 ActionButton(
                                     label = "Rechazar",
-                                    color = Color(0xFFF44336),
+                                    color = red,
                                     icon = Icons.Filled.Close,
                                     onClick = { onReject(event.id) },
                                 )
@@ -174,7 +174,7 @@ fun ModeratorEventCard(
                             EventStatus.REJECTED -> {
                                 ActionButton(
                                     label = "Verificar",
-                                    color = Color(0xFF4CAF50),
+                                    color = green,
                                     icon = Icons.Filled.CheckCircle,
                                     onClick = { onAccept(event) },
                                 )
@@ -220,10 +220,10 @@ private fun ActionButton(
             imageVector = icon,
             contentDescription = null,
             modifier = Modifier.size(14.dp),
-            tint = Color.White,
+            tint = MaterialTheme.colorScheme.onPrimary,
         )
         Spacer(Modifier.width(4.dp))
-        Text(label, fontSize = 12.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
+        Text(label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.SemiBold)
     }
 }
 

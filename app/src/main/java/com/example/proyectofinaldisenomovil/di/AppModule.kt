@@ -7,6 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
 import com.example.proyectofinaldisenomovil.core.utils.ResourceProviderImpl
 import com.example.proyectofinaldisenomovil.data.local.EventDataStore
+import com.example.proyectofinaldisenomovil.data.local.AppInitDataStore
 import com.example.proyectofinaldisenomovil.data.local.SessionDataStore
 import com.example.proyectofinaldisenomovil.data.local.SessionManager
 import com.example.proyectofinaldisenomovil.data.local.SettingsDataStore
@@ -63,6 +64,14 @@ object AppModule {
         dataStore: DataStore<Preferences>
     ): EventDataStore {
         return EventDataStore(dataStore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppInitDataStore(
+        dataStore: DataStore<Preferences>
+    ): AppInitDataStore {
+        return AppInitDataStore(dataStore)
     }
 
     @Provides

@@ -106,6 +106,7 @@ dependencies {
 
     // Kotlinx Serialization
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     // Hilt
     implementation(libs.hilt.android)

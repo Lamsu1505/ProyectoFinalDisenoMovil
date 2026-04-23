@@ -6,12 +6,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.AttendanceRepository
-import com.example.proyectofinaldisenomovil.data.repository.Memory.VoteRepositoryImpl
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
+import com.example.proyectofinaldisenomovil.domain.model.Location
+import com.example.proyectofinaldisenomovil.domain.model.User.User
+import com.example.proyectofinaldisenomovil.domain.model.User.UserLevel
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
+import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import kotlin.collections.set
 
@@ -26,8 +33,8 @@ sealed class RegisterResult {
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val voteRepositoryImpl: VoteRepositoryImpl,
-    private val attendanceRepository: AttendanceRepository
+    private val attendanceRepository: AttendanceRepository,
+    private val firebaseAuth: FirebaseAuth,
 ) : ViewModel() {
 
     var name by mutableStateOf("")
@@ -105,17 +112,35 @@ class RegisterViewModel @Inject constructor(
 
         _registerResult.value = RegisterResult.Loading
 
-        val user = userRepository.registerUser(
-            firstName = name.trim(),
-            lastName = lastName.trim(),
-            email = email.trim().lowercase(),
-            password = password
-        )
-         Log.i("Register user", "Se creo el usuario " + user?.firstName + " con id " +user?.uid + " correo " + user?.email + " y contraseña " + user?.password)
+        viewModelScope.launch {
+            try {
+                val emailClean = email.trim().lowercase()
+                val authResult = firebaseAuth.createUserWithEmailAndPassword(emailClean, password).await()
+                val uid = authResult.user?.uid ?: throw IllegalStateException("No se pudo obtener UID")
 
-        _registerResult.value = when {
-            user == null -> RegisterResult.EmailAlreadyExists
-            else -> RegisterResult.Success
+                val user = User(
+                    uid = uid,
+                    firstName = name.trim(),
+                    lastName = lastName.trim(),
+                    email = emailClean,
+                    location = Location(latitude = 4.5333, longitude = -75.6833),
+                    city = "Armenia, Quindío",
+                    role = UserRole.USER,
+                    reputationPoints = 0,
+                    level = UserLevel.ESPECTADOR,
+                    badges = emptyList(),
+                    isActive = true,
+                    createdAt = Timestamp.now(),
+                    rating = 0.0,
+                )
+                userRepository.createUser(user)
+                MockDataRepository.setLoggedInUser(user)
+                _registerResult.value = RegisterResult.Success
+            } catch (e: Exception) {
+                Log.e("Register", "Error registro Firebase", e)
+                // FirebaseAuthUserCollisionException -> email ya existe
+                _registerResult.value = RegisterResult.EmailAlreadyExists
+            }
         }
     }
 

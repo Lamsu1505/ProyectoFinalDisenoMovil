@@ -49,9 +49,14 @@ fun MyEventsScreen(
     paddingValues: PaddingValues,
     onNotificationClick: () -> Unit,
     onEditClick: (String) -> Unit,
-    onEventClick: (String) -> Unit
+    onEventClick: (String) -> Unit,
+    initialStatus: com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus? = null
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(initialStatus) {
+        initialStatus?.let { viewModel.onStatusChange(it) }
+    }
 
     var showRejectionDialog by remember { mutableStateOf(false) }
     var selectedRejectionReason by remember { mutableStateOf("") }

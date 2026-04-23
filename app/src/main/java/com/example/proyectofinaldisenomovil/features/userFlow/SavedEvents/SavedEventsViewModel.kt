@@ -79,7 +79,7 @@ class SavedEventsViewModel @Inject constructor(
         viewModelScope.launch {
             val currentUser = MockDataRepository.getLoggedInUser()
             currentUser?.let {
-                MockDataRepository.toggleSaveEvent(it.uid, eventId)
+                attendanceRepository.cancelAttendance(eventId, it.uid)
                 loadSavedEvents()
             }
         }

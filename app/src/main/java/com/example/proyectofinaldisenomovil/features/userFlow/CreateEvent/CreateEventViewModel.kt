@@ -6,9 +6,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.data.repository.UserRepository
+import com.example.proyectofinaldisenomovil.domain.model.BadgeType
+import com.example.proyectofinaldisenomovil.domain.model.User.UserLevel
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,6 +42,12 @@ data class CreateEventUiState(
     val startTime: String = "",
     val endDate: String = "",
     val endTime: String = "",
+    val startMillis: Long? = null,
+    val endMillis: Long? = null,
+    val startHour: Int = 12,
+    val startMinute: Int = 0,
+    val endHour: Int = 13,
+    val endMinute: Int = 0,
     val titleError: String = "",
     val descriptionError: String = "",
     val addressError: String = "",
@@ -48,7 +57,9 @@ data class CreateEventUiState(
 
 @HiltViewModel
 class CreateEventViewModel @Inject constructor(
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val userRepository: UserRepository,
+    private val firebaseAuth: FirebaseAuth
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateEventUiState())
@@ -64,7 +75,7 @@ class CreateEventViewModel @Inject constructor(
         return state.title.length >= 1 &&
                 state.description.length >= 1 &&
                 state.address.length >= 1 &&
-                state.startDate.isNotEmpty()
+                state.startMillis != null
     }
 
     private fun updateState(update: (CreateEventUiState) -> CreateEventUiState) {
@@ -122,28 +133,70 @@ class CreateEventViewModel @Inject constructor(
     fun onStartDateChange(millis: Long?) {
         millis?.let {
             val dateString = dateFormatter.format(Date(it))
-            val timeString = timeFormatter.format(Date(it))
             updateState { state -> 
+                val calendar = java.util.Calendar.getInstance().apply {
+                    timeInMillis = it
+                    set(java.util.Calendar.HOUR_OF_DAY, state.startHour)
+                    set(java.util.Calendar.MINUTE, state.startMinute)
+                }
                 state.copy(
                     startDate = dateString,
-                    startTime = timeString,
+                    startMillis = calendar.timeInMillis,
                     dateError = ""
                 ) 
             }
         }
     }
 
+    fun onStartTimeChange(hour: Int, minute: Int) {
+        updateState { state ->
+            val calendar = java.util.Calendar.getInstance().apply {
+                timeInMillis = state.startMillis ?: System.currentTimeMillis()
+                set(java.util.Calendar.HOUR_OF_DAY, hour)
+                set(java.util.Calendar.MINUTE, minute)
+            }
+            val timeString = timeFormatter.format(calendar.time)
+            state.copy(
+                startTime = timeString,
+                startHour = hour,
+                startMinute = minute,
+                startMillis = calendar.timeInMillis
+            )
+        }
+    }
+
     fun onEndDateChange(millis: Long?) {
         millis?.let {
             val dateString = dateFormatter.format(Date(it))
-            val timeString = timeFormatter.format(Date(it))
             updateState { state -> 
+                val calendar = java.util.Calendar.getInstance().apply {
+                    timeInMillis = it
+                    set(java.util.Calendar.HOUR_OF_DAY, state.endHour)
+                    set(java.util.Calendar.MINUTE, state.endMinute)
+                }
                 state.copy(
                     endDate = dateString,
-                    endTime = timeString,
+                    endMillis = calendar.timeInMillis,
                     dateError = ""
                 ) 
             }
+        }
+    }
+
+    fun onEndTimeChange(hour: Int, minute: Int) {
+        updateState { state ->
+            val calendar = java.util.Calendar.getInstance().apply {
+                timeInMillis = state.endMillis ?: (state.startMillis ?: System.currentTimeMillis())
+                set(java.util.Calendar.HOUR_OF_DAY, hour)
+                set(java.util.Calendar.MINUTE, minute)
+            }
+            val timeString = timeFormatter.format(calendar.time)
+            state.copy(
+                endTime = timeString,
+                endHour = hour,
+                endMinute = minute,
+                endMillis = calendar.timeInMillis
+            )
         }
     }
 
@@ -167,7 +220,10 @@ class CreateEventViewModel @Inject constructor(
 
             Log.i("Crear evento" , "Iniciando creación")
             try {
-                eventRepository.createEvent(
+                val startMillis = state.startMillis ?: System.currentTimeMillis()
+                val endMillis = state.endMillis ?: (startMillis + 24 * 60 * 60 * 1000)
+
+                val createdEvent = eventRepository.createEvent(
                     title = state.title.trim(),
                     description = state.description.trim(),
                     category = state.category,
@@ -177,10 +233,45 @@ class CreateEventViewModel @Inject constructor(
                     } else {
                         listOf("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800")
                     },
-                    startDate = Timestamp(Date()),
-                    endDate = Timestamp(Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)),
+                    startDate = Timestamp(Date(startMillis)),
+                    endDate = Timestamp(Date(endMillis)),
                     maxAttendees = capacity
                 )
+
+                // Gamification: award points and badges to the author
+                try {
+                    val currentUid = firebaseAuth.currentUser?.uid
+                    if (currentUid != null) {
+                        val user = userRepository.getUserById(currentUid)
+                        if (user != null) {
+                            val pointsForCreate = 50
+                            val newPoints = user.reputationPoints + pointsForCreate
+                            val newLevel = UserLevel.fromPoints(newPoints)
+
+                            // Count created events (fresh from repository)
+                            val myEventsCount = try {
+                                eventRepository.getAllEvents().count { it.authorUid == currentUid }
+                            } catch (_: Exception) { 1 }
+
+                            val newBadges = user.badges.toMutableList()
+                            if (myEventsCount == 1 && !newBadges.contains(BadgeType.PRIMERA_PUBLICACION)) {
+                                newBadges.add(BadgeType.PRIMERA_PUBLICACION)
+                            }
+                            if (myEventsCount >= 5 && !newBadges.contains(BadgeType.PRODUCTOR)) newBadges.add(BadgeType.PRODUCTOR)
+                            if (myEventsCount >= 10 && !newBadges.contains(BadgeType.ORGANIZADOR_EXPERTO)) newBadges.add(BadgeType.ORGANIZADOR_EXPERTO)
+                            if (myEventsCount >= 25 && !newBadges.contains(BadgeType.MAESTRO_EVENTOS)) newBadges.add(BadgeType.MAESTRO_EVENTOS)
+
+                            val updatedUser = user.copy(
+                                reputationPoints = newPoints,
+                                level = newLevel,
+                                badges = newBadges
+                            )
+                            userRepository.updateUser(updatedUser)
+                        }
+                    }
+                } catch (_: Exception) {
+                    // non-fatal; continue
+                }
 
                 _createResult.value = CreateEventResult.Success
             } catch (e: Exception) {
@@ -188,6 +279,7 @@ class CreateEventViewModel @Inject constructor(
             }
         }
     }
+
 
     fun resetResult() {
         _createResult.value = CreateEventResult.Idle

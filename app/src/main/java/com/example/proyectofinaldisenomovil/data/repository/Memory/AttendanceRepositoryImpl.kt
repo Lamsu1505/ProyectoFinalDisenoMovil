@@ -101,7 +101,7 @@ class AttendanceRepositoryImpl @Inject constructor(): AttendanceRepository {
         return _allAttendances.map { list -> list.filter { it.uid == uid } }
     }
 
-    override fun getEventsIdByUserID(uid: String): List<String> {
+    override suspend fun getEventsIdByUserID(uid: String): List<String> {
         // 1. Filtramos los votos del StateFlow para obtener solo los del usuario solicitado
         val userSaved = _allAttendances.value.filter { it.uid == uid }
         // 2. Extraemos los IDs de los eventos de los votos del usuario

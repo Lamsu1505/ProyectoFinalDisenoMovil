@@ -88,7 +88,7 @@ class HomeViewModel @Inject constructor(
 
         result = when (_orderBy.value) {
             "Nombre" -> result.sortedBy { it.title }
-            "Popularidad" -> result.sortedByDescending { it.importantVotes }
+            "Popularidad", "Votos" -> result.sortedByDescending { it.importantVotes }
             "Fecha" -> result.sortedBy { it.startDate }
             else -> result
         }

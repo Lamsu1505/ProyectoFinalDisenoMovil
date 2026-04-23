@@ -31,6 +31,6 @@ interface AttendanceRepository {
     /** Real-time stream of all attendances for a given user (for the profile screen). */
     fun observeUserAttendances(uid: String): Flow<List<Attendance>>
 
-    fun getEventsIdByUserID(uid: String) : List<String>
+    suspend fun getEventsIdByUserID(uid: String) : List<String>
     fun fetchAttendances(): List<Attendance>
 }

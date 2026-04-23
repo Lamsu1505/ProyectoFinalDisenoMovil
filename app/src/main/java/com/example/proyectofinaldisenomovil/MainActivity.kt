@@ -13,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import com.cloudinary.android.MediaManager
 import com.example.proyectofinaldisenomovil.core.navigation.AppNavigation
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.data.seed.FirestoreSeeder
 import com.example.proyectofinaldisenomovil.data.local.SessionManager
 import com.example.proyectofinaldisenomovil.data.local.SettingsDataStore
 import com.google.firebase.Firebase
@@ -33,6 +35,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -42,6 +45,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var sessionManager: SessionManager
+
+    @Inject
+    lateinit var firestoreSeeder: FirestoreSeeder
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
@@ -86,6 +92,10 @@ class MainActivity : ComponentActivity() {
         MediaManager.init(this, configMap)
         subirImagen()
         enableEdgeToEdge()
+
+        lifecycleScope.launch {
+            firestoreSeeder.seedIfNeeded()
+        }
 
         setContent {
             val currentLanguage by settingsDataStore.languageFlow.collectAsState(initial = SettingsDataStore.DEFAULT_LANGUAGE)

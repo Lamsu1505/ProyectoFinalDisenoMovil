@@ -59,14 +59,14 @@ fun CategoryFilterChips(
                 shape  = RoundedCornerShape(20.dp),
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor     = MaterialTheme.colorScheme.primary,
-                    selectedLabelColor         = Color.White,
+                    selectedLabelColor         = MaterialTheme.colorScheme.onPrimary,
                     containerColor             = Color.Transparent,
                     labelColor                 = MaterialTheme.colorScheme.onSurface,
                 ),
                 border = FilterChipDefaults.filterChipBorder(
                     enabled            = true,
                     selected           = isSelected,
-                    borderColor        = MaterialTheme.colorScheme.onBackground,
+                    borderColor        = MaterialTheme.colorScheme.onSurfaceVariant,
                     selectedBorderColor = Color.Transparent,
                     borderWidth        = 1.dp,
                 ),

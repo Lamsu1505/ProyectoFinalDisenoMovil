@@ -64,8 +64,8 @@ interface EventRepository {
         maxAttendees: Int?
     ): Event
 
-    fun getAllEvents() : List<Event>
-    fun onEventAccept(event: Event)
-    fun onEventReject(event: Event, reason: String)
-    fun editEvent(idEvent: String, newEvent: Event)
+    suspend fun getAllEvents() : List<Event>
+    suspend fun onEventAccept(event: Event)
+    suspend fun onEventReject(event: Event, reason: String)
+    suspend fun editEvent(idEvent: String, newEvent: Event)
 }

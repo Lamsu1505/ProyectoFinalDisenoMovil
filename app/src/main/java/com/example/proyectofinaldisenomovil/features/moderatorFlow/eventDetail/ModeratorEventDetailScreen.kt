@@ -59,6 +59,7 @@ import com.example.proyectofinaldisenomovil.core.component.moderator.Confirmatio
 import com.example.proyectofinaldisenomovil.core.component.moderator.LogoutDialog
 import com.example.proyectofinaldisenomovil.core.component.moderator.state.Moderatoreventdetailuistate
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.core.theme.blue
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.R
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -132,7 +133,7 @@ fun ModeratorEventDetailScreenContent(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.moderator_back),
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
 
@@ -142,7 +143,7 @@ fun ModeratorEventDetailScreenContent(
                 ) {
                     Text(
                         text = stringResource(R.string.moderator_detail_title),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -152,7 +153,7 @@ fun ModeratorEventDetailScreenContent(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                         contentDescription = stringResource(R.string.moderator_logout),
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
             }
@@ -220,19 +221,6 @@ fun ModeratorEventDetailScreenContent(
         )
     }
 
-    if (uiState.showRejectDialog) {
-        ConfirmationDialog(
-            title = stringResource(R.string.moderator_confirm_title),
-            bodyText = stringResource(R.string.moderator_confirm_reject),
-            showReasonField = true,
-            reasonValue = uiState.rejectionReason,
-            onReasonChange = onRejectionReasonChange,
-            reasonError = uiState.rejectionReasonError,
-            isLoading = uiState.isSubmittingVerification,
-            onConfirm = onRejectConfirm,
-            onDismiss = onRejectDialogDismiss,
-        )
-    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -257,10 +245,10 @@ private fun EventDetailContent(
     }
 
     val statusColor = when (event.status) {
-        EventStatus.PENDING_REVIEW -> Color(0xFFFFA000)
-        EventStatus.VERIFIED -> Color(0xFF4CAF50)
-        EventStatus.REJECTED -> Color(0xFFF44336)
-        EventStatus.RESOLVED -> Color(0xFF2196F3)
+        EventStatus.PENDING_REVIEW -> MaterialTheme.colorScheme.secondary
+        EventStatus.VERIFIED -> MaterialTheme.colorScheme.primary
+        EventStatus.REJECTED -> MaterialTheme.colorScheme.tertiary
+        EventStatus.RESOLVED -> blue
     }
     val statusLabel = when (event.status) {
         EventStatus.PENDING_REVIEW -> "Pendiente de verificación"
@@ -298,7 +286,7 @@ private fun EventDetailContent(
             ) {
                 Text(
                     text = event.category.label,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSecondary,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
@@ -314,33 +302,32 @@ private fun EventDetailContent(
             ) {
                 Text(
                     text = statusLabel,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                 )
             }
 
-            if (event.imageUrls.size > 1) {
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    event.imageUrls.forEachIndexed { index, _ ->
-                        Box(
-                            modifier = Modifier
-                                .size(if (index == pagerState.currentPage) 10.dp else 8.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    if (index == pagerState.currentPage)
-                                        MaterialTheme.colorScheme.primary
-                                    else
-                                        Color.White.copy(alpha = 0.5f)
-                                ),
-                        )
-                    }
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                event.imageUrls.forEachIndexed { index, _ ->
+                    Box(
+                        modifier = Modifier
+                            .size(if (index == pagerState.currentPage) 10.dp else 8.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (index == pagerState.currentPage)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    Color.White.copy(alpha = 0.5f)
+                            ),
+                    )
                 }
             }
         }
@@ -427,13 +414,13 @@ private fun EventDetailContent(
                         text = "Motivo de rechazo:",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFFF44336),
+                        color = MaterialTheme.colorScheme.tertiary,
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text = event.rejectionReason,
                         fontSize = 14.sp,
-                        color = Color(0xFFF44336),
+                        color = MaterialTheme.colorScheme.tertiary,
                         lineHeight = 20.sp,
                     )
                 }
@@ -473,8 +460,8 @@ private fun EventDetailContent(
                         .height(48.dp),
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color(0xFFF44336),
-                        contentColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onTertiary,
                     ),
                 ) {
                     Text(
@@ -495,7 +482,7 @@ private fun EventDetailContent(
                         .height(48.dp),
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF4CAF50),
+                        containerColor = MaterialTheme.colorScheme.primary,
                     ),
                 ) {
                     Text(

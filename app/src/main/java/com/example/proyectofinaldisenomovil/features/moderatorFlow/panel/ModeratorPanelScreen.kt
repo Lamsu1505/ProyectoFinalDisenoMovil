@@ -1,6 +1,8 @@
 package com.example.proyectofinaldisenomovil.features.moderatorFlow.panel
 
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,11 +19,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,32 +33,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofinaldisenomovil.core.component.moderator.CategoryFilterChips
 import com.example.proyectofinaldisenomovil.core.component.moderator.LogoutDialog
 import com.example.proyectofinaldisenomovil.core.component.moderator.ModeratorEventCard
 import com.example.proyectofinaldisenomovil.core.component.moderator.ModeratorTopBar
-import com.example.proyectofinaldisenomovil.core.component.moderator.SortDistanceRow
-import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
-import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
+import com.example.proyectofinaldisenomovil.core.component.moderator.state.SortOption
+import com.example.proyectofinaldisenomovil.core.theme.whiteBackground
 import com.example.proyectofinaldisenomovil.R
-import com.example.proyectofinaldisenomovil.core.component.moderator.ConfirmationDialog
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository.printEvents
 
 @Composable
 fun ModeratorPanelScreen(
@@ -67,14 +69,17 @@ fun ModeratorPanelScreen(
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    // Este bloque se ejecuta cada vez que regresas a esta pantalla
     LaunchedEffect(lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.loadEvents()
         }
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(whiteBackground)
+    ) {
         ModeratorTopBar(
             navController = navController,
             title = stringResource(R.string.moderator_title),
@@ -82,6 +87,8 @@ fun ModeratorPanelScreen(
             onSearchChange = viewModel::onSearchQueryChange,
             onLogoutClick = viewModel::onLogoutClick,
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         CategoryFilterChips(
             selectedCategory = uiState.selectedCategory,
@@ -92,42 +99,33 @@ fun ModeratorPanelScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            StatusChip(
-                label = "Todos (${uiState.events.size})",
-                isSelected = uiState.statusFilter == null,
-                color = MaterialTheme.colorScheme.primary,
-                onClick = { viewModel.onStatusFilterChange(null) }
-            )
-            StatusChip(
-                label = "Pendientes (${uiState.pendingEvents.size})",
-                isSelected = uiState.statusFilter == EventStatus.PENDING_REVIEW,
-                color = Color(0xFFFFA000),
-                onClick = { viewModel.onStatusFilterChange(EventStatus.PENDING_REVIEW) }
-            )
-            StatusChip(
-                label = "Verificados (${uiState.verifiedEvents.size})",
-                isSelected = uiState.statusFilter == EventStatus.VERIFIED,
-                color = Color(0xFF4CAF50),
-                onClick = { viewModel.onStatusFilterChange(EventStatus.VERIFIED) }
-            )
-            StatusChip(
-                label = "Rechazados (${uiState.rejectedEvents.size})",
-                isSelected = uiState.statusFilter == EventStatus.REJECTED,
-                color = Color(0xFFF44336),
-                onClick = { viewModel.onStatusFilterChange(EventStatus.REJECTED) }
-            )
-        }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(7.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.filter_sort_by), fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface)
+                SortByComboBox(
+                    options = SortOption.entries,
+                    selected = uiState.sortBy,
+                    onSelected = viewModel::onSortChange
+                )
+            }
 
-        SortDistanceRow(
-            selectedSort = uiState.sortBy,
-            selectedDistance = uiState.distanceKm,
-            onSortChange = viewModel::onSortChange,
-            onDistanceChange = viewModel::onDistanceChange,
-        )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(7.dp)
+            ) {
+                Text(stringResource(R.string.filter_distance), fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface)
+                DistanceComboBox(
+                    selected = uiState.distanceKm,
+                    onSelected = viewModel::onDistanceChange
+                )
+            }
+        }
 
         Box(
             modifier = Modifier
@@ -159,7 +157,6 @@ fun ModeratorPanelScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        Log.i("Moderator events" , "Los eventos del uiState : ${uiState.filteredEvents}")
                         items(
                             items = uiState.filteredEvents,
                             key = { it.id },
@@ -169,7 +166,7 @@ fun ModeratorPanelScreen(
                                 event = event,
                                 onCardClick = { onEventClick(event.id) },
                                 onAccept = { viewModel.onEventAccept(event) },
-                                onReject = {onEventClick(event.id)},
+                                onReject = { onEventClick(event.id) },
                             )
                         }
                     }
@@ -191,23 +188,114 @@ fun ModeratorPanelScreen(
 }
 
 @Composable
-private fun StatusChip(
-    label: String,
-    isSelected: Boolean,
-    color: Color,
-    onClick: () -> Unit
+fun SortByComboBox(
+    options: List<SortOption>,
+    selected: SortOption,
+    onSelected: (SortOption) -> Unit
 ) {
-    FilterChip(
-        selected = isSelected,
-        onClick = onClick,
-        label = { Text(label, fontSize = 12.sp) },
-        colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = color,
-            selectedLabelColor = Color.White,
-            containerColor = Color.Transparent,
-            labelColor = MaterialTheme.colorScheme.onSurface,
-        ),
-    )
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .clickable { expanded = true }
+    ) {
+        Row(
+            Modifier
+                .clip(RoundedCornerShape(20.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .padding(2.dp)
+                .padding(start = 8.dp)
+                .width(100.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = selected.label,
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(3f),
+                maxLines = 1
+            )
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(25.dp)
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option.label, style = MaterialTheme.typography.bodyMedium) },
+                        onClick = {
+                            onSelected(option)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DistanceComboBox(
+    selected: Int,
+    onSelected: (Int) -> Unit
+) {
+    val options = listOf(1, 5, 10, 30, 50, 100, 150)
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .clickable { expanded = true },
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            Modifier
+                .clip(RoundedCornerShape(20.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .padding(2.dp)
+                .padding(start = 8.dp)
+                .width(100.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "${selected} Km",
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(25.dp)
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        modifier = Modifier.width(120.dp),
+                        text = {
+                            Text(
+                                text = "${option} Km",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth(),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        },
+                        onClick = {
+                            onSelected(option)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable

@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.features.LikedEvents.SavedEventsScreen
@@ -142,8 +143,12 @@ fun UserNavigation(
                     onEditProfileClick = {
                         userNavController.navigate(UserRoutes.EDIT_PROFILE)
                     },
-                    onMyEventsClick = {
-                        userNavController.navigate(UserRoutes.MY_EVENTS)
+                    onMyEventsClick = { status ->
+                        if (status == null) {
+                            userNavController.navigate(UserRoutes.MY_EVENTS)
+                        } else {
+                            userNavController.navigate("${UserRoutes.MY_EVENTS}/${status.name}")
+                        }
                     }
                 )
             }
@@ -166,6 +171,26 @@ fun UserNavigation(
                     onEventClick = { eventId ->
                         userNavController.navigate("${UserRoutes.EVENT_DETAIL}/$eventId")
                     }
+                )
+            }
+
+            composable(
+                route = "${UserRoutes.MY_EVENTS}/{status}",
+                arguments = listOf(navArgument("status") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val statusArg = backStackEntry.arguments?.getString("status")
+                val initialStatus = try { statusArg?.let { EventStatus.valueOf(it) } } catch (_: Exception) { null }
+
+                MyEventsScreen(
+                    paddingValues = paddingValues,
+                    onNotificationClick = { userNavController.navigate(UserRoutes.NOTIFICATIONS) },
+                    onEditClick = { eventId ->
+                        userNavController.navigate("${UserRoutes.EDIT_EVENT}/$eventId")
+                    },
+                    onEventClick = { eventId ->
+                        userNavController.navigate("${UserRoutes.EVENT_DETAIL}/$eventId")
+                    },
+                    initialStatus = initialStatus
                 )
             }
 

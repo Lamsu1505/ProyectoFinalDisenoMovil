@@ -41,16 +41,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 // ─────────────────────────────────────────────
-//  DATA CLASS  – Comentario
-// ─────────────────────────────────────────────
-data class Comment(
-    val authorInitials: String,
-    val authorName: String,
-    val timeLabel: String,
-    val text: String
-)
-
-// ─────────────────────────────────────────────
 //  PANTALLA PRINCIPAL
 // ─────────────────────────────────────────────
 @Composable
@@ -65,6 +55,8 @@ fun ViewEventScreen(
     val detailResult by viewEventViewModel.detailResult.collectAsState()
     val isInterested by viewEventViewModel.isInterested.collectAsState()
     val isConfirmed  by viewEventViewModel.isConfirmed.collectAsState()
+    val comments     by viewEventViewModel.comments.collectAsState()
+    val newComment   by viewEventViewModel.newCommentText.collectAsState()
 
     val listState = rememberLazyListState()
 
@@ -100,6 +92,10 @@ fun ViewEventScreen(
                             isConfirmed  = isConfirmed,
                             onInterestedClick = { viewEventViewModel.toggleInterested() },
                             onConfirmedClick  = {viewEventViewModel.toggleConfirmed()},
+                            comments     = comments,
+                            newCommentValue = newComment,
+                            onNewCommentChange = viewEventViewModel::onNewCommentChange,
+                            onSendComment = viewEventViewModel::sendComment,
                             listState    = listState
                         )
                     }
@@ -120,22 +116,12 @@ private fun EventDetailContent(
     isConfirmed: Boolean,
     onInterestedClick: () -> Unit,
     onConfirmedClick: () -> Unit,
+    comments: List<CommentUiModel>,
+    newCommentValue: String,
+    onNewCommentChange: (String) -> Unit,
+    onSendComment: () -> Unit,
     listState: androidx.compose.foundation.lazy.LazyListState
 ) {
-    // Estado local para el campo de nuevo comentario
-    var newCommentText by remember { mutableStateOf("") }
-    var comments by remember {
-        mutableStateOf(
-            listOf(
-                Comment("AP", "Andres Perez",      "Ahora",   "Hola quiero saber precio y lugar. Muchas gracias. Nos vemos allí."),
-                Comment("NT", "Natalia Tejada",    "Hace 1h", "Es un evento no apto para mascotas, es muy lamentableeee."),
-                Comment("SL", "Santiago Londoño",  "Hace 2h", "Soy londoño."),
-                Comment("SL", "Santiago Londoño",  "Hace 2h", "Soy londoño."),
-                Comment("SL", "Santiago Londoño",  "Hace 2h", "Soy londoño.")
-            )
-        )
-    }
-
     LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
         item { EventImageHeader(event) }
         item {
@@ -157,16 +143,9 @@ private fun EventDetailContent(
         // ── CAMPO PARA NUEVO COMENTARIO ──────────
         item {
             NewCommentButton(
-                value    = newCommentText,
-                onValueChange = { newCommentText = it },
-                onSend   = {
-                    if (newCommentText.isNotBlank()) {
-                        comments = listOf(
-                            Comment("YO", "Tú", "Ahora", newCommentText)
-                        ) + comments
-                        newCommentText = ""
-                    }
-                }
+                value    = newCommentValue,
+                onValueChange = onNewCommentChange,
+                onSend   = onSendComment
             )
         }
 
@@ -485,7 +464,7 @@ private fun EventMapPlaceholder() {
 //  SECCIÓN COMENTARIOS  ← NUEVA
 // ─────────────────────────────────────────────
 @Composable
-private fun CommentsSection(comments: List<Comment>) {
+private fun CommentsSection(comments: List<CommentUiModel>) {
     Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
         Text(
             text       = stringResource(R.string.view_event_comments),
@@ -522,7 +501,7 @@ private fun CommentsSection(comments: List<Comment>) {
 //  ITEM COMENTARIO  ← NUEVO
 // ─────────────────────────────────────────────
 @Composable
-private fun CommentItem(comment: Comment) {
+private fun CommentItem(comment: CommentUiModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -538,7 +517,7 @@ private fun CommentItem(comment: Comment) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text       = comment.authorInitials,
+                text       = comment.initials,
                 fontWeight = FontWeight.Bold,
                 fontSize   = 14.sp,
                 color      = MaterialTheme.colorScheme.onSurface
@@ -562,7 +541,7 @@ private fun CommentItem(comment: Comment) {
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text     = comment.timeLabel,
+                    text     = comment.timeAgo,
                     fontSize = 11.sp,
                     color    = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
                 )

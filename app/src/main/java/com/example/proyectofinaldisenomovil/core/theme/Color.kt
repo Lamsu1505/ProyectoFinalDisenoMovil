@@ -12,3 +12,9 @@ val darkGrey = Color(0xFF6C6C6C)
 val WhiteBone = Color(0xFFFFF7E2)
 val greyDisable = Color(0xFFDEDEDE)
 val secondBackground = Color(0xFFE5D8D2)
+
+val moderatorPrimary = green
+val moderatorOnPrimary = Color.White
+val moderatorSecondary = blue
+val moderatorSurface = secondBackground
+val moderatorOnSurface = darkGrey

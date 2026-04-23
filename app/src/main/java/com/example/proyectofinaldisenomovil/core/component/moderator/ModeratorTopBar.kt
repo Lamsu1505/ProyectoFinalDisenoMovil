@@ -62,21 +62,22 @@ fun ModeratorTopBar(
     Surface(
         modifier = modifier.fillMaxWidth(),
         color    = MaterialTheme.colorScheme.primary,
+        shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp),
         shadowElevation = 4.dp,
     ) {
         Column(
             modifier = Modifier.padding(
-                start  = 12.dp,
-                end    = 12.dp,
+                start  = 16.dp,
+                end    = 16.dp,
                 top    = 12.dp,
-                bottom = if (showBackArrow) 12.dp else 10.dp,
+                bottom = if (showBackArrow) 24.dp else 20.dp,
             )
         ) {
             // ── Title row ─────────────────────────────────────────────────────
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(40.dp),
+                    .height(48.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 // Back arrow (detail mode only)
@@ -88,7 +89,7 @@ fun ModeratorTopBar(
                         Icon(
                             imageVector        = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
-                            tint               = Color.White,
+                            tint               = MaterialTheme.colorScheme.onPrimary,
                         )
                     }
                 }
@@ -96,9 +97,9 @@ fun ModeratorTopBar(
                 // Centered title
                 Text(
                     text       = title,
-                    color      = Color.White,
-                    fontSize   = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    color      = MaterialTheme.colorScheme.onPrimary,
+                    fontSize   = 20.sp,
+                    fontWeight = FontWeight.Bold,
                     modifier   = Modifier.align(Alignment.Center),
                 )
 
@@ -110,46 +111,46 @@ fun ModeratorTopBar(
                     Icon(
                         imageVector        = Icons.AutoMirrored.Filled.ExitToApp,
                         contentDescription = "Cerrar sesion",
-                        tint               = Color.White,
+                        tint               = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
             }
 
             // ── Search bar (panel mode only) ──────────────────────────────────
             if (!showBackArrow) {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(12.dp))
                 OutlinedTextField(
                     value         = searchQuery,
                     onValueChange = onSearchChange,
                     placeholder   = {
                         Text(
                             text     = "Buscar Eventos....",
-                            color    = Color.Gray,
-                            fontSize = 14.sp,
+                            color    = MaterialTheme.colorScheme.outline,
+                            fontSize = 15.sp,
                         )
                     },
                     leadingIcon = {
                         Icon(
                             imageVector        = androidx.compose.material.icons.Icons.Default.Search,
                             contentDescription = "Buscar",
-                            tint               = Color.Gray,
-                            modifier           = Modifier.size(20.dp),
+                            tint               = MaterialTheme.colorScheme.outline,
+                            modifier           = Modifier.size(24.dp),
                         )
                     },
                     singleLine    = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = { onSearchDone() }),
-                    shape  = RoundedCornerShape(10.dp),
+                    shape  = RoundedCornerShape(25.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor   = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedContainerColor   = MaterialTheme.colorScheme.background,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.background,
                         focusedBorderColor      = Color.Transparent,
                         unfocusedBorderColor    = Color.Transparent,
                         cursorColor             = MaterialTheme.colorScheme.primary,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(46.dp),
+                        .height(54.dp),
                 )
             }
         }

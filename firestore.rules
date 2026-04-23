@@ -1,0 +1,79 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function getUserRole(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data.role;
+    }
+
+    function isModerator() {
+      return isSignedIn() && getUserRole(request.auth.uid) == 'MODERATOR';
+    }
+
+    function isEventAuthor() {
+      return isSignedIn() && resource.data.authorUid == request.auth.uid;
+    }
+
+    function isNewEventAuthor() {
+      return isSignedIn() && request.resource.data.authorUid == request.auth.uid;
+    }
+
+    function isValidUserDocument() {
+      return request.resource.data.uid == request.auth.uid
+        && request.resource.data.role in ['USER', 'MODERATOR']
+        && request.resource.data.email is string
+        && request.resource.data.firstName is string
+        && request.resource.data.lastName is string
+        && request.resource.data.isActive == true;
+    }
+
+    match /users/{userId} {
+      allow create: if isSignedIn()
+        && request.auth.uid == userId
+        && isValidUserDocument()
+        && request.resource.data.role == 'USER';
+
+      allow read: if isSignedIn() && (request.auth.uid == userId || isModerator());
+
+      allow update: if isSignedIn() && request.auth.uid == userId;
+
+      allow delete: if false;
+    }
+
+    match /events/{eventId} {
+      allow create: if isSignedIn()
+        && isNewEventAuthor()
+        && request.resource.data.status == 'PENDING_REVIEW'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.title is string
+        && request.resource.data.description is string
+        && request.resource.data.category is string
+        && request.resource.data.address is string
+        && request.resource.data.imageUrls is list
+        && request.resource.data.startDate is timestamp
+        && request.resource.data.endDate is timestamp;
+
+      allow get: if resource.data.status == 'VERIFIED'
+        || isEventAuthor()
+        || isModerator();
+
+      allow list: if isSignedIn() && (
+        isModerator()
+        || request.query.where('status', '==', 'VERIFIED')
+        || request.query.where('authorUid', '==', request.auth.uid)
+      );
+
+      allow update: if isSignedIn() && (
+        isModerator()
+        || (isEventAuthor() && request.resource.data.status == resource.data.status)
+      );
+
+      allow delete: if isSignedIn() && (isModerator() || isEventAuthor());
+    }
+  }
+}
