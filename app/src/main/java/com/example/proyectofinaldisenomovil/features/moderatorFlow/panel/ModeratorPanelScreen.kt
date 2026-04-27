@@ -1,6 +1,7 @@
 package com.example.proyectofinaldisenomovil.features.moderatorFlow.panel
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -74,7 +75,11 @@ fun ModeratorPanelScreen(
         }
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         ModeratorTopBar(
             navController = navController,
             title = stringResource(R.string.moderator_title),
@@ -87,6 +92,8 @@ fun ModeratorPanelScreen(
             selectedCategory = uiState.selectedCategory,
             onCategorySelect = viewModel::onCategorySelect,
         )
+
+        Spacer(modifier = Modifier.size(7.dp))
 
         Row(
             modifier = Modifier
@@ -129,6 +136,8 @@ fun ModeratorPanelScreen(
             onDistanceChange = viewModel::onDistanceChange,
         )
 
+        Spacer(modifier = Modifier.size(7.dp))
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -151,13 +160,8 @@ fun ModeratorPanelScreen(
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(
-                            start = 16.dp,
-                            end = 16.dp,
-                            top = 8.dp,
-                            bottom = 16.dp,
-                        ),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(bottom = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(15.dp),
                     ) {
                         Log.i("Moderator events" , "Los eventos del uiState : ${uiState.filteredEvents}")
                         items(
