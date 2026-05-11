@@ -11,6 +11,7 @@ import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -55,6 +56,11 @@ class ModeratorPanelViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun updateUserLocation(latitude: Double, longitude: Double) {
+        val location = Location(latitude, longitude)
+        _uiState.update { it.copy(userLocation = location) }
     }
 
     fun onSearchQueryChange(query: String) {

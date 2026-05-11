@@ -2,6 +2,7 @@ package com.example.proyectofinaldisenomovil.data.repository
 
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventUiState
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
@@ -58,6 +59,8 @@ interface EventRepository {
         description: String,
         category: EventCategory,
         address: String,
+        latitude: Double,
+        longitude: Double,
         imageUrls: List<String>,
         startDate: Timestamp,
         endDate: Timestamp,
@@ -68,4 +71,12 @@ interface EventRepository {
     fun onEventAccept(event: Event)
     fun onEventReject(event: Event, reason: String)
     fun editEvent(idEvent: String, newEvent: Event)
+
+    fun getEventsNearLocation(
+        userLocation: Location,
+        maxDistanceKm: Double,
+        category: EventCategory? = null
+    ): List<Event>
+
+    fun observeAllEvents(): Flow<List<Event>>
 }

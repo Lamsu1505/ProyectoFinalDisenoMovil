@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.google.firebase.Timestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +36,7 @@ data class CreateEventUiState(
     val capacity: String = "",
     val images: List<Uri> = emptyList(),
     val address: String = "",
+    val selectedLocation: Location? = null,
     val startDate: String = "",
     val startTime: String = "",
     val endDate: String = "",
@@ -42,6 +44,7 @@ data class CreateEventUiState(
     val titleError: String = "",
     val descriptionError: String = "",
     val addressError: String = "",
+    val locationError: String = "",
     val dateError: String = "",
     val isFormValid: Boolean = false
 )
@@ -64,6 +67,7 @@ class CreateEventViewModel @Inject constructor(
         return state.title.length >= 1 &&
                 state.description.length >= 1 &&
                 state.address.length >= 1 &&
+                state.selectedLocation != null &&
                 state.startDate.isNotEmpty()
     }
 
@@ -71,6 +75,24 @@ class CreateEventViewModel @Inject constructor(
         _uiState.update { currentState ->
             val newState = update(currentState)
             newState.copy(isFormValid = checkFormValidity(newState))
+        }
+    }
+
+    fun onLocationSelected(latitude: Double, longitude: Double) {
+        val location = Location(latitude, longitude)
+        updateState {
+            it.copy(
+                selectedLocation = location,
+                locationError = ""
+            )
+        }
+    }
+
+    fun clearSelectedLocation() {
+        updateState {
+            it.copy(
+                selectedLocation = null
+            )
         }
     }
 
@@ -155,6 +177,7 @@ class CreateEventViewModel @Inject constructor(
             if (state.title.length < 1) missingFields.add("Título (mín. 1)")
             if (state.description.length < 1) missingFields.add("Descripción (mín. 1)")
             if (state.address.length < 1) missingFields.add("Dirección (mín. 1)")
+            if (state.selectedLocation == null) missingFields.add("Ubicación en el mapa")
             if (state.startDate.isEmpty()) missingFields.add("Fecha Inicio")
 
             _createResult.value = CreateEventResult.Error("Falta completar: ${missingFields.joinToString(", ")}")
@@ -172,6 +195,8 @@ class CreateEventViewModel @Inject constructor(
                     description = state.description.trim(),
                     category = state.category,
                     address = state.address.trim(),
+                    latitude = state.selectedLocation!!.latitude,
+                    longitude = state.selectedLocation!!.longitude,
                     imageUrls = if (state.images.isNotEmpty()) {
                         state.images.map { it.toString() }
                     } else {

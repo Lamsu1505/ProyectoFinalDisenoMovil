@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.core.theme.*
@@ -45,10 +47,10 @@ fun ModeratorEventCard(
         EventStatus.RESOLVED -> Color(0xFF2196F3)
     }
     val statusLabel = when (event.status) {
-        EventStatus.PENDING_REVIEW -> "Pendiente"
-        EventStatus.VERIFIED -> "Verificado"
-        EventStatus.REJECTED -> "Rechazado"
-        EventStatus.RESOLVED -> "Resuelto"
+        EventStatus.PENDING_REVIEW -> stringResource(R.string.event_status_pending)
+        EventStatus.VERIFIED -> stringResource(R.string.event_status_verified)
+        EventStatus.REJECTED -> stringResource(R.string.event_status_rejected)
+        EventStatus.RESOLVED -> stringResource(R.string.event_status_resolved)
     }
 
     Card(
@@ -130,7 +132,7 @@ fun ModeratorEventCard(
                             icon = Icons.Outlined.DateRange,
                             label = event.startDate?.let {
                                 SimpleDateFormat("EEEE d 'de' MMM", Locale("es")).format(it.toDate())
-                            } ?: "Fecha no definida",
+                            } ?: stringResource(R.string.moderator_date_not_defined),
                         )
                         MetaRow(
                             icon = Icons.Outlined.DateRange,
@@ -140,7 +142,7 @@ fun ModeratorEventCard(
                         )
                         MetaRow(
                             icon = Icons.Outlined.LocationOn,
-                            label = event.address.ifBlank { "Ubicacion no definida" },
+                            label = event.address.ifBlank { stringResource(R.string.moderator_location_not_defined) },
                         )
                     }
 
@@ -151,13 +153,13 @@ fun ModeratorEventCard(
                         when (event.status) {
                             EventStatus.PENDING_REVIEW -> {
                                 ActionButton(
-                                    label = "Aceptar",
+                                    label = stringResource(R.string.moderator_accept),
                                     color = Color(0xFF4CAF50),
                                     icon = Icons.Filled.CheckCircle,
                                     onClick = { onAccept(event) },
                                 )
                                 ActionButton(
-                                    label = "Rechazar",
+                                    label = stringResource(R.string.moderator_reject),
                                     color = Color(0xFFF44336),
                                     icon = Icons.Filled.Close,
                                     onClick = { onReject(event.id) },
@@ -165,7 +167,7 @@ fun ModeratorEventCard(
                             }
                             EventStatus.VERIFIED -> {
                                 ActionButton(
-                                    label = "Rechazar",
+                                    label = stringResource(R.string.moderator_reject),
                                     color = Color(0xFFF44336),
                                     icon = Icons.Filled.Close,
                                     onClick = { onReject(event.id) },
@@ -173,7 +175,7 @@ fun ModeratorEventCard(
                             }
                             EventStatus.REJECTED -> {
                                 ActionButton(
-                                    label = "Verificar",
+                                    label = stringResource(R.string.moderator_card_verify),
                                     color = Color(0xFF4CAF50),
                                     icon = Icons.Filled.CheckCircle,
                                     onClick = { onAccept(event) },
