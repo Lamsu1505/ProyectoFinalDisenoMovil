@@ -19,6 +19,16 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        val localProperties = rootProject.file("local.properties")
+        if (localProperties.exists()) {
+            val props = java.util.Properties()
+            props.load(localProperties.inputStream())
+            val mapboxToken = props.getProperty("mapbox.access.token", "")
+            buildConfigField("String", "MAPBOX_ACCESS_TOKEN", "\"$mapboxToken\"")
+        } else {
+            buildConfigField("String", "MAPBOX_ACCESS_TOKEN", "\"\"")
+        }
     }
 
     ndkVersion = "27.2.12479018"
@@ -44,6 +54,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     packaging {
@@ -115,6 +126,12 @@ dependencies {
 
     // DataStore
     implementation(libs.datastore.preferences)
+
+    // Mapbox
+    implementation(libs.mapbox.sdk)
+    implementation(libs.mapbox.compose)
+    // implementation(libs.mapbox.core) - Comentado temporalmente
+    implementation(libs.mapbox.annotation)
 
     // Testing
     testImplementation("junit:junit:4.13.2")

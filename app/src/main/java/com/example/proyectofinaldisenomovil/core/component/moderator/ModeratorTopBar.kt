@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.theme.*
 
 /**
@@ -62,22 +64,21 @@ fun ModeratorTopBar(
     Surface(
         modifier = modifier.fillMaxWidth(),
         color    = MaterialTheme.colorScheme.primary,
-        shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp),
         shadowElevation = 4.dp,
     ) {
         Column(
             modifier = Modifier.padding(
-                start  = 16.dp,
-                end    = 16.dp,
+                start  = 12.dp,
+                end    = 12.dp,
                 top    = 12.dp,
-                bottom = if (showBackArrow) 24.dp else 20.dp,
+                bottom = if (showBackArrow) 12.dp else 10.dp,
             )
         ) {
             // ── Title row ─────────────────────────────────────────────────────
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp),
+                    .height(40.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 // Back arrow (detail mode only)
@@ -88,8 +89,8 @@ fun ModeratorTopBar(
                     ) {
                         Icon(
                             imageVector        = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver",
-                            tint               = MaterialTheme.colorScheme.onPrimary,
+                            contentDescription = stringResource(R.string.moderator_back),
+                            tint               = Color.White,
                         )
                     }
                 }
@@ -97,9 +98,9 @@ fun ModeratorTopBar(
                 // Centered title
                 Text(
                     text       = title,
-                    color      = MaterialTheme.colorScheme.onPrimary,
-                    fontSize   = 20.sp,
-                    fontWeight = FontWeight.Bold,
+                    color      = Color.White,
+                    fontSize   = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
                     modifier   = Modifier.align(Alignment.Center),
                 )
 
@@ -110,47 +111,47 @@ fun ModeratorTopBar(
                 ) {
                     Icon(
                         imageVector        = Icons.AutoMirrored.Filled.ExitToApp,
-                        contentDescription = "Cerrar sesion",
-                        tint               = MaterialTheme.colorScheme.onPrimary,
+                        contentDescription = stringResource(R.string.moderator_logout_description),
+                        tint               = Color.White,
                     )
                 }
             }
 
             // ── Search bar (panel mode only) ──────────────────────────────────
             if (!showBackArrow) {
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(8.dp))
                 OutlinedTextField(
                     value         = searchQuery,
                     onValueChange = onSearchChange,
                     placeholder   = {
                         Text(
-                            text     = "Buscar Eventos....",
-                            color    = MaterialTheme.colorScheme.outline,
-                            fontSize = 15.sp,
+                            text     = stringResource(R.string.moderator_search_placeholder),
+                            color    = Color.Gray,
+                            fontSize = 14.sp,
                         )
                     },
                     leadingIcon = {
                         Icon(
                             imageVector        = androidx.compose.material.icons.Icons.Default.Search,
-                            contentDescription = "Buscar",
-                            tint               = MaterialTheme.colorScheme.outline,
-                            modifier           = Modifier.size(24.dp),
+                            contentDescription = stringResource(R.string.moderator_search_description),
+                            tint               = Color.Gray,
+                            modifier           = Modifier.size(20.dp),
                         )
                     },
                     singleLine    = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = { onSearchDone() }),
-                    shape  = RoundedCornerShape(25.dp),
+                    shape  = RoundedCornerShape(10.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor   = MaterialTheme.colorScheme.background,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                        focusedContainerColor   = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                         focusedBorderColor      = Color.Transparent,
                         unfocusedBorderColor    = Color.Transparent,
                         cursorColor             = MaterialTheme.colorScheme.primary,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(54.dp),
+                        .height(46.dp),
                 )
             }
         }

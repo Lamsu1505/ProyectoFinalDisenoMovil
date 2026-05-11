@@ -6,6 +6,7 @@ import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventUiState
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
@@ -342,6 +343,8 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
         description: String,
         category: EventCategory,
         address: String,
+        latitude: Double,
+        longitude: Double,
         imageUrls: List<String>,
         startDate: Timestamp,
         endDate: Timestamp,
@@ -356,6 +359,8 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
             description = description,
             category = category,
             address = address,
+            latitude = latitude,
+            longitude = longitude,
             imageUrls = imageUrls,
             startDate = startDate,
             endDate = endDate,
@@ -369,12 +374,33 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
         return newEvent
     }
 
-    override suspend fun getAllEvents(): List<Event> {
+    override fun getAllEvents(): List<Event> {
         Log.i("Moderator events" , "Los eventos son : ${events.value}")
         return events.value
     }
 
-    override suspend fun onEventAccept(event: Event) {
+    override fun getEventsNearLocation(
+        userLocation: Location,
+        maxDistanceKm: Double,
+        category: EventCategory?
+    ): List<Event> {
+        val allEvents = events.value.filter { it.isPublic && it.hasLocation }
+        
+        return allEvents.filter { event ->
+            val distance = userLocation.distanceTo(event.location)
+            distance <= maxDistanceKm
+        }.let { filtered ->
+            if (category != null) {
+                filtered.filter { it.category == category }
+            } else {
+                filtered
+            }
+        }
+    }
+
+    override fun observeAllEvents(): Flow<List<Event>> = events
+
+    override fun onEventAccept(event: Event) {
         val currentList = _events.value.toMutableList()
         val index = currentList.indexOfFirst { it.id == event.id }
 
@@ -390,7 +416,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
         }
     }
 
-    override suspend fun onEventReject(event: Event , reason: String) {
+    override fun onEventReject(event: Event , reason: String) {
         val currentList = _events.value.toMutableList()
         val index = currentList.indexOfFirst { it.id == event.id }
 
@@ -407,7 +433,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
         }
     }
 
-    override suspend fun editEvent(
+    override fun editEvent(
         idEvent: String,
         newEvent: Event
     ) {

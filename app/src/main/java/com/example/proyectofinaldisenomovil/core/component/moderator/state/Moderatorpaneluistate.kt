@@ -3,6 +3,7 @@ package com.example.proyectofinaldisenomovil.core.component.moderator.state
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
+import com.example.proyectofinaldisenomovil.domain.model.Location
 
 data class ModeratorPanelUiState(
     val events: List<Event> = emptyList(),
@@ -19,6 +20,7 @@ data class ModeratorPanelUiState(
     val showLogoutDialog: Boolean = false,
     val showRejectDialog: Boolean = false,
     val eventToReject: Event? = null,
+    val userLocation: Location? = null,
 )
 
 enum class SortOption(val label: String) {

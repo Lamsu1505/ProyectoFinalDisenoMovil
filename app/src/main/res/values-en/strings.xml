@@ -410,25 +410,31 @@
     <string name="badge_category_popular">Popular</string>
     <string name="badge_category_special">Special</string>
     
-    <!-- Badge Labels -->
-    <string name="badge_primera_publicacion">First Publication</string>
-    <string name="badge_productor">Producer</string>
-    <string name="badge_organizador_experto">Expert Organizer</string>
-    <string name="badge_maestro_eventos">Event Master</string>
-    <string name="badge_primer_paso">First Step</string>
-    <string name="badge_asistente_fiel">Faithful Attendee</string>
-    <string name="badge_veterano">Veteran</string>
-    <string name="badge_leyenda">Legend</string>
-    <string name="badge_primer_comentario">First Comment</string>
-    <string name="badge_conversador">Talker</string>
-    <string name="badge_historador">Historian</string>
-    <string name="badge_voz_comunidad">Community Voice</string>
-    <string name="badge_relevante">Relevant</string>
-    <string name="badge_popular">Popular</string>
-    <string name="badge_estrella">Star</string>
-    <string name="badge_icono">Icon</string>
-    <string name="badge_founder">Founder</string>
-    <string name="badge_early_adopter">Early Adopter</string>
-    <string name="badge_moderator">Moderator</string>
-    <string name="badge_voluntario">Volunteer</string>
+    <!-- Moderator Map -->
+    <string name="moderator_map_view">Map</string>
+    <string name="moderator_map_close">Close map</string>
+    <string name="moderator_map_event_details">View event details</string>
+    
+    <!-- Distance Filters -->
+    <string name="distance_filter_all">All</string>
+    <string name="distance_filter_less_5">Within 5km</string>
+    <string name="distance_filter_less_10">Within 10km</string>
+    <string name="distance_filter_less_25">Within 25km</string>
+    <string name="distance_filter_in_city">In the city</string>
+    
+    <!-- Map Permissions -->
+    <string name="location_permission_rationale">Location access is needed to show nearby events</string>
+    <string name="location_permission_denied">Location permission denied</string>
+    <string name="enable_location_settings">Enable location</string>
+    
+    <!-- Event Status -->
+    <string name="event_status_pending">Pending</string>
+    <string name="event_status_verified">Verified</string>
+    <string name="event_status_rejected">Rejected</string>
+    <string name="event_status_resolved">Resolved</string>
+    
+    <!-- Moderator Card -->
+    <string name="moderator_card_verify">Verify</string>
+    <string name="moderator_card_reject">Reject</string>
+    <string name="moderator_card_view">View</string>
 </resources>

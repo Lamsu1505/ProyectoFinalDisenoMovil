@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.core.theme.*
@@ -39,16 +41,16 @@ fun ModeratorEventCard(
     modifier: Modifier = Modifier,
 ) {
     val statusColor = when (event.status) {
-        EventStatus.PENDING_REVIEW -> MaterialTheme.colorScheme.secondary
-        EventStatus.VERIFIED -> MaterialTheme.colorScheme.primary
-        EventStatus.REJECTED -> MaterialTheme.colorScheme.tertiary
-        EventStatus.RESOLVED -> blue
+        EventStatus.PENDING_REVIEW -> Color(0xFFFFA000)
+        EventStatus.VERIFIED -> Color(0xFF4CAF50)
+        EventStatus.REJECTED -> Color(0xFFF44336)
+        EventStatus.RESOLVED -> Color(0xFF2196F3)
     }
     val statusLabel = when (event.status) {
-        EventStatus.PENDING_REVIEW -> "Pendiente"
-        EventStatus.VERIFIED -> "Verificado"
-        EventStatus.REJECTED -> "Rechazado"
-        EventStatus.RESOLVED -> "Resuelto"
+        EventStatus.PENDING_REVIEW -> stringResource(R.string.event_status_pending)
+        EventStatus.VERIFIED -> stringResource(R.string.event_status_verified)
+        EventStatus.REJECTED -> stringResource(R.string.event_status_rejected)
+        EventStatus.RESOLVED -> stringResource(R.string.event_status_resolved)
     }
 
     Card(
@@ -82,7 +84,7 @@ fun ModeratorEventCard(
                 ) {
                     Text(
                         text = event.category.label,
-                        color = MaterialTheme.colorScheme.onSecondary,
+                        color = Color.White,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
@@ -98,7 +100,7 @@ fun ModeratorEventCard(
                 ) {
                     Text(
                         text = statusLabel,
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = Color.White,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
@@ -130,7 +132,7 @@ fun ModeratorEventCard(
                             icon = Icons.Outlined.DateRange,
                             label = event.startDate?.let {
                                 SimpleDateFormat("EEEE d 'de' MMM", Locale("es")).format(it.toDate())
-                            } ?: "Fecha no definida",
+                            } ?: stringResource(R.string.moderator_date_not_defined),
                         )
                         MetaRow(
                             icon = Icons.Outlined.DateRange,
@@ -140,7 +142,7 @@ fun ModeratorEventCard(
                         )
                         MetaRow(
                             icon = Icons.Outlined.LocationOn,
-                            label = event.address.ifBlank { "Ubicacion no definida" },
+                            label = event.address.ifBlank { stringResource(R.string.moderator_location_not_defined) },
                         )
                     }
 
@@ -151,30 +153,30 @@ fun ModeratorEventCard(
                         when (event.status) {
                             EventStatus.PENDING_REVIEW -> {
                                 ActionButton(
-                                    label = "Aceptar",
-                                    color = green,
+                                    label = stringResource(R.string.moderator_accept),
+                                    color = Color(0xFF4CAF50),
                                     icon = Icons.Filled.CheckCircle,
                                     onClick = { onAccept(event) },
                                 )
                                 ActionButton(
-                                    label = "Rechazar",
-                                    color = red,
+                                    label = stringResource(R.string.moderator_reject),
+                                    color = Color(0xFFF44336),
                                     icon = Icons.Filled.Close,
                                     onClick = { onReject(event.id) },
                                 )
                             }
                             EventStatus.VERIFIED -> {
                                 ActionButton(
-                                    label = "Rechazar",
-                                    color = red,
+                                    label = stringResource(R.string.moderator_reject),
+                                    color = Color(0xFFF44336),
                                     icon = Icons.Filled.Close,
                                     onClick = { onReject(event.id) },
                                 )
                             }
                             EventStatus.REJECTED -> {
                                 ActionButton(
-                                    label = "Verificar",
-                                    color = green,
+                                    label = stringResource(R.string.moderator_card_verify),
+                                    color = Color(0xFF4CAF50),
                                     icon = Icons.Filled.CheckCircle,
                                     onClick = { onAccept(event) },
                                 )
@@ -220,10 +222,10 @@ private fun ActionButton(
             imageVector = icon,
             contentDescription = null,
             modifier = Modifier.size(14.dp),
-            tint = MaterialTheme.colorScheme.onPrimary,
+            tint = Color.White,
         )
         Spacer(Modifier.width(4.dp))
-        Text(label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.SemiBold)
+        Text(label, fontSize = 12.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
     }
 }
 

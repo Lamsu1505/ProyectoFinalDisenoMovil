@@ -51,8 +51,10 @@ import com.example.proyectofinaldisenomovil.core.component.DatePickerModal
 import com.example.proyectofinaldisenomovil.core.component.TimePickerModal
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
+import com.example.proyectofinaldisenomovil.core.component.map.MapboxLocationSelector
 import com.example.proyectofinaldisenomovil.core.theme.*
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -72,7 +74,8 @@ fun CreateEventScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var showExitDialog by remember { mutableStateOf(false) }
-
+    var showMapDialog by remember { mutableStateOf(false) }
+    
     val handleBack = {
         if (uiState.title.isNotEmpty() || uiState.description.isNotEmpty() || uiState.address.isNotEmpty()) {
             showExitDialog = true
@@ -81,6 +84,17 @@ fun CreateEventScreen(
         }
     }
 
+    if (showMapDialog) {
+        LocationPickerDialog(
+            selectedLocation = uiState.selectedLocation,
+            onLocationSelected = { lat, lon ->
+                viewModel.onLocationSelected(lat, lon)
+                showMapDialog = false
+            },
+            onDismiss = { showMapDialog = false }
+        )
+    }
+    
     BackHandler(onBack = handleBack)
 
     LaunchedEffect(createResult) {
@@ -170,7 +184,9 @@ fun CreateEventScreen(
                 CategoryBadge(icon = Icons.Default.LocationOn, label = stringResource(R.string.create_event_location_label))
                 locationSection(
                     uiState,
-                    viewModel)
+                    viewModel,
+                    onOpenMap = { showMapDialog = true }
+                )
                 Spacer(modifier = Modifier.height(5.dp))
             }
 
@@ -484,7 +500,8 @@ fun imageSection(
 @Composable
 fun locationSection(
     uiState: CreateEventUiState,
-    viewModel: CreateEventViewModel
+    viewModel: CreateEventViewModel,
+    onOpenMap: () -> Unit = {}
 ) {
     OutlinedCard(
         modifier = Modifier
@@ -521,20 +538,49 @@ fun locationSection(
                     .background(Color(0xFFE0E0E0)),
                 contentAlignment = Alignment.BottomCenter
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.LocationOn,
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = Color.Gray
-                    )
+                if (uiState.selectedLocation != null) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp),
+                                tint = green
+                            )
+                            Text(
+                                text = "Lat: ${String.format("%.4f", uiState.selectedLocation.latitude)}",
+                                fontSize = 12.sp,
+                                color = Color.Gray
+                            )
+                            Text(
+                                text = "Lng: ${String.format("%.4f", uiState.selectedLocation.longitude)}",
+                                fontSize = 12.sp,
+                                color = Color.Gray
+                            )
+                        }
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = null,
+                            modifier = Modifier.size(48.dp),
+                            tint = Color.Gray
+                        )
+                    }
                 }
 
                 Button(
-                    onClick = { /* Map selection */ },
+                    onClick = onOpenMap,
                     colors = ButtonDefaults.buttonColors(containerColor = orange),
                     shape = RoundedCornerShape(20.dp),
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -542,9 +588,24 @@ fun locationSection(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.TouchApp, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(stringResource(R.string.create_event_select_map), fontSize = 12.sp)
+                        Text(
+                            text = if (uiState.selectedLocation != null) 
+                                stringResource(R.string.create_event_change_location)
+                            else 
+                                stringResource(R.string.create_event_select_map), 
+                            fontSize = 12.sp
+                        )
                     }
                 }
+            }
+            
+            if (uiState.locationError.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = uiState.locationError,
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 12.sp
+                )
             }
         }
     }
@@ -806,6 +867,67 @@ fun CategoryBadge(icon: ImageVector, label: String) {
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LocationPickerDialog(
+    selectedLocation: Location?,
+    onLocationSelected: (Double, Double) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.ok))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        title = {
+            Text(stringResource(R.string.create_event_location_label))
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+            ) {
+                if (selectedLocation != null) {
+                    Text(
+                        text = stringResource(R.string.location_selected),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Lat: ${String.format("%.6f", selectedLocation.latitude)}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = "Lng: ${String.format("%.6f", selectedLocation.longitude)}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.tap_on_map_to_select),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                MapboxLocationSelector(
+                    modifier = Modifier.fillMaxSize(),
+                    selectedLocation = selectedLocation,
+                    onLocationSelected = onLocationSelected
+                )
+            }
+        }
+    )
 }
 
 

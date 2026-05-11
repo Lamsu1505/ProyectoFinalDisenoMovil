@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.domain.model.Event
 
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.google.firebase.Timestamp
 
 /**
@@ -43,6 +44,13 @@ data class Event(
     val createdAt: Timestamp? = null,
     val updatedAt: Timestamp? = null,
 ) {
+    val location: Location
+        get() = Location(latitude, longitude)
+
+    /** True when the event has valid coordinates. */
+    val hasLocation: Boolean
+        get() = latitude != 0.0 && longitude != 0.0
+
     /** True when the event still accepts new attendees. */
     val hasCapacity: Boolean
         get() = maxAttendees == null || currentAttendees < maxAttendees

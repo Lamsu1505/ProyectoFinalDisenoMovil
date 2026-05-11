@@ -6,13 +6,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.moderator.state.SortOption
 import com.example.proyectofinaldisenomovil.core.theme.*
 
@@ -35,6 +38,7 @@ fun SortDistanceRow(
     selectedDistance: Int,
     onSortChange: (SortOption) -> Unit,
     onDistanceChange: (Int) -> Unit,
+    onMapClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -63,6 +67,35 @@ fun SortDistanceRow(
                 onDistanceChange(label.replace(" km", "").toInt())
             },
         )
+
+        // ── Map button (optional) ────────────────────────────────────────────────
+        if (onMapClick != null) {
+            Card(
+                modifier = Modifier.clickable { onMapClick() },
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Map,
+                        contentDescription = stringResource(R.string.moderator_map_view),
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Text(
+                        text = stringResource(R.string.moderator_map_view),
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+        }
     }
 }
 

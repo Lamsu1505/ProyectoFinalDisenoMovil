@@ -17,4 +17,4 @@ local.properties
 .idea
 *.log
 gradle-app.setting
-.cursor
+app/src/main/res/values/mapbox_access_token.xml

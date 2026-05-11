@@ -7,10 +7,11 @@ import com.example.proyectofinaldisenomovil.core.component.moderator.state.Moder
 import com.example.proyectofinaldisenomovil.core.component.moderator.state.SortOption
 import com.example.proyectofinaldisenomovil.data.local.SessionDataStore
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
+import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
-import com.google.firebase.auth.FirebaseAuth
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,8 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ModeratorPanelViewModel @Inject constructor(
     private val sessionDataStore: SessionDataStore,
-    private val eventRepository: EventRepository,
-    private val auth: FirebaseAuth
+    private val eventRepository: EventRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ModeratorPanelUiState())
@@ -38,13 +38,8 @@ class ModeratorPanelViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            val allEvents = try {
-                eventRepository.getAllEvents()
-            } catch (e: Exception) {
-                Log.e("ModeratorPanel", "Error cargando eventos", e)
-                emptyList()
-            }
-            Log.i("Recarga de ventana" , "Recarga de ventana home moderadores : ${allEvents.size}")
+            val allEvents = eventRepository.getAllEvents()
+            Log.i("Recarga de ventana" , "Recarga de ventana home moderadores : $allEvents")
 
             val pendingEvents = allEvents.filter { it.status == EventStatus.PENDING_REVIEW }
             val verifiedEvents = allEvents.filter { it.status == EventStatus.VERIFIED }
@@ -61,6 +56,11 @@ class ModeratorPanelViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun updateUserLocation(latitude: Double, longitude: Double) {
+        val location = Location(latitude, longitude)
+        _uiState.update { it.copy(userLocation = location) }
     }
 
     fun onSearchQueryChange(query: String) {
@@ -99,17 +99,14 @@ class ModeratorPanelViewModel @Inject constructor(
     fun onLogoutConfirm() {
         viewModelScope.launch {
             sessionDataStore.clearSession()
-            auth.signOut()
+            MockDataRepository.logout()
             _uiState.update { it.copy(showLogoutDialog = false) }
         }
     }
 
     fun onEventAccept(event: Event) {
-        viewModelScope.launch {
-            val moderatorUid = auth.currentUser?.uid ?: ""
-            eventRepository.verifyEvent(event.id, moderatorUid)
-            loadEvents()
-        }
+        eventRepository.onEventAccept(event)
+        loadEvents()
     }
 
     fun onEventReject(event: Event) {
@@ -118,22 +115,15 @@ class ModeratorPanelViewModel @Inject constructor(
 
     fun onRejectConfirm(reason: String) {
         val event = _uiState.value.eventToReject ?: return
-        viewModelScope.launch {
-            val moderatorUid = auth.currentUser?.uid ?: ""
-            eventRepository.rejectEvent(event.id, moderatorUid, reason)
-            _uiState.update { it.copy(showRejectDialog = false, eventToReject = null) }
-            loadEvents()
-        }
+        eventRepository.onEventReject(event, reason)
+        _uiState.update { it.copy(showRejectDialog = false, eventToReject = null) }
+        loadEvents()
     }
 
     fun onEventReverify(event: Event) {
-        viewModelScope.launch {
-            val moderatorUid = auth.currentUser?.uid ?: ""
-            eventRepository.verifyEvent(event.id, moderatorUid)
-            loadEvents()
-        }
+        MockDataRepository.approveEvent(event.id)
+        loadEvents()
     }
-
 
     fun onEventRejectAgain(event: Event) {
         _uiState.update { it.copy(showRejectDialog = true, eventToReject = event) }

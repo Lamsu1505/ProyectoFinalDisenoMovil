@@ -1,5 +1,8 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.home
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +26,8 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
@@ -30,11 +35,15 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +66,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryEventsSelectorBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SearchTopBarApp
+import com.example.proyectofinaldisenomovil.core.component.map.MapboxViewer
 import com.example.proyectofinaldisenomovil.core.utils.toDisplayDate
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
@@ -72,18 +82,79 @@ fun HomeScreen(
     onEventClick : (String) -> Unit
 ) {
     var query by remember { mutableStateOf("") }
-
-    // Observa el estado del ViewModel
+    var showMapSheet by remember { mutableStateOf(false) }
+    
     val events by homeViewModel.events.collectAsState(initial = emptyList())
     val orderBy by homeViewModel.orderBy.collectAsState()
-
+    val distanceFilter by homeViewModel.distanceFilter.collectAsState()
+    val userLocation by homeViewModel.userLocation.collectAsState()
+    
+    var hasLocationPermission by remember { mutableStateOf(false) }
+    
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        hasLocationPermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+    }
+    
+    LaunchedEffect(Unit) {
+        locationPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
+    
+    if (showMapSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showMapSheet = false },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(400.dp)
+                    .padding(16.dp)
+            ) {
+                MapboxViewer(
+                    events = events,
+                    userLocation = userLocation,
+                    onUserLocationObtained = { lat, lon ->
+                        homeViewModel.updateUserLocation(lat, lon)
+                    }
+                )
+                
+                FloatingActionButton(
+                    onClick = {
+                        locationPermissionLauncher.launch(
+                            arrayOf(
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            )
+                        )
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp),
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MyLocation,
+                        contentDescription = "Mi ubicación"
+                    )
+                }
+            }
+        }
+    }
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(paddingValues)
     ) {
-        // TopBar suelta, sin Scaffold
         SearchTopBarApp(
             query = query,
             onQueryChange = {
@@ -93,17 +164,18 @@ fun HomeScreen(
             onNotificationsClick = onNotificationClick
         )
 
-        // Barra de categorías
         CategoryEventsSelectorBar(
             onCategorySelected = { homeViewModel.onCategorySelected(it) }
         )
 
         Spacer(modifier = Modifier.size(7.dp))
 
-        // Filtros de orden y distancia
         FiltersBar(
             selectedOrder = orderBy,
-            onOrderSelected = { homeViewModel.onOrderByChanged(it) }
+            onOrderSelected = { homeViewModel.onOrderByChanged(it) },
+            selectedDistance = distanceFilter,
+            onDistanceSelected = { homeViewModel.setDistanceFilter(it) },
+            onMapClick = { showMapSheet = true }
         )
 
         Spacer(modifier = Modifier.size(7.dp))
@@ -144,7 +216,10 @@ fun HomeScreen(
 @Composable
 fun FiltersBar(
     selectedOrder: String,
-    onOrderSelected: (String) -> Unit
+    onOrderSelected: (String) -> Unit,
+    selectedDistance: DistanceFilter = DistanceFilter.ALL,
+    onDistanceSelected: (DistanceFilter) -> Unit = {},
+    onMapClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -179,7 +254,42 @@ fun FiltersBar(
                 horizontalArrangement = Arrangement.spacedBy(7.dp)
             ) {
                 Text(stringResource(R.string.filter_distance), fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface)
-                DistanceComboBox()
+                DistanceFilterComboBox(
+                    selectedFilter = selectedDistance,
+                    onFilterSelected = onDistanceSelected
+                )
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Card(
+                modifier = Modifier.clickable { onMapClick() },
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
+                shape = RoundedCornerShape(20.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Map,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Text(
+                        text = stringResource(R.string.filter_show_map),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
         }
     }
@@ -240,16 +350,16 @@ fun OrderByComboBox(
 
 
 @Composable
-fun DistanceComboBox() {
-    val options = listOf("1Km", "5Km", "10Km", "30Km", "50km", "100Km", "+150Km")
+fun DistanceFilterComboBox(
+    selectedFilter: DistanceFilter = DistanceFilter.ALL,
+    onFilterSelected: (DistanceFilter) -> Unit = {}
+) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(options[3]) }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { expanded = true },
-        contentAlignment = Alignment.Center
+            .clickable { expanded = true }
     ) {
         Row(
             Modifier
@@ -261,9 +371,10 @@ fun DistanceComboBox() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = selectedOption,
+                text = selectedFilter.label,
                 fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(3f)
             )
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
@@ -275,19 +386,11 @@ fun DistanceComboBox() {
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                options.forEach { option ->
+                DistanceFilter.entries.forEach { filter ->
                     DropdownMenuItem(
-                        modifier = Modifier.width(120.dp),
-                        text = {
-                            Text(
-                                text = option,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth(),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        },
+                        text = { Text(filter.label, style = MaterialTheme.typography.bodyMedium) },
                         onClick = {
-                            selectedOption = option
+                            onFilterSelected(filter)
                             expanded = false
                         }
                     )

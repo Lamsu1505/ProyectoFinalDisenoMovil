@@ -436,4 +436,40 @@
     <string name="badge_voluntario">Voluntario</string>
 <!-- Login Messages -->
     <string name="login_error_credentials">Credenciales incorrectas</string>
+    
+    <!-- Map Filters -->
+    <string name="filter_show_map">Ver mapa</string>
+    <string name="filter_my_location">Mi ubicación</string>
+    <string name="create_event_change_location">Cambiar ubicación</string>
+    <string name="location_permission_required">Se requiere permiso de ubicación</string>
+    <string name="location_selected">Ubicación seleccionada</string>
+    <string name="tap_on_map_to_select">Toca el mapa para seleccionar ubicación</string>
+    
+    <!-- Moderator Map -->
+    <string name="moderator_map_view">Mapa</string>
+    <string name="moderator_map_close">Cerrar mapa</string>
+    <string name="moderator_map_event_details">Ver detalles del evento</string>
+    
+    <!-- Distance Filters -->
+    <string name="distance_filter_all">Todos</string>
+    <string name="distance_filter_less_5">A menos de 5km</string>
+    <string name="distance_filter_less_10">A menos de 10km</string>
+    <string name="distance_filter_less_25">A menos de 25km</string>
+    <string name="distance_filter_in_city">En la ciudad</string>
+    
+    <!-- Map Permissions -->
+    <string name="location_permission_rationale">Se necesita acceso a tu ubicación para mostrar eventos cercanos</string>
+    <string name="location_permission_denied">Permiso de ubicación denegado</string>
+    <string name="enable_location_settings">Habilitar ubicación</string>
+    
+    <!-- Event Status -->
+    <string name="event_status_pending">Pendiente</string>
+    <string name="event_status_verified">Verificado</string>
+    <string name="event_status_rejected">Rechazado</string>
+    <string name="event_status_resolved">Resuelto</string>
+    
+    <!-- Moderator Card -->
+    <string name="moderator_card_verify">Verificar</string>
+    <string name="moderator_card_reject">Rechazar</string>
+    <string name="moderator_card_view">Ver</string>
 </resources>
