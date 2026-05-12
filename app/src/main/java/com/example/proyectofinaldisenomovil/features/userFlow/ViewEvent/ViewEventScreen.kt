@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -121,7 +122,7 @@ private fun EventDetailContent(
     isConfirmed: Boolean,
     onInterestedClick: () -> Unit,
     onConfirmedClick: () -> Unit,
-    listState: androidx.compose.foundation.lazy.LazyListState
+    listState: LazyListState
 ) {
     // Estado local para el campo de nuevo comentario
     var newCommentText by remember { mutableStateOf("") }
@@ -150,7 +151,7 @@ private fun EventDetailContent(
         }
         item { EventDescription(event.description) }
 
-        item { EventMapPlaceholder() }
+        item { EventMapPlaceholder(event) }
 
         // ── SECCIÓN COMENTARIOS ──────────────────
         item { CommentsSection(comments = comments) }
@@ -458,11 +459,13 @@ private fun EventDescription(description: String) {
 // ─────────────────────────────────────────────
 //  MAPA PLACEHOLDER  (sin cambios)
 @Composable
-private fun EventMapPlaceholder() {
+private fun EventMapPlaceholder(event: Event) {
     MapBox(
         modifier = Modifier
             .fillMaxWidth()
-            .height(400.dp)
+            .height(400.dp),
+        event = event,
+        activateClick = false
     )
 }
 

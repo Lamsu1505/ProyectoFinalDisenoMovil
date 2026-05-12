@@ -182,10 +182,10 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                     "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=800",
                     "https://thesavvyimg.co.uk/wp-content/uploads/2019/03/Main-Pathway-pic-ThesavvyIMG-1024x476.jpg"
                 ),
-                latitude = 4.5445,
-                longitude = -75.6703,
+                latitude = 4.554028,
+                longitude = -75.6609262,
                 address = "Parque El Bosque, Armenia, Quindío",
-                maxAttendees = null,
+                maxAttendees = 2000,
                 currentAttendees = 175,
                 status = EventStatus.VERIFIED,
                 importantVotes = 67,
