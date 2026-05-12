@@ -34,6 +34,7 @@ import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
+import com.example.proyectofinaldisenomovil.core.component.mapbox.MapBox
 import com.example.proyectofinaldisenomovil.core.utils.RequestResult
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import java.text.NumberFormat
@@ -456,29 +457,13 @@ private fun EventDescription(description: String) {
 
 // ─────────────────────────────────────────────
 //  MAPA PLACEHOLDER  (sin cambios)
-// ─────────────────────────────────────────────
 @Composable
 private fun EventMapPlaceholder() {
-    Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-        Text(
-            text      = stringResource(R.string.view_event_location),
-            style      = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color      = MaterialTheme.colorScheme.onSurface
-        )
-        Spacer(Modifier.height(10.dp))
-        Box(
-            modifier           = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-                .clip(RoundedCornerShape(14.dp))
-                .background(Color.LightGray),
-            contentAlignment   = Alignment.Center
-        ) {
-            Text("Mapa próximamente", color = Color.DarkGray)
-        }
-    }
-    Spacer(modifier = Modifier.height(20.dp))
+    MapBox(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(400.dp)
+    )
 }
 
 // ─────────────────────────────────────────────
