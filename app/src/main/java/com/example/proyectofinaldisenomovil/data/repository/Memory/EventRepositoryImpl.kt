@@ -23,13 +23,14 @@ import kotlin.collections.filter
 import kotlin.collections.filter
 import kotlin.collections.indexOfFirst
 
+
 @Singleton
 class EventRepositoryImpl @Inject constructor(): EventRepository {
     private val _events = MutableStateFlow<List<Event>>(emptyList())
      val events : StateFlow<List<Event>> = _events.asStateFlow()
 
     init{
-        _events.value = fetchEvents()
+        _events.value = fetchEventss()
     }
 
     fun save(event: Event) {
@@ -45,7 +46,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
     }
 
 
-    private fun fetchEvents(): List<Event>{
+    fun fetchEventss(): List<Event>{
         return listOf(
             Event(
                 id = "event_001",
@@ -245,6 +246,10 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                 updatedAt = null
             )
         )
+    }
+
+    override suspend fun fetchEvents(): List<Event> {
+        TODO("Not yet implemented")
     }
 
     override fun observeFeedEvents(
