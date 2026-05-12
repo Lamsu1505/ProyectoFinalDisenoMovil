@@ -50,6 +50,7 @@ import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.DatePickerModal
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
+import com.example.proyectofinaldisenomovil.core.component.mapbox.MapBox
 import com.example.proyectofinaldisenomovil.core.theme.*
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import kotlinx.coroutines.launch
@@ -512,7 +513,14 @@ fun locationSection(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            
+            MapBox(
+                modifier = Modifier.fillMaxWidth()
+                    .height(400.dp),
+                event = null,
+                activateClick = true
+            )
+
+
         }
     }
 }

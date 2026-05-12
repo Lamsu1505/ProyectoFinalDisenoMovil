@@ -150,14 +150,14 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
         return newUser
     }
 
-    override fun validateCredentials(
+    override suspend fun validateCredentials(
         email: String,
         password: String
     ): User? {
         return _users.firstOrNull { it.email == email && it.password == password }
     }
 
-    override fun getAllUsers(): List<User> = _users.toList()
+    override suspend fun getAllUsers(): List<User> = _users.toList()
 
     override suspend fun getUserById(uid: String): User? = _users.firstOrNull { it.uid == uid }
 
@@ -189,5 +189,16 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
 
     override fun findUserByEmail(email: String): User? {
         return _users.firstOrNull { it.email.equals(email, ignoreCase = true) }
+    }
+
+    override suspend fun save(user: User) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun login(
+        email: String,
+        password: String
+    ): User? {
+        TODO("Not yet implemented")
     }
 }

@@ -5,6 +5,7 @@ import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.local.SessionDataStore
@@ -71,30 +72,34 @@ class LoginViewModel @Inject constructor(
     }
 
     fun login() {
-        if (!validateForm()) return
-        _loginResult.value = RequestResult.Loading
-
-        val user = userRepository.validateCredentials(email, password)
-
-        if (user != null) {
+        if (validateForm()) {
             viewModelScope.launch {
-                val mappedRole = when (user.role) {
-                    UserRole.USER -> com.example.proyectofinaldisenomovil.domain.model.UserRole.USER
-                    UserRole.MODERATOR -> com.example.proyectofinaldisenomovil.domain.model.UserRole.ADMIN
-                }
-                sessionDataStore.saveSession(
-                    UserSession(
-                        userId = user.uid,
-                        role = mappedRole
+                // Indicar que la operación está en curso
+                _loginResult.value = RequestResult.Loading
+                // Llamar a la función de login del repositorio
+                val user = userRepository.login(email, password)
+
+                if(user!=null){
+                    val mappedRole = when (user.role) {
+                        UserRole.USER -> com.example.proyectofinaldisenomovil.domain.model.UserRole.USER
+                        UserRole.MODERATOR -> com.example.proyectofinaldisenomovil.domain.model.UserRole.ADMIN
+                    }
+
+                    sessionDataStore.saveSession(
+                        UserSession(
+                            userId = user.uid,
+                            role = mappedRole
+                        )
                     )
-                )
+                    _loginResult.value = RequestResult.Success(R.string.login_success.toString())
+                }
+                else {
+                    _loginResult.value = RequestResult.Failure(R.string.login_error.toString())
+                }
             }
-            MockDataRepository.setLoggedInUser(user)
-            _loginResult.value = RequestResult.Success(resourceProvider.getString(R.string.login_success))
-        } else {
-            _loginResult.value = RequestResult.Failure(resourceProvider.getString(R.string.login_error))
         }
     }
+
 
     fun resetResult() {
         _loginResult.value = null
