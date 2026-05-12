@@ -18,7 +18,6 @@ class EventRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-
     override fun observeFeedEvents(
         category: EventCategory?,
         latLng: Pair<Double, Double>?,
@@ -91,6 +90,13 @@ class EventRepositoryImpl @Inject constructor(
     override fun onEventReject(
         event: Event,
         reason: String
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    override fun editEvent(
+        idEvent: String,
+        newEvent: Event
     ) {
         TODO("Not yet implemented")
     }

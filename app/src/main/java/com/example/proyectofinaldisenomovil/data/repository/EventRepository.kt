@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
  */
 interface EventRepository {
 
+    suspend fun fetchEvents(): List<Event>
     /**
      * Real-time stream of VERIFIED (public) events, optionally filtered by
      * [category] and geographic [radiusKm] around [latLng].
