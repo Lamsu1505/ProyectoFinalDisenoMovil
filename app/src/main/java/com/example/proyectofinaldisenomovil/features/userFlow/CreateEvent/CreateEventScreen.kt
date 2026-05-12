@@ -50,6 +50,7 @@ import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.DatePickerModal
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
+import com.example.proyectofinaldisenomovil.core.component.mapbox.MapBox
 import com.example.proyectofinaldisenomovil.core.theme.*
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import kotlinx.coroutines.launch
@@ -512,39 +513,14 @@ fun locationSection(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFFE0E0E0)),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.LocationOn,
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = Color.Gray
-                    )
-                }
+            MapBox(
+                modifier = Modifier.fillMaxWidth()
+                    .height(400.dp),
+                event = null,
+                activateClick = true
+            )
 
-                Button(
-                    onClick = { /* Map selection */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = orange),
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.TouchApp, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(stringResource(R.string.create_event_select_map), fontSize = 12.sp)
-                    }
-                }
-            }
+
         }
     }
 }

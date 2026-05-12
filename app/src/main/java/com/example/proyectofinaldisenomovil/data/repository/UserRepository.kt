@@ -24,8 +24,10 @@ interface UserRepository {
         password: String
     ): User?
 
-    fun validateCredentials(email: String, password: String) : User?
-    fun getAllUsers() : List<User>
+    suspend fun validateCredentials(email: String, password: String) : User?
+    suspend fun getAllUsers() : List<User>
     suspend fun resetPassword(email: String, newPassword: String): Boolean
     fun findUserByEmail(email: String): User?
+    suspend fun save(user: User)
+    suspend fun login(email: String, password: String): User?
 }

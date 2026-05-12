@@ -8,14 +8,14 @@ import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.google.firebase.Timestamp
 
 data class User(
-    val uid: String = "",
+    var uid: String = "",
     val firstName: String = "",
     val lastName: String = "",
     val email: String = "",
     val password: String = "",
     val profileImageUrl: String? = null,
     /** Latitude of the user's home / reference location */
-    val location : Location?,
+    val location : Location? =null,
     val city: String = "",
     val role: UserRole = UserRole.USER,
     val reputationPoints: Int = 0,
