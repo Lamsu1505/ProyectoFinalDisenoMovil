@@ -108,13 +108,19 @@ class ProfileViewModel @Inject constructor(
         loadUserProfile()
     }
 
+    fun logOut(){
+        viewModelScope.launch {
+            userRepository.logOut()
+        }
+    }
+
     fun loadUserProfile() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
             delay(500)
 
-            val loggedInUser = MockDataRepository.getLoggedInUser()
+            val loggedInUser = userRepository.getLoggedInUser()
             val user = loggedInUser?.let { userRepository.getUserById(it.uid) }
             if (user != null) {
                 val currentLevel = UserLevel.fromPoints(user.reputationPoints)

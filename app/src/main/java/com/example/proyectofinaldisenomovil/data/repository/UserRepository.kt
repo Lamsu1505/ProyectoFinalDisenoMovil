@@ -27,4 +27,7 @@ interface UserRepository {
     fun findUserByEmail(email: String): User?
     suspend fun save(user: User)
     suspend fun login(email: String, password: String): User?
+
+    suspend fun getLoggedInUser(): User?
+    fun logOut()
 }

@@ -205,4 +205,12 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
     ): User? {
         TODO("Not yet implemented")
     }
+
+    override suspend fun getLoggedInUser(): User? {
+        TODO("Not yet implemented")
+    }
+
+    override fun logOut() {
+        TODO("Not yet implemented")
+    }
 }

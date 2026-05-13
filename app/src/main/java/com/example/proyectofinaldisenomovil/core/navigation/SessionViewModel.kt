@@ -8,6 +8,7 @@ import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.BadgeType
 import com.example.proyectofinaldisenomovil.domain.model.User.UserLevel
 import com.example.proyectofinaldisenomovil.domain.model.UserSession
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -40,7 +41,8 @@ data class UserProfileData(
 @HiltViewModel
 class SessionViewModel @Inject constructor(
     private val sessionDataStore: SessionDataStore,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val auth: FirebaseAuth
 ) : ViewModel() {
 
     private val _userProfileData = MutableStateFlow(UserProfileData())
@@ -167,6 +169,7 @@ class SessionViewModel @Inject constructor(
 
     fun clearSession() {
         viewModelScope.launch {
+            auth.signOut()
             sessionDataStore.clearSession()
             _userProfileData.value = UserProfileData()
         }

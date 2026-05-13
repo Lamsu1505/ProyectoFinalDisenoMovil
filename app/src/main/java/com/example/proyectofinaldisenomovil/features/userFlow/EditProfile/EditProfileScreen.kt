@@ -3,6 +3,7 @@ package com.example.proyectofinaldisenomovil.features.userFlow.EditProfile
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -344,6 +345,16 @@ fun EditProfileScreen(
                     leadingIcon = Icons.Default.Phone,
                     keyboardType = KeyboardType.Phone
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button ( onClick = { viewModel.onSave() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = green)
+                ) {
+                    Text(stringResource(R.string.save))
+                }
+
 
                 Spacer(modifier = Modifier.height(24.dp))
 

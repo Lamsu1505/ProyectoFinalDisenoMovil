@@ -51,23 +51,24 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun login(email: String, password: String): User? {
-        // Consultar la colección para encontrar un usuario con el email y password proporcionados
-        val snapshot = collection
-            .whereEqualTo("email", email)
-            .whereEqualTo("password", password)
-            .get()
-            .await()
+        // Autenticar al usuario con Firebase Authentication
+        val responseUser = auth.signInWithEmailAndPassword(email, password).await()
+        // Obtener el UID del usuario autenticado
+        val uid = responseUser.user?.uid ?: throw Exception("Usuario no encontrado")
+        // Recuperar los datos del usuario desde Firestore
+        return getUserById(uid)
+    }
 
-        // Si no se encuentra ningún documento, retornar null
-        if (snapshot.documents.isEmpty()) {
-            return null
-        }
+    override suspend fun getLoggedInUser(): User? {
+        // Obtener el UID del usuario actualmente autenticado
+        val uid = auth.currentUser?.uid ?: return null
+        // Recuperar los datos del usuario desde Firestore
+        return getUserById(uid)
+    }
 
-        // Retornar el primer usuario encontrado, se mapea el documento a un objeto User y se asigna el ID del documento de Firestore
-        return snapshot.documents.first().toObject(User::class.java)?.apply {
-            uid = snapshot.documents.first().id
-        }
-
+    override fun logOut() {
+        // Cerrar sesión en Firebase Authentication
+        auth.signOut()
     }
 
     override suspend fun createUser(user: User) {
