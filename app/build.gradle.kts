@@ -101,6 +101,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:34.13.0"))
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
@@ -137,4 +138,8 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    //Mapbox
+    implementation(libs.maps.android)
+    implementation(libs.maps.compose)
 }

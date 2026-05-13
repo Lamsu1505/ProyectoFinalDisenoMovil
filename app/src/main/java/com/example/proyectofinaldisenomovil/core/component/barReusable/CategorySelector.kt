@@ -57,10 +57,10 @@ private val PlusButtonGray = Color(0xFFD6D6D6)
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CategoryEventsSelectorBar(
+    selectedCategory: EventCategory? = null,
     onCategorySelected: (EventCategory?) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selected by remember { mutableStateOf<EventCategory?>(null) }
 
     val allCategories = EventCategory.values().toList()
     val visibleCategories = allCategories.take(3)
@@ -79,9 +79,10 @@ fun CategoryEventsSelectorBar(
             visibleCategories.forEach { category ->
                 CategoryChip(
                     label = category.label,
-                    isSelected = selected == category,
+                    isSelected = selectedCategory == category,
                     onClick = {
-                        selected = if (selected == category) null else category
+                        val newSelection = if (selectedCategory == category) null else category
+                        onCategorySelected(newSelection)
                     },
                     modifier = Modifier.weight(1f)
                 )
@@ -122,9 +123,10 @@ fun CategoryEventsSelectorBar(
                 extraCategories.forEach { category ->
                     CategoryChip(
                         label = category.label,
-                        isSelected = selected == category,
+                        isSelected = selectedCategory == category,
                         onClick = {
-                            selected = if (selected == category) null else category
+                            val newSelection = if (selectedCategory == category) null else category
+                            onCategorySelected(newSelection)
                         }
                     )
                 }
@@ -244,7 +246,7 @@ private fun NotificationTab(
 fun PreviewCategorySelect() {
     ProyectoFinalDisenoMovilTheme {
         CategoryEventsSelectorBar(
-            {}
+            onCategorySelected = {}
         )
     }
 }

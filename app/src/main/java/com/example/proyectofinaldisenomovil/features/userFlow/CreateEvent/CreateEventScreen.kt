@@ -48,13 +48,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.DatePickerModal
-import com.example.proyectofinaldisenomovil.core.component.TimePickerModal
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
-import com.example.proyectofinaldisenomovil.core.component.map.MapboxLocationSelector
+import com.example.proyectofinaldisenomovil.core.component.mapbox.MapBox
 import com.example.proyectofinaldisenomovil.core.theme.*
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
-import com.example.proyectofinaldisenomovil.domain.model.Location
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -74,8 +72,7 @@ fun CreateEventScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var showExitDialog by remember { mutableStateOf(false) }
-    var showMapDialog by remember { mutableStateOf(false) }
-    
+
     val handleBack = {
         if (uiState.title.isNotEmpty() || uiState.description.isNotEmpty() || uiState.address.isNotEmpty()) {
             showExitDialog = true
@@ -84,17 +81,6 @@ fun CreateEventScreen(
         }
     }
 
-    if (showMapDialog) {
-        LocationPickerDialog(
-            selectedLocation = uiState.selectedLocation,
-            onLocationSelected = { lat, lon ->
-                viewModel.onLocationSelected(lat, lon)
-                showMapDialog = false
-            },
-            onDismiss = { showMapDialog = false }
-        )
-    }
-    
     BackHandler(onBack = handleBack)
 
     LaunchedEffect(createResult) {
@@ -184,9 +170,7 @@ fun CreateEventScreen(
                 CategoryBadge(icon = Icons.Default.LocationOn, label = stringResource(R.string.create_event_location_label))
                 locationSection(
                     uiState,
-                    viewModel,
-                    onOpenMap = { showMapDialog = true }
-                )
+                    viewModel)
                 Spacer(modifier = Modifier.height(5.dp))
             }
 
@@ -500,8 +484,7 @@ fun imageSection(
 @Composable
 fun locationSection(
     uiState: CreateEventUiState,
-    viewModel: CreateEventViewModel,
-    onOpenMap: () -> Unit = {}
+    viewModel: CreateEventViewModel
 ) {
     OutlinedCard(
         modifier = Modifier
@@ -530,83 +513,14 @@ fun locationSection(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFFE0E0E0)),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                if (uiState.selectedLocation != null) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.LocationOn,
-                                contentDescription = null,
-                                modifier = Modifier.size(48.dp),
-                                tint = green
-                            )
-                            Text(
-                                text = "Lat: ${String.format("%.4f", uiState.selectedLocation.latitude)}",
-                                fontSize = 12.sp,
-                                color = Color.Gray
-                            )
-                            Text(
-                                text = "Lng: ${String.format("%.4f", uiState.selectedLocation.longitude)}",
-                                fontSize = 12.sp,
-                                color = Color.Gray
-                            )
-                        }
-                    }
-                } else {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.LocationOn,
-                            contentDescription = null,
-                            modifier = Modifier.size(48.dp),
-                            tint = Color.Gray
-                        )
-                    }
-                }
+            MapBox(
+                modifier = Modifier.fillMaxWidth()
+                    .height(400.dp),
+                event = null,
+                activateClick = true
+            )
 
-                Button(
-                    onClick = onOpenMap,
-                    colors = ButtonDefaults.buttonColors(containerColor = orange),
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.TouchApp, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = if (uiState.selectedLocation != null) 
-                                stringResource(R.string.create_event_change_location)
-                            else 
-                                stringResource(R.string.create_event_select_map), 
-                            fontSize = 12.sp
-                        )
-                    }
-                }
-            }
-            
-            if (uiState.locationError.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = uiState.locationError,
-                    color = MaterialTheme.colorScheme.error,
-                    fontSize = 12.sp
-                )
-            }
+
         }
     }
 }
@@ -617,9 +531,7 @@ fun dateSection(
     viewModel: CreateEventViewModel
 ) {
     var showStartDatePicker by remember { mutableStateOf(false) }
-    var showStartTimePicker by remember { mutableStateOf(false) }
     var showEndDatePicker by remember { mutableStateOf(false) }
-    var showEndTimePicker by remember { mutableStateOf(false) }
 
     if (showStartDatePicker) {
         DatePickerModal(
@@ -631,16 +543,6 @@ fun dateSection(
         )
     }
 
-    if (showStartTimePicker) {
-        TimePickerModal(
-            onTimeSelected = { hour, minute ->
-                viewModel.onStartTimeChange(hour, minute)
-                showStartTimePicker = false
-            },
-            onDismiss = { showStartTimePicker = false }
-        )
-    }
-
     if (showEndDatePicker) {
         DatePickerModal(
             onDateSelected = { 
@@ -648,16 +550,6 @@ fun dateSection(
                 showEndDatePicker = false
             },
             onDismiss = { showEndDatePicker = false }
-        )
-    }
-
-    if (showEndTimePicker) {
-        TimePickerModal(
-            onTimeSelected = { hour, minute ->
-                viewModel.onEndTimeChange(hour, minute)
-                showEndTimePicker = false
-            },
-            onDismiss = { showEndTimePicker = false }
         )
     }
 
@@ -720,27 +612,18 @@ fun dateSection(
                         color = MaterialTheme.colorScheme.outline
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Box {
-                        OutlinedTextField(
-                            value = uiState.startTime,
-                            onValueChange = { },
-                            readOnly = true,
-                            enabled = false,
-                            trailingIcon = { Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.Gray) },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                disabledBorderColor = Color.Black,
-                                disabledTextColor = Color.Black,
-                                disabledPlaceholderColor = Color.Gray
-                            )
+                    OutlinedTextField(
+                        value = uiState.startTime,
+                        onValueChange = { },
+                        trailingIcon = { Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.Gray) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = Color.Black,
+                            focusedBorderColor = Color.Black,
+                            unfocusedTextColor = Color.Gray
                         )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable { showStartTimePicker = true }
-                        )
-                    }
+                    )
                 }
             }
 
@@ -796,33 +679,24 @@ fun dateSection(
                         color = MaterialTheme.colorScheme.outline
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Box {
-                        OutlinedTextField(
-                            value = uiState.endTime,
-                            onValueChange = { },
-                            readOnly = true,
-                            enabled = false,
-                            trailingIcon = { Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.Gray) },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                disabledBorderColor = Color.Black,
-                                disabledTextColor = Color.Black,
-                                disabledPlaceholderColor = Color.Gray
-                            )
+                    OutlinedTextField(
+                        value = uiState.endTime,
+                        onValueChange = { },
+                        readOnly = true,
+                        trailingIcon = { Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.Gray) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = Color.Black,
+                            focusedBorderColor = Color.Black,
+                            unfocusedTextColor = Color.Gray
                         )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable { showEndTimePicker = true }
-                        )
-                    }
+                    )
                 }
             }
         }
     }
 }
-
 
 @Composable
 fun ButtonsSection(
@@ -867,67 +741,6 @@ fun CategoryBadge(icon: ImageVector, label: String) {
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun LocationPickerDialog(
-    selectedLocation: Location?,
-    onLocationSelected: (Double, Double) -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.ok))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
-            }
-        },
-        title = {
-            Text(stringResource(R.string.create_event_location_label))
-        },
-        text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
-            ) {
-                if (selectedLocation != null) {
-                    Text(
-                        text = stringResource(R.string.location_selected),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Lat: ${String.format("%.6f", selectedLocation.latitude)}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Text(
-                        text = "Lng: ${String.format("%.6f", selectedLocation.longitude)}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                } else {
-                    Text(
-                        text = stringResource(R.string.tap_on_map_to_select),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                MapboxLocationSelector(
-                    modifier = Modifier.fillMaxSize(),
-                    selectedLocation = selectedLocation,
-                    onLocationSelected = onLocationSelected
-                )
-            }
-        }
-    )
 }
 
 

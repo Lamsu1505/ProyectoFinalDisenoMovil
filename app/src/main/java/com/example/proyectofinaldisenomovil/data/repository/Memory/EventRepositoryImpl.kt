@@ -19,13 +19,14 @@ import javax.inject.Singleton
 import kotlin.collections.filter
 import kotlin.collections.indexOfFirst
 
+
 @Singleton
 class EventRepositoryImpl @Inject constructor(): EventRepository {
     private val _events = MutableStateFlow<List<Event>>(emptyList())
      val events : StateFlow<List<Event>> = _events.asStateFlow()
 
     init{
-        _events.value = fetchEvents()
+        _events.value = fetchEventss()
     }
 
     fun save(event: Event) {
@@ -41,7 +42,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
     }
 
 
-    private fun fetchEvents(): List<Event>{
+    fun fetchEventss(): List<Event>{
         return listOf(
             Event(
                 id = "event_001",
@@ -178,10 +179,10 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                     "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=800",
                     "https://thesavvyimg.co.uk/wp-content/uploads/2019/03/Main-Pathway-pic-ThesavvyIMG-1024x476.jpg"
                 ),
-                latitude = 4.5445,
-                longitude = -75.6703,
+                latitude = 4.554028,
+                longitude = -75.6609262,
                 address = "Parque El Bosque, Armenia, Quindío",
-                maxAttendees = null,
+                maxAttendees = 2000,
                 currentAttendees = 175,
                 status = EventStatus.VERIFIED,
                 importantVotes = 67,
@@ -288,6 +289,10 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
                 rejectionReason = "El concierto es muy malucooooo"
             )
         )
+    }
+
+    override suspend fun fetchEvents(): List<Event> {
+        TODO("Not yet implemented")
     }
 
     override fun observeFeedEvents(

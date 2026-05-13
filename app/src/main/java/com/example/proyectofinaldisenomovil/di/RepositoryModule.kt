@@ -2,12 +2,12 @@ package com.example.proyectofinaldisenomovil.di
 
 import com.example.proyectofinaldisenomovil.data.repository.AttendanceRepository
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
+import com.example.proyectofinaldisenomovil.data.repository.Memory.AttendanceRepositoryImpl
+import com.example.proyectofinaldisenomovil.data.repository.Memory.EventRepositoryImpl
+import com.example.proyectofinaldisenomovil.data.repository.Remote.UserRepositoryImpl
+import com.example.proyectofinaldisenomovil.data.repository.Memory.VoteRepositoryImpl
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.data.repository.VoteRepository
-import com.example.proyectofinaldisenomovil.data.repository.firebase.FirestoreUserRepository
-import com.example.proyectofinaldisenomovil.data.repository.firebase.FirestoreAttendanceRepository
-import com.example.proyectofinaldisenomovil.data.repository.firebase.FirestoreEventRepository
-import com.example.proyectofinaldisenomovil.data.repository.firebase.FirestoreVoteRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -20,24 +20,24 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindEventRepository(
-        impl: FirestoreEventRepository
+        impl: EventRepositoryImpl
     ): EventRepository
 
     @Binds
     @Singleton
     abstract fun bindUserRepository(
-        impl: FirestoreUserRepository
+        impl: UserRepositoryImpl
     ): UserRepository
 
     @Binds
     @Singleton
     abstract fun bindVoteRepository(
-        impl: FirestoreVoteRepository
+        impl: VoteRepositoryImpl
     ): VoteRepository
 
     @Binds
     @Singleton
     abstract fun bindAttendanceRepository(
-        impl: FirestoreAttendanceRepository
+        impl: AttendanceRepositoryImpl
     ): AttendanceRepository
 }
