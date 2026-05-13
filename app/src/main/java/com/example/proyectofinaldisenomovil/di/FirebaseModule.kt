@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.di
 
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
@@ -15,5 +16,11 @@ object FirebaseModule {
     fun provideFirestore(): FirebaseFirestore {
         // Proporciona una instancia singleton de FirebaseFirestore en toda la aplicación
         return FirebaseFirestore.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
     }
 }

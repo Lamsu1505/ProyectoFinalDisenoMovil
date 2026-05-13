@@ -2,6 +2,7 @@ package com.example.proyectofinaldisenomovil.data.repository.Remote
 
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.User.User
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +14,8 @@ import javax.inject.Singleton
 
 @Singleton
 class UserRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore // Se inyecta una instancia de FirebaseFirestore para interactuar con la base de datos
+    private val firestore: FirebaseFirestore, // Se inyecta una instancia de FirebaseFirestore para interactuar con la base de datos
+    private val auth: FirebaseAuth
 ): UserRepository {
 
     // Definimos la colección de usuarios donde se almacenarán los datos
@@ -89,13 +91,25 @@ class UserRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun registerUser(
-        firstName: String,
-        lastName: String,
-        email: String,
-        password: String
+    override suspend fun registerUser(
+        user : User
     ): User? {
-        TODO("Not yet implemented")
+        val newUser = auth.createUserWithEmailAndPassword(user.email, user.password).await()
+        val uid = newUser.user?.uid ?: throw Exception("Error al obtener el UID del usuario creado")
+
+        // Se hace una copia del usuario con el UID generado por Firebase Authentication
+        val userCopy = user.copy(
+            uid = uid,
+            password = "" // No guardar la contraseña en Firestore
+        )
+
+        // Guardar los datos del usuario en Firestore
+        collection
+            .document(uid)
+            .set(userCopy)
+            .await()
+
+        return userCopy
     }
 
     override suspend fun validateCredentials(

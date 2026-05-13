@@ -91,6 +91,7 @@ class LoginViewModel @Inject constructor(
                             role = mappedRole
                         )
                     )
+
                     _loginResult.value = RequestResult.Success(R.string.login_success.toString())
                 }
                 else {

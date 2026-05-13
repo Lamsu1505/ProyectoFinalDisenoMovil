@@ -121,7 +121,11 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
         TODO("Not yet implemented")
     }
 
-    override fun registerUser(
+    override suspend fun registerUser(user: User): User? {
+        TODO("Not yet implemented")
+    }
+
+    suspend fun registerUser(
         firstName: String,
         lastName: String,
         email: String,

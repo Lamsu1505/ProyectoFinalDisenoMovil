@@ -17,11 +17,8 @@ interface UserRepository {
 
     suspend fun saveFcmToken(uid: String, token: String)
 
-    fun registerUser (
-        firstName: String,
-        lastName: String,
-        email: String,
-        password: String
+    suspend fun registerUser (
+        user: User
     ): User?
 
     suspend fun validateCredentials(email: String, password: String) : User?

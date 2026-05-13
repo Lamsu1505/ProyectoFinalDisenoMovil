@@ -6,12 +6,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.AttendanceRepository
 import com.example.proyectofinaldisenomovil.data.repository.Memory.VoteRepositoryImpl
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
+import com.example.proyectofinaldisenomovil.domain.model.User.User
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.collections.set
 
@@ -97,25 +100,33 @@ class RegisterViewModel @Inject constructor(
                password.isNotEmpty() && passwordConfirmation.isNotEmpty()
     }
 
-     fun register() {
+      fun register() {
         if (!validateForm()) {
             _registerResult.value = RegisterResult.Error("register_complete_fields")
             return
         }
 
-        _registerResult.value = RegisterResult.Loading
+        viewModelScope.launch {
+            _registerResult.value = RegisterResult.Loading
 
-        val user = userRepository.registerUser(
-            firstName = name.trim(),
-            lastName = lastName.trim(),
-            email = email.trim().lowercase(),
-            password = password
-        )
-         Log.i("Register user", "Se creo el usuario " + user?.firstName + " con id " +user?.uid + " correo " + user?.email + " y contraseña " + user?.password)
+            var newUser = User(
+                firstName = name.trim(),
+                lastName = lastName.trim(),
+                email = email.trim().lowercase(),
+                password = password
+            )
 
-        _registerResult.value = when {
-            user == null -> RegisterResult.EmailAlreadyExists
-            else -> RegisterResult.Success
+            val user = userRepository.registerUser(
+                newUser
+            )
+
+            Log.i("Register user", "Se creo el usuario " + user?.firstName + " con id " +user?.uid + " correo " + user?.email + " y contraseña " + user?.password)
+
+            _registerResult.value = when {
+                user == null -> RegisterResult.EmailAlreadyExists
+                else -> RegisterResult.Success
+            }
+
         }
     }
 
