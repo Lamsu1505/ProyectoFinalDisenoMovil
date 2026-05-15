@@ -51,6 +51,7 @@ import com.example.proyectofinaldisenomovil.core.component.DatePickerModal
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.component.mapbox.MapBox
+import com.example.proyectofinaldisenomovil.core.component.mapbox.MapSearchField
 import com.example.proyectofinaldisenomovil.core.theme.*
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import kotlinx.coroutines.launch
@@ -486,6 +487,8 @@ fun locationSection(
     uiState: CreateEventUiState,
     viewModel: CreateEventViewModel
 ) {
+    var searchQuery by remember { mutableStateOf("") }
+
     OutlinedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -513,11 +516,22 @@ fun locationSection(
 
             Spacer(modifier = Modifier.height(20.dp))
 
+            MapSearchField(
+                query = searchQuery,
+                onQueryChange = { searchQuery = it },
+                onSearch = {
+
+                }
+            )
+
             MapBox(
                 modifier = Modifier.fillMaxWidth()
                     .height(400.dp),
                 event = null,
-                activateClick = true
+                activateClick = true,
+                onMapClickListener = { point ->
+                    println("Punto seleccionado: $point")
+                }
             )
 
 

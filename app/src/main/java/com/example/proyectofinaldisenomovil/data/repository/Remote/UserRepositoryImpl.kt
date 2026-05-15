@@ -1,6 +1,7 @@
 package com.example.proyectofinaldisenomovil.data.repository.Remote
 
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.example.proyectofinaldisenomovil.domain.model.User.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -101,7 +102,9 @@ class UserRepositoryImpl @Inject constructor(
         // Se hace una copia del usuario con el UID generado por Firebase Authentication
         val userCopy = user.copy(
             uid = uid,
-            password = "" // No guardar la contraseña en Firestore
+            password = "",
+            location = Location(4.5405006, -75.6657982),
+            createdAt = com.google.firebase.Timestamp.now()
         )
 
         // Guardar los datos del usuario en Firestore
