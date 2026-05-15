@@ -35,48 +35,6 @@ object MockDataRepository {
             isActive = true
         ),
         User(
-            uid = "user_002",
-            firstName = "Laura",
-            lastName = "Gómez",
-            email = "laura@example.com",
-            profileImageUrl = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
-            location = defaultLocation,
-            city = "Armenia, Quindío",
-            role = UserRole.USER,
-            reputationPoints = 280,
-            level = UserLevel.ORGANIZADOR,
-            badges = listOf(BadgeType.ASISTENTE_FIEL),
-            isActive = true
-        ),
-        User(
-            uid = "user_003",
-            firstName = "Sebastián",
-            lastName = "Ríos",
-            email = "sebastian@example.com",
-            profileImageUrl = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200",
-            location = Location(latitude = 4.5667, longitude = -75.7500),
-            city = "Montenegro, Quindío",
-            role = UserRole.USER,
-            reputationPoints = 120,
-            level = UserLevel.ESPECTADOR,
-            badges = emptyList(),
-            isActive = true
-        ),
-        User(
-            uid = "user_004",
-            firstName = "Valentina",
-            lastName = "Ospina",
-            email = "valentina@example.com",
-            profileImageUrl = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200",
-            location = defaultLocation,
-            city = "Armenia, Quindío",
-            role = UserRole.USER,
-            reputationPoints = 520,
-            level = UserLevel.CREADOR,
-            badges = listOf(BadgeType.VOLUNTARIO),
-            isActive = true
-        ),
-        User(
             uid = "mod_001",
             firstName = "Juan",
             lastName = "Pérez",
