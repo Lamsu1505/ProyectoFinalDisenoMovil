@@ -2,8 +2,10 @@ package com.example.proyectofinaldisenomovil.di
 
 import com.example.proyectofinaldisenomovil.data.repository.AttendanceRepository
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
+import com.example.proyectofinaldisenomovil.data.repository.ImageRepository
 import com.example.proyectofinaldisenomovil.data.repository.Memory.AttendanceRepositoryImpl
 import com.example.proyectofinaldisenomovil.data.repository.Memory.EventRepositoryImpl
+import com.example.proyectofinaldisenomovil.data.repository.Remote.ImageRepositoryImpl
 import com.example.proyectofinaldisenomovil.data.repository.Remote.UserRepositoryImpl
 import com.example.proyectofinaldisenomovil.data.repository.Memory.VoteRepositoryImpl
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
@@ -40,4 +42,10 @@ abstract class RepositoryModule {
     abstract fun bindAttendanceRepository(
         impl: AttendanceRepositoryImpl
     ): AttendanceRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindImageRepository(
+        impl: ImageRepositoryImpl
+    ): ImageRepository
 }
