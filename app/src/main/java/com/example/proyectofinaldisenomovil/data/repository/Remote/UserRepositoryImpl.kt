@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.data.repository.Remote
 
+import android.util.Log
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.example.proyectofinaldisenomovil.domain.model.User.User
@@ -147,15 +148,39 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun resetPassword(
-        email: String,
-        newPassword: String
-    ): Boolean {
-        TODO("Not yet implemented")
+    override suspend fun resetPassword(email: String): Boolean {
+        // Enviar un correo electrónico de restablecimiento de contraseña a la dirección proporcionada
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+
+                if (task.isSuccessful) {
+                    Log.d("RESET", "Correo enviado")
+                } else {
+                    Log.e("RESET", task.exception?.message ?: "Error")
+                }
+            }
+        return true
     }
 
-    override fun findUserByEmail(email: String): User? {
-        TODO("Not yet implemented")
-    }
 
+    override suspend fun findUserByEmail(email: String): User? {
+
+        return try {
+
+            val result = firestore
+                .collection("users")
+                .whereEqualTo("email", email)
+                .get()
+                .await()
+
+            if (!result.isEmpty) {
+                result.documents[0].toObject(User::class.java)
+            } else {
+                null
+            }
+
+        } catch (e: Exception) {
+            null
+        }
+    }
 }

@@ -162,6 +162,13 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
     }
 
     override suspend fun getAllUsers(): List<User> = _users.toList()
+    override suspend fun resetPassword(email: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun findUserByEmail(email: String): User? {
+        TODO("Not yet implemented")
+    }
 
     override suspend fun getUserById(uid: String): User? = _users.firstOrNull { it.uid == uid }
 
@@ -174,25 +181,6 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
                 currentUser = user
             }
         }
-    }
-
-    override suspend fun resetPassword(email: String, newPassword: String): Boolean {
-        val index = _users.indexOfFirst { it.email.equals(email, ignoreCase = true) }
-        return if (index != -1) {
-            val user = _users[index]
-            val updatedUser = user.copy(password = newPassword)
-            _users[index] = updatedUser
-            if (currentUser?.uid == user.uid) {
-                currentUser = updatedUser
-            }
-            true
-        } else {
-            false
-        }
-    }
-
-    override fun findUserByEmail(email: String): User? {
-        return _users.firstOrNull { it.email.equals(email, ignoreCase = true) }
     }
 
     override suspend fun save(user: User) {

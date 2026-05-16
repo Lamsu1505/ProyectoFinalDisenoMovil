@@ -52,27 +52,12 @@ class ForgotPasswordViewModel @Inject constructor(
 
     fun sendRecoveryCode() {
         val email = _emailField.value.value
+        Log.i("Recovery code","El email es "+ email)
         
         if (!isFormValid()) return
 
-        val user = userRepository.findUserByEmail(email)
-        if (user == null) {
-            _requestResult.value = RequestResult.Failure(
-                resourceProvider.getString(R.string.forgot_password_email_not_found)
-            )
-            return
-        }
-
-        _requestResult.value = RequestResult.Loading
-        targetEmail = email
-
         viewModelScope.launch {
-            delay(1000)
-            sentCode = generateFixedCode()
-            Log.d("ForgotPassword", "Recovery code sent to $email: $sentCode")
-            _requestResult.value = RequestResult.Success(
-                resourceProvider.getString(R.string.forgot_password_code_sent)
-            )
+            userRepository.resetPassword(email)
         }
     }
 

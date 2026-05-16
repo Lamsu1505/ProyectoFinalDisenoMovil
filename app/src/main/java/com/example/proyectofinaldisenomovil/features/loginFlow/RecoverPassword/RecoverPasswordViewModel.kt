@@ -160,7 +160,7 @@ class RecoverPasswordViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val success = userRepository.resetPassword(email, _newPasswordField.value.value)
+                val success = userRepository.resetPassword(email)
                 if (success) {
                     _requestResult.value = RequestResult.Success(
                         resourceProvider.getString(R.string.recover_password_success)

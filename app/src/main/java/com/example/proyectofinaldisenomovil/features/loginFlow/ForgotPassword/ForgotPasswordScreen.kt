@@ -123,7 +123,7 @@ fun ForgotPasswordScreen(
                         emailField = emailField,
                         isLoading = requestResult is RequestResult.Loading,
                         onEmailChange = forgotPasswordViewModel::onEmailChange,
-                        onSendCode = forgotPasswordViewModel::sendRecoveryCode,
+                        onSendCode = {forgotPasswordViewModel.sendRecoveryCode()},
                         onNavigateToLogin = onNavigateToLogin
                     )
                 }
