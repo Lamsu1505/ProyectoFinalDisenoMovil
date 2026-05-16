@@ -10,7 +10,6 @@ import com.example.proyectofinaldisenomovil.core.utils.ValidatedField
 import com.example.proyectofinaldisenomovil.core.utils.Validators
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,9 +27,6 @@ class ForgotPasswordViewModel @Inject constructor(
 
     private val _requestResult = MutableStateFlow<RequestResult?>(null)
     val requestResult: StateFlow<RequestResult?> = _requestResult.asStateFlow()
-
-    private var sentCode: String = ""
-    private var targetEmail: String = ""
 
     fun onEmailChange(newEmail: String) {
         val errorKey = Validators.validateEmail(newEmail)
@@ -52,22 +48,20 @@ class ForgotPasswordViewModel @Inject constructor(
 
     fun sendRecoveryCode() {
         val email = _emailField.value.value
-        Log.i("Recovery code","El email es "+ email)
-        
+        Log.i("Recovery code", "El email es " + email)
+
         if (!isFormValid()) return
 
+        _requestResult.value = RequestResult.Loading
         viewModelScope.launch {
-            userRepository.resetPassword(email)
+            val success = userRepository.resetPassword(email)
+            if (success) {
+                _requestResult.value = RequestResult.Success("Link enviado al correo")
+            } else {
+                _requestResult.value = RequestResult.Failure("Hubo un error en el envio del correo")
+            }
         }
     }
-
-    private fun generateFixedCode(): String {
-        return "54321"
-    }
-
-    fun getSentCode(): String = sentCode
-
-    fun getTargetEmail(): String = targetEmail
 
     fun resetState() {
         _requestResult.value = null

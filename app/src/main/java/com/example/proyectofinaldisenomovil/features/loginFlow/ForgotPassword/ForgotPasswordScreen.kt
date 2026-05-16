@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -40,15 +39,12 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppSnackbarHost
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SnackbarController
 import com.example.proyectofinaldisenomovil.core.component.login.HeaderSectionNonLogued
 import com.example.proyectofinaldisenomovil.core.component.login.TopBarRegister
-import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.core.utils.RequestResult
-import kotlinx.coroutines.launch
 
 @Composable
 fun ForgotPasswordScreen(
@@ -67,15 +63,12 @@ fun ForgotPasswordScreen(
     LaunchedEffect(requestResult) {
         when (val result = requestResult) {
             is RequestResult.Success -> {
-                snackbarController.showMessage(result.message)
-                onNavigateToRecoverPassword(
-                    forgotPasswordViewModel.getTargetEmail(),
-                    forgotPasswordViewModel.getSentCode()
-                )
+                snackbarHostState.showSnackbar(result.message)
+                onNavigateToLogin()
                 forgotPasswordViewModel.resetState()
             }
             is RequestResult.Failure -> {
-                snackbarController.showMessage(result.errorMessage)
+                snackbarHostState.showSnackbar(result.errorMessage)
                 forgotPasswordViewModel.resetState()
             }
             is RequestResult.Loading -> {}

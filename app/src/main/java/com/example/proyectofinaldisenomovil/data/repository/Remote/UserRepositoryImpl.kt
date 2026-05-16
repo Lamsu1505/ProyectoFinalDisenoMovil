@@ -149,17 +149,14 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun resetPassword(email: String): Boolean {
-        // Enviar un correo electrónico de restablecimiento de contraseña a la dirección proporcionada
-        auth.sendPasswordResetEmail(email)
-            .addOnCompleteListener { task ->
-
-                if (task.isSuccessful) {
-                    Log.d("RESET", "Correo enviado")
-                } else {
-                    Log.e("RESET", task.exception?.message ?: "Error")
-                }
-            }
-        return true
+        return try {
+            auth.sendPasswordResetEmail(email).await()
+            Log.d("RESET", "Correo enviado")
+            true
+        } catch (e: Exception) {
+            Log.e("RESET", e.message ?: "Error")
+            false
+        }
     }
 
 
