@@ -5,6 +5,8 @@ import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.example.proyectofinaldisenomovil.domain.model.User.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,13 +54,40 @@ class UserRepositoryImpl @Inject constructor(
         return snapshot.toObject(User::class.java)?.apply { this.uid = snapshot.id }
     }
 
-    override suspend fun login(email: String, password: String): User? {
-        // Autenticar al usuario con Firebase Authentication
-        val responseUser = auth.signInWithEmailAndPassword(email, password).await()
-        // Obtener el UID del usuario autenticado
-        val uid = responseUser.user?.uid ?: throw Exception("Usuario no encontrado")
-        // Recuperar los datos del usuario desde Firestore
-        return getUserById(uid)
+    override suspend fun login(
+        email: String,
+        password: String
+    ): User? {
+
+        return try {
+
+            val responseUser = auth
+                .signInWithEmailAndPassword(email, password)
+                .await()
+
+            val uid = responseUser.user?.uid
+                ?: throw Exception("Usuario no encontrado")
+
+            getUserById(uid)
+
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+
+            Log.e("LOGIN", "Contraseña incorrecta")
+
+            null
+
+        } catch (e: FirebaseAuthInvalidUserException) {
+
+            Log.e("LOGIN", "Usuario no existe")
+
+            null
+
+        } catch (e: Exception) {
+
+            Log.e("LOGIN", e.message ?: "Error")
+
+            null
+        }
     }
 
     override suspend fun getLoggedInUser(): User? {

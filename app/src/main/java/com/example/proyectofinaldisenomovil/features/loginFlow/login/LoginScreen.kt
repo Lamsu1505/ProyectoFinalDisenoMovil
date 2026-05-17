@@ -60,6 +60,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.login.LoginHeaderSection
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppSnackbarHost
+import com.example.proyectofinaldisenomovil.core.component.barReusable.SnackbarController
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.core.theme.green
 import com.example.proyectofinaldisenomovil.core.utils.RequestResult

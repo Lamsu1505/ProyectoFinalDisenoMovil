@@ -51,7 +51,6 @@ import com.example.proyectofinaldisenomovil.core.component.DatePickerModal
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.component.mapbox.MapBox
-import com.example.proyectofinaldisenomovil.core.component.mapbox.MapSearchField
 import com.example.proyectofinaldisenomovil.core.theme.*
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import kotlinx.coroutines.launch
@@ -298,6 +297,7 @@ fun infoSection(
                     }
                 }
                 Spacer(modifier = Modifier.width(12.dp))
+
                 Column(modifier = Modifier.weight(1f)) {
                     Text(stringResource(R.string.create_event_capacity_label), fontWeight = FontWeight.Bold, color = colorLabels, fontSize = 14.sp)
                     Spacer(modifier = Modifier.height(4.dp))
@@ -515,14 +515,6 @@ fun locationSection(
             )
 
             Spacer(modifier = Modifier.height(20.dp))
-
-            MapSearchField(
-                query = searchQuery,
-                onQueryChange = { searchQuery = it },
-                onSearch = {
-
-                }
-            )
 
             MapBox(
                 modifier = Modifier.fillMaxWidth()
@@ -754,32 +746,5 @@ fun CategoryBadge(icon: ImageVector, label: String) {
                 Text(text = label, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
         }
-    }
-}
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun LocationPreview() {
-//    ProyectoFinalDisenoMovilTheme {
-//        locationSection(navController = rememberNavController(), uiState = CreateEventUiState(), viewModel = CreateEventViewModel())
-//    }
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun DatePreview() {
-//    ProyectoFinalDisenoMovilTheme {
-//        dateSection(navController = rememberNavController(), uiState = CreateEventUiState(), viewModel = CreateEventViewModel())
-//    }
-//}
-
-@Preview(showBackground = true)
-@Composable
-fun CreateEventScreenPreview() {
-    ProyectoFinalDisenoMovilTheme {
-        CreateEventScreen(
-            paddingValues = PaddingValues(0.dp)
-        )
     }
 }

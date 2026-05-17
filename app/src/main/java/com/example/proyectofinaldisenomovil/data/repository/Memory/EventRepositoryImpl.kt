@@ -374,7 +374,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
         return newEvent
     }
 
-    override fun getAllEvents(): List<Event> {
+    override suspend fun getAllEvents(): List<Event> {
         Log.i("Moderator events" , "Los eventos son : ${events.value}")
         return events.value
     }

@@ -167,7 +167,7 @@ class CreateEventViewModel @Inject constructor(
 
             Log.i("Crear evento" , "Iniciando creación")
             try {
-                eventRepository.createEvent(
+                val eventCreated = eventRepository.createEvent(
                     title = state.title.trim(),
                     description = state.description.trim(),
                     category = state.category,
@@ -181,6 +181,8 @@ class CreateEventViewModel @Inject constructor(
                     endDate = Timestamp(Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)),
                     maxAttendees = capacity
                 )
+
+                Log.i("Crear evento", "Evento creado: $eventCreated")
 
                 _createResult.value = CreateEventResult.Success
             } catch (e: Exception) {

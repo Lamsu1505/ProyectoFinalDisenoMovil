@@ -79,6 +79,7 @@ class LoginViewModel @Inject constructor(
                 // Llamar a la función de login del repositorio
                 val user = userRepository.login(email, password)
 
+                Log.i("Login result","Usuario es "+ user?.firstName)
                 if(user!=null){
                     val mappedRole = when (user.role) {
                         UserRole.USER -> com.example.proyectofinaldisenomovil.domain.model.UserRole.USER
