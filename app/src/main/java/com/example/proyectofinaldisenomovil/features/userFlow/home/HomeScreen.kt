@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.LocationOn
@@ -76,6 +77,7 @@ fun HomeScreen(
     // Observa el estado del ViewModel
     val events by homeViewModel.events.collectAsState(initial = emptyList())
     val orderBy by homeViewModel.orderBy.collectAsState()
+    val uiState by homeViewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -131,8 +133,9 @@ fun HomeScreen(
                 ) { event ->
                     EventCard(
                         event = event,
+                        isLiked = uiState.likedEvents[event.id] ?: false,
                         onEventClick = onEventClick,
-                        onLikeClick = {}
+                        onLikeClick = { homeViewModel.onLikeClick(event.id) }
                     )
                 }
             }
@@ -301,6 +304,7 @@ fun DistanceComboBox() {
 @Composable
 fun EventCard(
     event: Event,
+    isLiked: Boolean,
     onEventClick: (String) -> Unit,
     onLikeClick: () -> Unit = {}
 ) {
@@ -365,7 +369,7 @@ fun EventCard(
 
                 // Botón "me interesa"
                 IconButton(
-                    onClick = onLikeClick,
+                    onClick = onLikeClick ,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(8.dp)
@@ -375,9 +379,17 @@ fun EventCard(
                         )
                 ) {
                     Icon(
-                        imageVector = Icons.Default.FavoriteBorder,
+                        imageVector = if (isLiked)
+                            Icons.Default.Favorite
+                        else
+                            Icons.Default.FavoriteBorder,
+
                         contentDescription = "Me interesa",
-                        tint = Color.White
+
+                        tint = if (isLiked)
+                            Color.Red
+                        else
+                            Color.White
                     )
                 }
             }
