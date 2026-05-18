@@ -325,7 +325,7 @@ private fun EventInfoSection(
                     // Asistentes confirmados  (ícono Personas)
                     IconLabel(
                         icon  = Icons.Default.Group,
-                        label = "${event.id ?: 0} / ${event.id ?: "∞"}"
+                        label = "${event.currentAttendees ?: 0} / ${event.maxAttendees ?: "∞"}"
                     )
                 }
 

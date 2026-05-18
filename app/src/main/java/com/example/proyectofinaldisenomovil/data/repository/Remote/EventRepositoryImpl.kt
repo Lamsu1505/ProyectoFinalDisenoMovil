@@ -216,14 +216,57 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override fun onEventAccept(event: Event) {
-        TODO("Not yet implemented")
+        firestore
+            .collection("events")
+            .document(event.id)
+            .update(
+                mapOf(
+                    "status" to EventStatus.VERIFIED.name,
+                    "moderatorUid" to auth.currentUser?.uid,
+                    "updatedAt" to Timestamp.now()
+                )
+            )
+            .addOnSuccessListener {
+                Log.i(
+                    "EVENT_ACCEPT",
+                    "Evento aprobado correctamente"
+                )
+            }
+            .addOnFailureListener { e ->
+                Log.e(
+                    "EVENT_ACCEPT",
+                    e.stackTraceToString()
+                )
+            }
     }
 
     override fun onEventReject(
         event: Event,
         reason: String
     ) {
-        TODO("Not yet implemented")
+        firestore
+            .collection("events")
+            .document(event.id)
+            .update(
+                mapOf(
+                    "status" to EventStatus.REJECTED.name,
+                    "moderatorUid" to auth.currentUser?.uid,
+                    "updatedAt" to Timestamp.now(),
+                    "rejectionReason" to reason
+                )
+            )
+            .addOnSuccessListener {
+                Log.i(
+                    "EVENT_REJECT",
+                    "Evento aprobado correctamente"
+                )
+            }
+            .addOnFailureListener { e ->
+                Log.e(
+                    "EVENT_REJECT",
+                    e.stackTraceToString()
+                )
+            }
     }
 
     override fun editEvent(

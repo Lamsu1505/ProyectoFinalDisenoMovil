@@ -16,7 +16,8 @@ import kotlin.collections.mutableSetOf
 import kotlin.collections.set
 
 @Singleton
-class AttendanceRepositoryImpl @Inject constructor(): AttendanceRepository {
+class AttendanceRepositoryImpl @Inject constructor(
+): AttendanceRepository {
 
     // Para el observeUserAttendances necesitamos algo más dinámico
     private val _allAttendances = MutableStateFlow<List<Attendance>>(emptyList())
@@ -101,7 +102,7 @@ class AttendanceRepositoryImpl @Inject constructor(): AttendanceRepository {
         return _allAttendances.map { list -> list.filter { it.uid == uid } }
     }
 
-    override fun getEventsIdByUserID(uid: String): List<String> {
+    override suspend fun getEventsIdByUserID(uid: String): List<String> {
         // 1. Filtramos los votos del StateFlow para obtener solo los del usuario solicitado
         val userSaved = _allAttendances.value.filter { it.uid == uid }
         // 2. Extraemos los IDs de los eventos de los votos del usuario

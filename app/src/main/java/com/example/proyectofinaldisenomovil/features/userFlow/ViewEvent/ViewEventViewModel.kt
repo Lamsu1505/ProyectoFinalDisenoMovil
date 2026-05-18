@@ -7,7 +7,7 @@ import com.example.proyectofinaldisenomovil.core.utils.RequestResult
 import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
 import com.example.proyectofinaldisenomovil.data.repository.AttendanceRepository
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.data.repository.VoteRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,7 +31,8 @@ class ViewEventViewModel @Inject constructor(
     private val eventRepository: EventRepository,
     private val voteRepository: VoteRepository,
     private val attendanceRepository: AttendanceRepository,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val userRepository: UserRepository
 ): ViewModel() {
 
 
@@ -58,7 +59,7 @@ class ViewEventViewModel @Inject constructor(
                 val event = eventRepository.getEventById(eventId)
                 if(event != null){
                     _currentEvent.value = event
-                    val userId = MockDataRepository.getLoggedInUser()?.uid?:""
+                    val userId = userRepository.getLoggedInUser()?.uid?:""
                     
                     // Inicializamos los estados de los botones desde los repositorios
                     _isInterested.value = voteRepository.hasVoted(eventId, userId)
@@ -78,14 +79,14 @@ class ViewEventViewModel @Inject constructor(
 
     suspend fun isInterested () : Boolean{
         val eventId = _currentEvent.value?.id.toString()
-        val userId = MockDataRepository.getLoggedInUser()?.uid.toString()
+        val userId = userRepository.getLoggedInUser()?.uid.toString()
         return voteRepository.hasVoted(eventId , userId)
     }
 
     fun toggleInterested() {
         viewModelScope.launch {
             val eventId = _currentEvent.value?.id ?: return@launch
-            val userId = MockDataRepository.getLoggedInUser()?.uid ?: return@launch
+            val userId = userRepository.getLoggedInUser()?.uid ?: return@launch
 
             // 1. Ejecutamos el cambio y obtenemos el nuevo estado (true o false)
             val isNowInterested = voteRepository.toggleVote(eventId, userId)
@@ -103,7 +104,7 @@ class ViewEventViewModel @Inject constructor(
     fun toggleConfirmed() {
         viewModelScope.launch {
             val eventId = _currentEvent.value?.id ?: return@launch
-            val userId = MockDataRepository.getLoggedInUser()?.uid ?: return@launch
+            val userId = userRepository.getLoggedInUser()?.uid ?: return@launch
 
             if (_isConfirmed.value) {
                 // Si ya está confirmado, cancelamos la asistencia

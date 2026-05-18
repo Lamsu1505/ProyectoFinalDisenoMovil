@@ -5,7 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.Memory.VoteRepositoryImpl
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.data.repository.UserRepository
+import com.example.proyectofinaldisenomovil.data.repository.VoteRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +37,8 @@ data class FavoritesUiState(
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
     private val eventRepository: EventRepository,
-    private val voteRepositoryImpl: VoteRepositoryImpl
+    private val voteRepositoryImpl: VoteRepository,
+    private val userRepository: UserRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(FavoritesUiState())
     val uiState: StateFlow<FavoritesUiState> = _uiState.asStateFlow()
@@ -49,7 +51,7 @@ class FavoritesViewModel @Inject constructor(
     private fun loadLikedEvents() {
         viewModelScope.launch {
             Log.i("liked events screen" , "entro al launch")
-            val currentUser = MockDataRepository.getLoggedInUser()
+            val currentUser = userRepository.getLoggedInUser()
             Log.i("liked events screen" , "capturo al usuario " + currentUser.toString())
 
             if (currentUser != null) {
@@ -94,9 +96,9 @@ class FavoritesViewModel @Inject constructor(
 
     fun onToggleFavorite(eventId: String) {
         viewModelScope.launch {
-            val currentUser = MockDataRepository.getLoggedInUser()
+            val currentUser = userRepository.getLoggedInUser()
             currentUser?.let {
-                MockDataRepository.toggleLikeEvent(it.uid, eventId)
+                voteRepositoryImpl.toggleVote(eventId, it.uid)
                 loadLikedEvents()
             }
         }

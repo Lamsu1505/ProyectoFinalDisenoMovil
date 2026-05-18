@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.AttendanceRepository
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.FavoriteEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +25,8 @@ data class SavedEventsUiState(
 @HiltViewModel
 class SavedEventsViewModel @Inject constructor(
     private val eventRepository: EventRepository,
-    private val attendanceRepository: AttendanceRepository
+    private val attendanceRepository: AttendanceRepository,
+    private val userRepository: UserRepository
 )
     : ViewModel() {
     private val _uiState = MutableStateFlow(SavedEventsUiState())
@@ -36,7 +38,7 @@ class SavedEventsViewModel @Inject constructor(
 
     private fun loadSavedEvents() {
         viewModelScope.launch {
-            val currentUser = MockDataRepository.getLoggedInUser()
+            val currentUser = userRepository.getLoggedInUser()
             if (currentUser != null) {
                 val idSavedEvents = attendanceRepository.getEventsIdByUserID(currentUser.uid)
                 val savedEvents = eventRepository.getEventsByIds(idSavedEvents)
