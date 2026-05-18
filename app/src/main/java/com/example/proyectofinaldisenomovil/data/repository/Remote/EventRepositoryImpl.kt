@@ -8,6 +8,7 @@ import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
@@ -33,7 +34,28 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getEventById(id: String): Event? {
-        TODO("Not yet implemented")
+        return try {
+            val document = firestore
+                .collection("events")
+                .document(id)
+                .get()
+                .await()
+
+            if (document.exists()) {
+                document.toObject(Event::class.java)
+                    ?.copy(id = document.id)
+
+            } else {
+                null
+            }
+
+        } catch (e: Exception) {
+            Log.e(
+                "GET_EVENT_BY_ID",
+                e.stackTraceToString()
+            )
+            null
+        }
     }
 
     override suspend fun updateEvent(event: Event) {
@@ -65,11 +87,35 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getVerifiedEvents(): List<Event> {
-        return getAllEvents()
+        val events = getAllEvents()
+        return events.filter { it.status == EventStatus.VERIFIED }
     }
 
-    override suspend fun getEventsByIds(ids: List<String>): List<Event> {
-        TODO("Not yet implemented")
+    override suspend fun getEventsByIds(
+        ids: List<String>
+    ): List<Event> {
+        return try {
+            if (ids.isEmpty()) {
+                return emptyList()
+            }
+
+            val snapshot = firestore
+                .collection("events")
+                .whereIn(FieldPath.documentId(), ids)
+                .get()
+                .await()
+
+            snapshot.documents.mapNotNull { document ->
+                document.toObject(Event::class.java)
+                    ?.copy(id = document.id)
+            }
+        } catch (e: Exception) {
+            Log.e(
+                "GET_EVENTS_BY_IDS",
+                e.stackTraceToString()
+            )
+            emptyList()
+        }
     }
 
     override suspend fun createEvent(
@@ -155,18 +201,16 @@ class EventRepositoryImpl @Inject constructor(
                 .collection("events")
                 .get()
                 .await()
+
             snapshot.documents.mapNotNull { document ->
-
                 document.toObject(Event::class.java)
+                    ?.copy(id = document.id)
             }
-
         } catch (e: Exception) {
-
             Log.e(
-                "GET_EVENTS",
-                e.message ?: "Error obteniendo eventos"
+                "GET_ALL_EVENTS",
+                e.stackTraceToString()
             )
-
             emptyList()
         }
     }

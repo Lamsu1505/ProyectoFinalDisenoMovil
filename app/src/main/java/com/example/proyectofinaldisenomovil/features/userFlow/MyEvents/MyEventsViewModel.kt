@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +25,8 @@ data class MyEventsUiState(
 
 @HiltViewModel
 class MyEventsViewModel @Inject constructor(
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MyEventsUiState())
@@ -37,7 +39,8 @@ class MyEventsViewModel @Inject constructor(
     fun loadMyEvents() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val currentUser = MockDataRepository.getLoggedInUser()
+            val currentUser = userRepository.getLoggedInUser()
+
             if (currentUser != null) {
                 val allEvents = eventRepository.getAllEvents()
                 val myEvents = allEvents.filter { it.authorUid == currentUser.uid }
@@ -72,9 +75,5 @@ class MyEventsViewModel @Inject constructor(
             }
             state.copy(filteredEvents = filtered)
         }
-    }
-
-    fun refresh() {
-        loadMyEvents()
     }
 }
