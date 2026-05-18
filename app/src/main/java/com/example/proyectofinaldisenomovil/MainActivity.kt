@@ -78,13 +78,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //Se inicializa el cloudinary
         val configMap = mapOf(
-            "cloud_name" to "dcr9hdiat",
-            "api_key" to "716781964881746",
-            "secure" to true
+            "cloud_name" to "dfbiw4xli",
+            "api_key" to "184923461485653"
         )
         MediaManager.init(this, configMap)
-        subirImagen()
         enableEdgeToEdge()
 
         setContent {
@@ -131,9 +130,4 @@ fun drawableToFile(context: Context, drawableId: Int): File {
     outputStream.close()
 
     return file
-}
-
-fun subirImagen(){
-    //TODO
-
 }

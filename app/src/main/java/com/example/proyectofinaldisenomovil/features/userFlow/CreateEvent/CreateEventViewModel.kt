@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.data.repository.Remote.CloudinaryRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.google.firebase.Timestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,7 +49,8 @@ data class CreateEventUiState(
 
 @HiltViewModel
 class CreateEventViewModel @Inject constructor(
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val cloudinaryRepository: CloudinaryRepository
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateEventUiState())
@@ -148,45 +150,111 @@ class CreateEventViewModel @Inject constructor(
     }
 
     fun createEvent() {
-        val state = _uiState.value
-        
-        if (!state.isFormValid) {
-            val missingFields = mutableListOf<String>()
-            if (state.title.length < 1) missingFields.add("Título (mín. 1)")
-            if (state.description.length < 1) missingFields.add("Descripción (mín. 1)")
-            if (state.address.length < 1) missingFields.add("Dirección (mín. 1)")
-            if (state.startDate.isEmpty()) missingFields.add("Fecha Inicio")
 
-            _createResult.value = CreateEventResult.Error("Falta completar: ${missingFields.joinToString(", ")}")
+        val state = _uiState.value
+
+        if (!state.isFormValid) {
+
+            val missingFields = mutableListOf<String>()
+
+            if (state.title.length < 1)
+                missingFields.add("Título (mín. 1)")
+
+            if (state.description.length < 1)
+                missingFields.add("Descripción (mín. 1)")
+
+            if (state.address.length < 1)
+                missingFields.add("Dirección (mín. 1)")
+
+            if (state.startDate.isEmpty())
+                missingFields.add("Fecha Inicio")
+
+            _createResult.value = CreateEventResult.Error(
+                "Falta completar: ${missingFields.joinToString(", ")}"
+            )
+
             return
         }
 
         viewModelScope.launch {
-            _createResult.value = CreateEventResult.Loading
-            val capacity = state.capacity.replace(".", "").toIntOrNull()
 
-            Log.i("Crear evento" , "Iniciando creación")
+            _createResult.value = CreateEventResult.Loading
+
             try {
-                val eventCreated = eventRepository.createEvent(
-                    title = state.title.trim(),
-                    description = state.description.trim(),
-                    category = state.category,
-                    address = state.address.trim(),
-                    imageUrls = if (state.images.isNotEmpty()) {
-                        state.images.map { it.toString() }
+                val capacity =
+                    state.capacity.replace(".", "").toIntOrNull()
+
+                Log.i("CreateEvent", "Subiendo imágenes...")
+
+                // =========================
+                // SUBIR IMÁGENES CLOUDINARY
+                // =========================
+
+                val uploadedImageUrls =
+                    if (state.images.isNotEmpty()) {
+                        state.images.map { imageUri ->
+                            cloudinaryRepository.uploadImage(imageUri)
+                        }
+
                     } else {
-                        listOf("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800")
-                    },
-                    startDate = Timestamp(Date()),
-                    endDate = Timestamp(Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)),
-                    maxAttendees = capacity
+
+                        listOf(
+                            "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800"
+                        )
+                    }
+
+                Log.i(
+                    "CreateEvent",
+                    "Imágenes subidas: $uploadedImageUrls"
                 )
 
-                Log.i("Crear evento", "Evento creado: $eventCreated")
+                // =========================
+                // CREAR EVENTO
+                // =========================
 
-                _createResult.value = CreateEventResult.Success
+                val eventCreated =
+                    eventRepository.createEvent(
+                        title = state.title.trim(),
+
+                        description = state.description.trim(),
+
+                        category = state.category,
+
+                        address = state.address.trim(),
+
+                        imageUrls = uploadedImageUrls,
+
+                        startDate = Timestamp(Date()),
+
+                        endDate = Timestamp(
+                            Date(
+                                System.currentTimeMillis() +
+                                        24 * 60 * 60 * 1000
+                            )
+                        ),
+
+                        maxAttendees = capacity
+                    )
+
+                Log.i(
+                    "CreateEvent",
+                    "Evento creado: $eventCreated"
+                )
+
+                _createResult.value =
+                    CreateEventResult.Success
+
             } catch (e: Exception) {
-                _createResult.value = CreateEventResult.Error("Error: ${e.message}")
+
+                Log.e(
+                    "CreateEvent",
+                    "Error: ${e.message}"
+                )
+
+                _createResult.value =
+                    CreateEventResult.Error(
+                        "Error: ${e.message}"
+                    )
             }
         }
     }
