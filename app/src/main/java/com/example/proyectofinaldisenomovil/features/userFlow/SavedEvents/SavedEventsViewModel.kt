@@ -19,7 +19,8 @@ data class SavedEventsUiState(
     val savedEvents: List<FavoriteEvent> = emptyList(),
     val categories: List<String> = listOf("Deportes", "Pasatiempo", "Academico"),
     val selectedCategory: String = "Deportes",
-    val searchQuery: String = ""
+    val searchQuery: String = "",
+    val selectedOrder: String= "Nombre"
 )
 
 @HiltViewModel
@@ -29,6 +30,8 @@ class SavedEventsViewModel @Inject constructor(
     private val userRepository: UserRepository
 )
     : ViewModel() {
+
+    private var allSavedEvents: List<Event> = emptyList()
     private val _uiState = MutableStateFlow(SavedEventsUiState())
     val uiState: StateFlow<SavedEventsUiState> = _uiState.asStateFlow()
 
@@ -41,12 +44,42 @@ class SavedEventsViewModel @Inject constructor(
             val currentUser = userRepository.getLoggedInUser()
             if (currentUser != null) {
                 val idSavedEvents = attendanceRepository.getEventsIdByUserID(currentUser.uid)
-                val savedEvents = eventRepository.getEventsByIds(idSavedEvents)
-                _uiState.value = _uiState.value.copy(
-                    savedEvents = savedEvents.map { it.toFavoriteEvent() }
-                )
+                allSavedEvents = eventRepository.getEventsByIds(idSavedEvents)
+                applyFilters()
             }
         }
+    }
+
+    private fun applyFilters() {
+        val currentState = _uiState.value
+        var filtered = allSavedEvents
+
+        if (currentState.selectedCategory != null) {
+            filtered = filtered.filter { it.category.label == currentState.selectedCategory }
+        }
+
+        if (currentState.searchQuery.isNotBlank()) {
+            filtered = filtered.filter { it.title.contains(currentState.searchQuery, ignoreCase = true) }
+        }
+
+        filtered = when (currentState.selectedOrder) {
+            "Nombre" -> filtered.sortedBy { it.title }
+            "Fecha" -> filtered.sortedBy { it.startDate }
+            "Popularidad" -> filtered.sortedByDescending { it.currentAttendees }
+            else -> filtered
+        }
+
+        _uiState.value = _uiState.value.copy(savedEvents = filtered.map { it.toFavoriteEvent() })
+    }
+
+    fun onCategorySelect(category: String?) {
+        category?.let { _uiState.value = _uiState.value.copy(selectedCategory = it) }
+        applyFilters()
+    }
+
+    fun onOrderSelect(order: String) {
+        _uiState.value = _uiState.value.copy(selectedOrder = order)
+        applyFilters()
     }
 
     private fun Event.toFavoriteEvent(): FavoriteEvent {
@@ -73,9 +106,6 @@ class SavedEventsViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(searchQuery = query)
     }
 
-    fun onCategorySelect(category: String) {
-        _uiState.value = _uiState.value.copy(selectedCategory = category)
-    }
 
     fun onUnsaveEvent(eventId: String) {
         viewModelScope.launch {

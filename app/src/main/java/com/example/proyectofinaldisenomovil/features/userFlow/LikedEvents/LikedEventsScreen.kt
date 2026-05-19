@@ -69,13 +69,18 @@ fun LikedEventsScreen(
         ) {
             item {
                 CategoryEventsSelectorBar(
-                    onCategorySelected = {}
+                    onCategorySelected = { category ->
+                        viewModel.onCategorySelect(category?.label)
+                    }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
             item {
-                FavoritesFilters()
+                FavoritesFilters(
+                    selectedOrder = uiState.selectedOrder,
+                    onOrderSelected = { viewModel.onOrderSelect(it) }
+                )
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -96,7 +101,10 @@ fun LikedEventsScreen(
 }
 
 @Composable
-fun FavoritesFilters() {
+fun FavoritesFilters(
+    selectedOrder: String,
+    onOrderSelected: (String) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -122,9 +130,10 @@ fun FavoritesFilters() {
                     color = MaterialTheme.colorScheme.onSurface,
 
                     )
-                OrderByComboBox(listOf("Nombre", "Fecha", "Popularidad"),
-                    selected = "Nombre",
-                    onSelected = {}
+                OrderByComboBox(
+                    options = listOf("Nombre", "Fecha", "Popularidad"),
+                    selected = selectedOrder,
+                    onSelected = onOrderSelected
                 )
             }
 

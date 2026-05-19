@@ -73,13 +73,18 @@ fun SavedEventsScreen(
         ) {
             item {
                 CategoryEventsSelectorBar(
-                    onCategorySelected = { }
+                    onCategorySelected = { category ->
+                        viewModel.onCategorySelect(category?.label)
+                    }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
             item {
-                SavedEventsFilters()
+                SavedEventsFilters(
+                    selectedOrder = uiState.selectedOrder,
+                    onOrderSelected = { viewModel.onOrderSelect(it) }
+                )
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -102,7 +107,10 @@ fun SavedEventsScreen(
 }
 
 @Composable
-fun SavedEventsFilters() {
+fun SavedEventsFilters(
+    selectedOrder: String,
+    onOrderSelected: (String) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,9 +137,9 @@ fun SavedEventsFilters() {
 
                     )
                 OrderByComboBox(
-                    listOf("Nombre", "Fecha", "Popularidad"),
-                    selected = "Nombre",
-                    onSelected = { /* TODO: Handle order change */ }
+                    options = listOf("Nombre", "Fecha", "Popularidad"),
+                    selected = selectedOrder,
+                    onSelected = onOrderSelected
                 )
             }
 
