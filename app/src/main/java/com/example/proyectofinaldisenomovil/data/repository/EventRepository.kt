@@ -2,7 +2,7 @@ package com.example.proyectofinaldisenomovil.data.repository
 
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
-import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventUiState
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
 
@@ -60,9 +60,10 @@ interface EventRepository {
         category: EventCategory,
         address: String,
         imageUrls: List<String>,
-        startDate: Timestamp,
+        startDate: Timestamp?,
         endDate: Timestamp,
-        maxAttendees: Int?
+        maxAttendees: Int?,
+        location: Location?
     ): Event
 
     suspend fun getAllEvents() : List<Event>

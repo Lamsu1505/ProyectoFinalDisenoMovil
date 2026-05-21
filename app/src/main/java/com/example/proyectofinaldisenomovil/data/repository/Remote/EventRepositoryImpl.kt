@@ -6,6 +6,7 @@ import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldPath
@@ -124,9 +125,10 @@ class EventRepositoryImpl @Inject constructor(
         category: EventCategory,
         address: String,
         imageUrls: List<String>,
-        startDate: Timestamp,
+        startDate: Timestamp?,
         endDate: Timestamp,
-        maxAttendees: Int?
+        maxAttendees: Int?,
+        location: Location?
     ): Event {
 
         Log.i("Create event", "LLego al repo IMPL")
@@ -159,8 +161,8 @@ class EventRepositoryImpl @Inject constructor(
                 address = address,
 
                 // temporal mientras integras geocoding
-                latitude = 0.0,
-                longitude = 0.0,
+                latitude = location?.latitude ?:  0.0,
+                longitude = location?.longitude ?: 0.0,
 
                 startDate = startDate,
                 endDate = endDate,

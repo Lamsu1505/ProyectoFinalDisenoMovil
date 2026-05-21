@@ -6,7 +6,7 @@ import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
-import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventUiState
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -348,9 +348,11 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
         category: EventCategory,
         address: String,
         imageUrls: List<String>,
-        startDate: Timestamp,
+        startDate: Timestamp?,
         endDate: Timestamp,
-        maxAttendees: Int?
+        maxAttendees: Int?,
+        location: Location?
+
     ): Event {
         Log.i("Crear evento" , "Info que llego a crear evento: Titulo: $title Descripcion: $description Categoria: $category Direccion: $address Url imagenes: $imageUrls FechaInicio: $startDate Fecha fin:$endDate Max attendees: $maxAttendees")
         val newEvent = Event(

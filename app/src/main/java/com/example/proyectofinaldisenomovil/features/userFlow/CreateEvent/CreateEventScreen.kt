@@ -53,6 +53,7 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.component.mapbox.MapBox
 import com.example.proyectofinaldisenomovil.core.theme.*
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -487,7 +488,6 @@ fun locationSection(
     uiState: CreateEventUiState,
     viewModel: CreateEventViewModel
 ) {
-    var searchQuery by remember { mutableStateOf("") }
 
     OutlinedCard(
         modifier = Modifier
@@ -522,7 +522,11 @@ fun locationSection(
                 event = null,
                 activateClick = true,
                 onMapClickListener = { point ->
-                    println("Punto seleccionado: $point")
+                    val longitude = point.longitude()
+                    val latitude = point.latitude()
+                    val address = Location(latitude, longitude)
+                    println("Punto seleccionado: $address")
+                    viewModel.onPointerAddressChange(address)
                 }
             )
 

@@ -8,6 +8,7 @@ import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventResult
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventUiState
+import com.google.firebase.Timestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,8 +37,7 @@ class EditEventViewModel @Inject constructor(
     private fun checkFormValidity(state: CreateEventUiState): Boolean {
         return state.title.length >= 1 &&
                 state.description.length >= 1 &&
-                state.address.length >= 1 &&
-                state.startDate.isNotEmpty()
+                state.address.length >= 1
     }
 
     private fun updateState(update: (CreateEventUiState) -> CreateEventUiState) {
@@ -59,7 +59,7 @@ class EditEventViewModel @Inject constructor(
                         category = e.category,
                         capacity = e.maxAttendees?.toString() ?: "",
                         address = e.address,
-                        startDate = e.startDate?.let { dateFormatter.format(it.toDate()) } ?: "",
+                        startDate = "",
                         startTime = e.startDate?.let { timeFormatter.format(it.toDate()) } ?: "",
                         endDate = e.endDate?.let { dateFormatter.format(it.toDate()) } ?: "",
                         endTime = e.endDate?.let { timeFormatter.format(it.toDate()) } ?: "",
@@ -93,8 +93,22 @@ class EditEventViewModel @Inject constructor(
         millis?.let {
             val dateString = dateFormatter.format(Date(it))
             val timeString = timeFormatter.format(Date(it))
-            updateState { it.copy(startDate = dateString, startTime = timeString) }
+            updateState { state ->
+                state.copy(
+                    endDate = dateString,
+                    endTime = timeString,
+                    dateError = ""
+                )
+            }
         }
+    }
+
+    public fun Long.toDateString(): String {
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return sdf.format(Date(this))
+    }
+    public fun Long.toTimestamp(): Timestamp {
+        return Timestamp(Date(this))
     }
 
     fun onEndDateChange(millis: Long?) {

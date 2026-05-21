@@ -1,14 +1,13 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent
 
-import android.R
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.data.repository.Remote.CloudinaryRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.google.firebase.Timestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +35,8 @@ data class CreateEventUiState(
     val capacity: String = "",
     val images: List<Uri> = emptyList(),
     val address: String = "",
-    val startDate: String = "",
+    val pointerAddres: Location = Location(0.0, 0.0),
+    val startDate: String="",
     val startTime: String = "",
     val endDate: String = "",
     val endTime: String = "",
@@ -66,7 +66,7 @@ class CreateEventViewModel @Inject constructor(
         return state.title.length >= 1 &&
                 state.description.length >= 1 &&
                 state.address.length >= 1 &&
-                state.startDate.isNotEmpty()
+                state.startDate.toString().isNotEmpty()
     }
 
     private fun updateState(update: (CreateEventUiState) -> CreateEventUiState) {
@@ -111,6 +111,14 @@ class CreateEventViewModel @Inject constructor(
         }
     }
 
+    fun onPointerAddressChange(newAddress: Location) {
+        updateState {
+            it.copy(
+                pointerAddres = newAddress,
+            )
+        }
+    }
+
     fun addImage(uri: Uri) {
         if (_uiState.value.images.size < 5) {
             updateState { it.copy(images = it.images + uri) }
@@ -125,12 +133,13 @@ class CreateEventViewModel @Inject constructor(
         millis?.let {
             val dateString = dateFormatter.format(Date(it))
             val timeString = timeFormatter.format(Date(it))
-            updateState { state -> 
+            Log.i("CreateEvent", "Fecha seleccionada: $dateString")
+            updateState { state ->
                 state.copy(
                     startDate = dateString,
                     startTime = timeString,
                     dateError = ""
-                ) 
+                )
             }
         }
     }
@@ -166,7 +175,7 @@ class CreateEventViewModel @Inject constructor(
             if (state.address.length < 1)
                 missingFields.add("Dirección (mín. 1)")
 
-            if (state.startDate.isEmpty())
+            if (state.startDate.toString().isEmpty())
                 missingFields.add("Fecha Inicio")
 
             _createResult.value = CreateEventResult.Error(
@@ -208,9 +217,27 @@ class CreateEventViewModel @Inject constructor(
                     "Imágenes subidas: $uploadedImageUrls"
                 )
 
+                Log.i(
+                    "CreateEvent",
+                    "Fecha seleccionada: ${state.startDate}"
+                )
+
+                Log.i(
+                    "CreateEvent",
+                    "Ubicacion seleccionada: ${state.pointerAddres}"
+                )
+
+
                 // =========================
                 // CREAR EVENTO
                 // =========================
+
+                val dateTimestamp = state.startDate.toTimeStamp()
+
+                val location = Location(
+                    state.pointerAddres.latitude ,
+                    state.pointerAddres.longitude
+                )
 
                 val eventCreated =
                     eventRepository.createEvent(
@@ -222,9 +249,11 @@ class CreateEventViewModel @Inject constructor(
 
                         address = state.address.trim(),
 
+                        location = location,
+
                         imageUrls = uploadedImageUrls,
 
-                        startDate = Timestamp(Date()),
+                        startDate = dateTimestamp,
 
                         endDate = Timestamp(
                             Date(
@@ -257,6 +286,35 @@ class CreateEventViewModel @Inject constructor(
                     )
             }
         }
+    }
+
+
+    public fun Long.toDateString(): String {
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return sdf.format(Date(this))
+    }
+    public fun Long.toTimestamp(): Timestamp {
+        return Timestamp(Date(this))
+    }
+
+    public fun String.toTimeStamp(): Timestamp {
+        val formats = listOf(
+            SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()),
+            SimpleDateFormat("d 'de' MMMM 'del' yyyy", Locale("es")),
+            SimpleDateFormat("d 'de' MMMM 'de' yyyy", Locale("es"))  // some pickers use "de" not "del"
+        )
+
+        for (sdf in formats) {
+            try {
+                sdf.isLenient = false
+                val date = sdf.parse(this)
+                if (date != null) return Timestamp(date)
+            } catch (e: Exception) {
+                // try next format
+            }
+        }
+
+        throw IllegalArgumentException("Unparseable date: \"$this\"")
     }
 
     fun resetResult() {
