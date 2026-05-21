@@ -70,7 +70,9 @@ fun ViewEventScreen(
 
     val listState = rememberLazyListState()
 
-    LaunchedEffect(eventId) { viewEventViewModel.findEventById(eventId) }
+    LaunchedEffect(eventId) {
+        viewEventViewModel.findEventById(eventId)
+    }
 
     Scaffold(
         topBar = {

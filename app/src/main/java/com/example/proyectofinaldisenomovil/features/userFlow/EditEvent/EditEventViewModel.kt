@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
+import com.example.proyectofinaldisenomovil.data.repository.Remote.CloudinaryRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventResult
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventUiState
@@ -22,7 +23,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditEventViewModel @Inject constructor(
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val cloudinaryRepository: CloudinaryRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateEventUiState())
@@ -35,9 +37,10 @@ class EditEventViewModel @Inject constructor(
     private val timeFormatter = SimpleDateFormat("h:mm a", Locale("es", "CO"))
 
     private fun checkFormValidity(state: CreateEventUiState): Boolean {
-        return state.title.length >= 1 &&
-                state.description.length >= 1 &&
-                state.address.length >= 1
+        return state.title.isNotBlank() &&
+                state.description.isNotBlank() &&
+                state.address.isNotBlank() &&
+                state.startDate.isNotEmpty()
     }
 
     private fun updateState(update: (CreateEventUiState) -> CreateEventUiState) {
@@ -59,10 +62,12 @@ class EditEventViewModel @Inject constructor(
                         category = e.category,
                         capacity = e.maxAttendees?.toString() ?: "",
                         address = e.address,
-                        startDate = "",
+                        // Corregido: Formatear el Timestamp para mostrarlo en el TextField de la UI
+                        startDate = e.startDate?.let { dateFormatter.format(it.toDate()) } ?: "",
                         startTime = e.startDate?.let { timeFormatter.format(it.toDate()) } ?: "",
                         endDate = e.endDate?.let { dateFormatter.format(it.toDate()) } ?: "",
                         endTime = e.endDate?.let { timeFormatter.format(it.toDate()) } ?: "",
+                        images = e.imageUrls.map { Uri.parse(it) }
                     )
                 }
             }
@@ -94,21 +99,14 @@ class EditEventViewModel @Inject constructor(
             val dateString = dateFormatter.format(Date(it))
             val timeString = timeFormatter.format(Date(it))
             updateState { state ->
+                // Corregido: Actualizar startDate, no endDate
                 state.copy(
-                    endDate = dateString,
-                    endTime = timeString,
+                    startDate = dateString,
+                    startTime = timeString,
                     dateError = ""
                 )
             }
         }
-    }
-
-    public fun Long.toDateString(): String {
-        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        return sdf.format(Date(this))
-    }
-    public fun Long.toTimestamp(): Timestamp {
-        return Timestamp(Date(this))
     }
 
     fun onEndDateChange(millis: Long?) {
@@ -136,7 +134,23 @@ class EditEventViewModel @Inject constructor(
             _editResult.value = CreateEventResult.Loading
             try {
                 val originalEvent = eventRepository.getEventById(eventId)
-                
+
+                // SOLUCIÓN AL ERROR: Solo subir si el Uri es local
+                val uploadedImageUrls = if (state.images.isNotEmpty()) {
+                    state.images.map { imageUri ->
+                        val uriString = imageUri.toString()
+                        if (uriString.startsWith("http")) {
+                            // Si ya es un link de internet (Cloudinary o Unsplash), lo dejamos como está
+                            uriString
+                        } else {
+                            // Si es un Uri local (content:// o file://), lo subimos
+                            cloudinaryRepository.uploadImage(imageUri)
+                        }
+                    }
+                } else {
+                    listOf("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800")
+                }
+
                 if (originalEvent != null) {
                     val updatedEvent = originalEvent.copy(
                         title = state.title.trim(),
@@ -144,17 +158,40 @@ class EditEventViewModel @Inject constructor(
                         category = state.category,
                         address = state.address.trim(),
                         maxAttendees = state.capacity.toIntOrNull(),
+                        imageUrls = uploadedImageUrls,
+                        // Aseguramos que la fecha se guarde correctamente
+                        startDate = state.startDate.toTimeStamp(),
+                        endDate = if (state.endDate.isNotEmpty()) state.endDate.toTimeStamp() else originalEvent.endDate
                     )
-                    
+
                     eventRepository.editEvent(eventId, updatedEvent)
                     _editResult.value = CreateEventResult.Success
                 } else {
                     _editResult.value = CreateEventResult.Error("No se encontró el evento original")
                 }
             } catch (e: Exception) {
+                Log.e("EditEvent", "Error al guardar: ${e.message}")
                 _editResult.value = CreateEventResult.Error("Error: ${e.message}")
             }
         }
+    }
+
+    // Helper para convertir el String del estado a Timestamp (usa los mismos formatos que CreateEventViewModel)
+    private fun String.toTimeStamp(): Timestamp {
+        val formats = listOf(
+            SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()),
+            SimpleDateFormat("dd 'de' MMMM 'del' yyyy", Locale("es", "CO")),
+            SimpleDateFormat("d 'de' MMMM 'del' yyyy", Locale("es", "CO"))
+        )
+
+        for (sdf in formats) {
+            try {
+                sdf.isLenient = false
+                val date = sdf.parse(this)
+                if (date != null) return Timestamp(date)
+            } catch (e: Exception) { continue }
+        }
+        return Timestamp.now()
     }
 
     fun resetResult() {
