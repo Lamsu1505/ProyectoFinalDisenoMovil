@@ -90,7 +90,7 @@ fun MapBox(
     }
 
     val marker = rememberIconImage(
-        key = R.drawable.marker,
+        key = "marker_icon",
         painter = painterResource(R.drawable.marker)
     )
 
@@ -131,16 +131,11 @@ fun MapBox(
                     }
                 }
 
-                clickedPoint?.let { point ->
+                // Favor clickedPoint for pin display (allows moving the pin during edit)
+                val pinPoint = clickedPoint ?: event?.let { Point.fromLngLat(it.longitude, it.latitude) }
+                
+                pinPoint?.let { point ->
                     PointAnnotation(point = point) {
-                        iconImage = marker
-                    }
-                }
-
-                if(event != null){
-                    PointAnnotation(
-                        point = Point.fromLngLat(event.longitude, event.latitude)
-                    ) {
                         iconImage = marker
                     }
                 }

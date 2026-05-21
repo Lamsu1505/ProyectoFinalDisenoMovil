@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.Remote.CloudinaryRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
+import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventResult
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventUiState
 import com.google.firebase.Timestamp
@@ -62,7 +63,7 @@ class EditEventViewModel @Inject constructor(
                         category = e.category,
                         capacity = e.maxAttendees?.toString() ?: "",
                         address = e.address,
-                        // Corregido: Formatear el Timestamp para mostrarlo en el TextField de la UI
+                        pointerAddres = Location(e.latitude, e.longitude),
                         startDate = e.startDate?.let { dateFormatter.format(it.toDate()) } ?: "",
                         startTime = e.startDate?.let { timeFormatter.format(it.toDate()) } ?: "",
                         endDate = e.endDate?.let { dateFormatter.format(it.toDate()) } ?: "",
@@ -94,12 +95,19 @@ class EditEventViewModel @Inject constructor(
         updateState { it.copy(address = newAddress) }
     }
 
+    fun onPointerAddressChange(newAddress: Location) {
+        updateState {
+            it.copy(
+                pointerAddres = newAddress,
+            )
+        }
+    }
+
     fun onStartDateChange(millis: Long?) {
         millis?.let {
             val dateString = dateFormatter.format(Date(it))
             val timeString = timeFormatter.format(Date(it))
             updateState { state ->
-                // Corregido: Actualizar startDate, no endDate
                 state.copy(
                     startDate = dateString,
                     startTime = timeString,
@@ -128,22 +136,23 @@ class EditEventViewModel @Inject constructor(
     fun saveChanges() {
         val state = _uiState.value
         val eventId = state.idEvent ?: return
-        Log.i("Editar evento", "Guardando cambios del evento " + eventId)
+        Log.i("Editar evento", "Guardando cambios del evento $eventId")
 
         viewModelScope.launch {
             _editResult.value = CreateEventResult.Loading
             try {
-                val originalEvent = eventRepository.getEventById(eventId)
+                val originalEvent = eventRepository.getEventById(eventId) ?: throw Exception("No se encontró el evento original")
 
-                // SOLUCIÓN AL ERROR: Solo subir si el Uri es local
+                // Robust check for local vs remote URIs to fix LocalUriNotFoundException
                 val uploadedImageUrls = if (state.images.isNotEmpty()) {
                     state.images.map { imageUri ->
-                        val uriString = imageUri.toString()
-                        if (uriString.startsWith("http")) {
-                            // Si ya es un link de internet (Cloudinary o Unsplash), lo dejamos como está
-                            uriString
+                        val scheme = imageUri.scheme
+                        if (scheme != null && (scheme.equals("http", true) || scheme.equals("https", true))) {
+                            // If it's already a web link (Cloudinary/Unsplash), keep it as is
+                            imageUri.toString()
                         } else {
-                            // Si es un Uri local (content:// o file://), lo subimos
+                            // Only upload if it's a local URI (content://, file://, etc)
+                            Log.i("EditEvent", "Uploading local image: $imageUri")
                             cloudinaryRepository.uploadImage(imageUri)
                         }
                     }
@@ -151,24 +160,21 @@ class EditEventViewModel @Inject constructor(
                     listOf("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800")
                 }
 
-                if (originalEvent != null) {
-                    val updatedEvent = originalEvent.copy(
-                        title = state.title.trim(),
-                        description = state.description.trim(),
-                        category = state.category,
-                        address = state.address.trim(),
-                        maxAttendees = state.capacity.toIntOrNull(),
-                        imageUrls = uploadedImageUrls,
-                        // Aseguramos que la fecha se guarde correctamente
-                        startDate = state.startDate.toTimeStamp(),
-                        endDate = if (state.endDate.isNotEmpty()) state.endDate.toTimeStamp() else originalEvent.endDate
-                    )
+                val updatedEvent = originalEvent.copy(
+                    title = state.title.trim(),
+                    description = state.description.trim(),
+                    category = state.category,
+                    address = state.address.trim(),
+                    latitude = state.pointerAddres.latitude,
+                    longitude = state.pointerAddres.longitude,
+                    maxAttendees = state.capacity.replace(".", "").toIntOrNull(),
+                    imageUrls = uploadedImageUrls,
+                    startDate = state.startDate.toTimeStamp(),
+                    endDate = if (state.endDate.isNotEmpty()) state.endDate.toTimeStamp() else originalEvent.endDate
+                )
 
-                    eventRepository.editEvent(eventId, updatedEvent)
-                    _editResult.value = CreateEventResult.Success
-                } else {
-                    _editResult.value = CreateEventResult.Error("No se encontró el evento original")
-                }
+                eventRepository.editEvent(eventId, updatedEvent)
+                _editResult.value = CreateEventResult.Success
             } catch (e: Exception) {
                 Log.e("EditEvent", "Error al guardar: ${e.message}")
                 _editResult.value = CreateEventResult.Error("Error: ${e.message}")
@@ -176,7 +182,6 @@ class EditEventViewModel @Inject constructor(
         }
     }
 
-    // Helper para convertir el String del estado a Timestamp (usa los mismos formatos que CreateEventViewModel)
     private fun String.toTimeStamp(): Timestamp {
         val formats = listOf(
             SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()),
