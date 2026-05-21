@@ -38,7 +38,12 @@ class MyEventsViewModel @Inject constructor(
 
     fun loadMyEvents() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(
+                isLoading = true,
+                events = emptyList(),
+                filteredEvents = emptyList()
+            ) }
+
             val currentUser = userRepository.getLoggedInUser()
 
             if (currentUser != null) {

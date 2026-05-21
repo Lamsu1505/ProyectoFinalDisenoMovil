@@ -53,6 +53,10 @@ fun MyEventsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.loadMyEvents()
+    }
+
     var showRejectionDialog by remember { mutableStateOf(false) }
     var selectedRejectionReason by remember { mutableStateOf("") }
 

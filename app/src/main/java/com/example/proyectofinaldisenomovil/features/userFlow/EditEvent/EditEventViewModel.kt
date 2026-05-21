@@ -135,7 +135,6 @@ class EditEventViewModel @Inject constructor(
         viewModelScope.launch {
             _editResult.value = CreateEventResult.Loading
             try {
-                // Buscamos el original para no perder metadatos (autor, asistentes actual, etc)
                 val originalEvent = eventRepository.getEventById(eventId)
                 
                 if (originalEvent != null) {
@@ -144,8 +143,7 @@ class EditEventViewModel @Inject constructor(
                         description = state.description.trim(),
                         category = state.category,
                         address = state.address.trim(),
-                        maxAttendees = state.capacity.toIntOrNull()
-                        // Nota: images y dates se pueden añadir si el repo lo soporta
+                        maxAttendees = state.capacity.toIntOrNull(),
                     )
                     
                     eventRepository.editEvent(eventId, updatedEvent)

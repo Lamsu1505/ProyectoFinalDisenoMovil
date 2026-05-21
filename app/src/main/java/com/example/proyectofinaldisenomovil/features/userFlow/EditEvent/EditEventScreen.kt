@@ -50,6 +50,7 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.theme.*
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CategoryBadge
+import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventResult
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventUiState
 import java.text.NumberFormat
 import java.util.Locale
@@ -62,11 +63,19 @@ fun EditEventScreen(
     viewModel: EditEventViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val editResult by viewModel.editResult.collectAsState()
     
     var showExitDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(eventId) {
         viewModel.loadEvent(eventId)
+    }
+
+    LaunchedEffect(editResult) {
+        if (editResult is CreateEventResult.Success) {
+            onBackClick() // Volver solo si tuvo éxito
+            viewModel.resetResult()
+        }
     }
 
     val handleBack = {
@@ -156,18 +165,14 @@ fun EditEventScreen(
                     ),
                     shape = RoundedCornerShape(20.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable(
-                            onClick = {
-                                viewModel.saveChanges()
-                                onBackClick()
-                            }
-                        )
-                    ) {
-                        Icon(Icons.Default.Save, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Guardar cambios", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (editResult is CreateEventResult.Loading) {
+                            CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                        } else {
+                            Icon(Icons.Default.Save, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Guardar cambios", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(20.dp))

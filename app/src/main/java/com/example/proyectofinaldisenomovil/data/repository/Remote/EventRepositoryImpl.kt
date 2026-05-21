@@ -275,7 +275,17 @@ class EventRepositoryImpl @Inject constructor(
         idEvent: String,
         newEvent: Event
     ) {
-        TODO("Not yet implemented")
+
+        firestore
+            .collection("events")
+            .document(idEvent)
+            .set(newEvent)
+            .addOnSuccessListener {
+                Log.i(
+                    "EDIT_EVENT",
+                    "Evento editado correctamente"
+                )
+            }
     }
 
 }
