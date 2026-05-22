@@ -184,7 +184,7 @@ fun CreateEventScreen(
 
             item {
                 Spacer(modifier = Modifier.height(24.dp))
-                ButtonsSection( uiState, viewModel)
+                ButtonsSection( uiState, viewModel, isLoading = createResult is CreateEventResult.Loading)
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }
@@ -711,11 +711,12 @@ fun dateSection(
 @Composable
 fun ButtonsSection(
     uiState: CreateEventUiState,
-    viewModel: CreateEventViewModel
+    viewModel: CreateEventViewModel,
+    isLoading : Boolean
 ) {
     Button(
         onClick = { viewModel.createEvent() },
-        enabled = uiState.isFormValid,
+        enabled = uiState.isFormValid && !isLoading,
         modifier = Modifier.fillMaxWidth().height(50.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.secondary,
@@ -723,12 +724,21 @@ fun ButtonsSection(
         ),
         shape = RoundedCornerShape(20.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.Folder, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.create_event_button), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        if (isLoading) {
+            CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+        } else {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Folder, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    stringResource(R.string.create_event_button),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
+
 }
 
 @Composable

@@ -55,6 +55,8 @@ import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CategoryBadge
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventResult
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventUiState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -63,10 +65,12 @@ import java.util.Locale
 fun EditEventScreen(
     eventId: String,
     onBackClick: () -> Unit,
-    viewModel: EditEventViewModel = hiltViewModel()
+    viewModel: EditEventViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val editResult by viewModel.editResult.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope ()
     
     var showExitDialog by remember { mutableStateOf(false) }
 
@@ -75,42 +79,54 @@ fun EditEventScreen(
     }
 
     LaunchedEffect(editResult) {
-        if (editResult is CreateEventResult.Success) {
-            onBackClick() // Volver solo si tuvo éxito
-            viewModel.resetResult()
+        when (editResult){
+            is CreateEventResult.Success -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar("Evento editado exitosamente")
+                    delay(1000)
+                    onBackClick()
+                }
+            }
+            is CreateEventResult.Error -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar((editResult as CreateEventResult.Error).message)
+                }
+            }
+            else -> {}
         }
     }
 
     val handleBack = {
         showExitDialog = true
     }
-
-    BackHandler(onBack = handleBack)
-
-    if (showExitDialog) {
-        AlertDialog(
-            onDismissRequest = { showExitDialog = false },
-            title = { Text("Cuidado") },
-            text = { Text("¿Desea salir sin guardar los cambios?") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showExitDialog = false
-                        onBackClick()
-                    }
-                ) {
-                    Text(stringResource(R.string.dialog_confirm))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showExitDialog = false }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            }
-        )
-    }
+//
+//    BackHandler(onBack = handleBack)
+//
+//    if (showExitDialog) {
+//        AlertDialog(
+//            onDismissRequest = { showExitDialog = false },
+//            title = { Text("Cuidado") },
+//            text = { Text("¿Desea salir sin guardar los cambios?") },
+//            confirmButton = {
+//                Button(
+//                    onClick = {
+//                        showExitDialog = false
+//                        onBackClick()
+//                    }
+//                ) {
+//                    Text(stringResource(R.string.dialog_confirm))
+//                }
+//            },
+//            dismissButton = {
+//                TextButton(onClick = { showExitDialog = false }) {
+//                    Text(stringResource(R.string.cancel))
+//                }
+//            }
+//        )
+//    }
 
     Scaffold(
+        snackbarHost = {SnackbarHost(snackbarHostState)},
         topBar = {
             AppTopBar(
                 title = "Editar Evento",
@@ -160,7 +176,7 @@ fun EditEventScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
                     onClick = { viewModel.saveChanges() },
-                    enabled = uiState.isFormValid,
+                    enabled = uiState.isFormValid && editResult !is CreateEventResult.Loading,
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = orange,
@@ -168,14 +184,10 @@ fun EditEventScreen(
                     ),
                     shape = RoundedCornerShape(20.dp)
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (editResult is CreateEventResult.Loading) {
-                            CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                        } else {
-                            Icon(Icons.Default.Save, contentDescription = null)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Guardar cambios", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                        }
+                    if (editResult is CreateEventResult.Loading) {
+                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                    } else {
+                        Text("Guardar cambios")
                     }
                 }
                 Spacer(modifier = Modifier.height(20.dp))
