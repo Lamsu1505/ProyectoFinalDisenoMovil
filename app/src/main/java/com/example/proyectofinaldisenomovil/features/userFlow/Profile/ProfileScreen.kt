@@ -27,29 +27,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Article
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Groups
-import androidx.compose.material.icons.filled.Forum
-import androidx.compose.material.icons.filled.TrendingUp
-import androidx.compose.material.icons.filled.WorkspacePremium
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Groups
-import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.AlertDialog
@@ -57,10 +45,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -83,18 +69,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import coil.compose.AsyncImage
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
-import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppSnackbarHost
-import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
+import com.example.proyectofinaldisenomovil.core.theme.blue
+import com.example.proyectofinaldisenomovil.core.theme.green
+import com.example.proyectofinaldisenomovil.core.theme.red
+import com.example.proyectofinaldisenomovil.core.theme.whiteBackground
 import com.example.proyectofinaldisenomovil.core.utils.RequestResult
-import com.example.proyectofinaldisenomovil.core.theme.*
 import com.example.proyectofinaldisenomovil.domain.model.BadgeCategory
 import com.example.proyectofinaldisenomovil.domain.model.BadgeType
+import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.features.settings.SettingsViewModel
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
@@ -107,7 +95,7 @@ fun ProfileScreen(
     onNotificationClick: () -> Unit = {},
     onBackClick: () -> Unit = {},
     onEditProfileClick: () -> Unit = {},
-    onMyEventsClick: () -> Unit = {}
+    onMyEventsClick: (EventStatus) -> Unit = {}
 ) {
     val uiState by profileViewModel.uiState.collectAsState()
     val currentLanguage by settingsViewModel.currentLanguage.collectAsState()
@@ -148,11 +136,11 @@ fun ProfileScreen(
         },
         bottomBar = { AppBottomBar(selectedRoute = "") },
         containerColor = whiteBackground
-    ) { paddingValues ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(innerPadding)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -294,8 +282,7 @@ fun ProfileScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .clickable { onMyEventsClick() },
+                    .padding(horizontal = 24.dp),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 border = BorderStroke(1.dp, Color.LightGray)
@@ -306,13 +293,31 @@ fun ProfileScreen(
                         .padding(vertical = 12.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    EventStat(Icons.Default.CheckCircle, stringResource(R.string.profile_active), uiState.activeEvents.toString(), blue)
+                    EventStat(
+                        icon = Icons.Default.CheckCircle,
+                        label = stringResource(R.string.profile_active),
+                        count = uiState.activeEvents.toString(),
+                        color = blue,
+                        onClick = { onMyEventsClick(EventStatus.VERIFIED) }
+                    )
                     Box(modifier = Modifier.width(1.dp).height(50.dp).background(Color.LightGray))
 
-                    EventStat(Icons.Default.Cancel, stringResource(R.string.profile_completed), uiState.completedEvents.toString(), green)
+                    EventStat(
+                        icon = Icons.Default.Cancel,
+                        label = stringResource(R.string.profile_completed),
+                        count = uiState.completedEvents.toString(),
+                        color = green,
+                        onClick = { onMyEventsClick(EventStatus.REJECTED) }
+                    )
                     Box(modifier = Modifier.width(1.dp).height(50.dp).background(Color.LightGray))
 
-                    EventStat(Icons.Default.DateRange, stringResource(R.string.profile_pending), uiState.pendingEvents.toString(), Color(0xFFFFA000))
+                    EventStat(
+                        icon = Icons.Default.DateRange,
+                        label = stringResource(R.string.profile_pending),
+                        count = uiState.pendingEvents.toString(),
+                        color = Color(0xFFFFA000),
+                        onClick = { onMyEventsClick(EventStatus.PENDING_REVIEW) }
+                    )
                 }
             }
 
@@ -390,31 +395,25 @@ fun SectionTitle(title: String) {
 }
 
 @Composable
-fun EventStat(icon: ImageVector, label: String, count: String, color: Color) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+fun EventStat(
+    icon: ImageVector,
+    label: String,
+    count: String,
+    color: Color,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .clickable { onClick() }
+            .padding(8.dp)
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(4.dp))
             Text(text = label, fontWeight = FontWeight.Bold, fontSize = 12.sp)
         }
         Text(text = count, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = color)
-    }
-}
-
-@Composable
-fun BadgeItem(icon: ImageVector?, label: String, tint: Color, isRating: Boolean = false , uiState: ProfileUiState) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        if (isRating) {
-            Text(text = ("+" + uiState.rating), fontSize = 25.sp, fontWeight = FontWeight.Bold)
-        } else if (icon != null) {
-            Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(32.dp))
-        }
-        Text(
-            text = ("+" + uiState.rating +" "+ label),
-            fontSize = 8.sp,
-            textAlign = TextAlign.Center,
-            lineHeight = 10.sp
-        )
     }
 }
 
@@ -681,17 +680,6 @@ fun LanguageChangeDialog(
         shape = RoundedCornerShape(20.dp),
         containerColor = Color.White
     )
-}
-
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
-@Composable
-fun ProfileScreenPreview() {
-    ProyectoFinalDisenoMovilTheme {
-        ProfileScreen(
-            paddingValues = PaddingValues(),
-            onLogout = {}
-        )
-    }
 }
 
 private fun calculateProgress(points: Int, level: Int): Float {

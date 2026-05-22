@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
+import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.features.LikedEvents.SavedEventsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.LikedEventsScreen
@@ -142,8 +143,8 @@ fun UserNavigation(
                     onEditProfileClick = {
                         userNavController.navigate(UserRoutes.EDIT_PROFILE)
                     },
-                    onMyEventsClick = {
-                        userNavController.navigate(UserRoutes.MY_EVENTS)
+                    onMyEventsClick = { status ->
+                        userNavController.navigate("${UserRoutes.MY_EVENTS}/${status.name}")
                     }
                 )
             }
@@ -196,6 +197,23 @@ fun UserNavigation(
                     onBackClick = { userNavController.popBackStack() }
                 )
             }
+
+            composable(
+                route = "${UserRoutes.MY_EVENTS}/{status}", // Ruta con parámetro
+                arguments = listOf(navArgument("status") {
+                    type = NavType.StringType
+                    defaultValue = EventStatus.VERIFIED.name
+                })
+            ) { backStackEntry ->
+                MyEventsScreen(
+                    paddingValues = paddingValues,
+                    onNotificationClick = { userNavController.navigate(UserRoutes.NOTIFICATIONS) },
+                    onEditClick = { eventId -> userNavController.navigate("${UserRoutes.EDIT_EVENT}/$eventId") },
+                    onEventClick = { eventId -> userNavController.navigate("${UserRoutes.EVENT_DETAIL}/$eventId") }
+                )
+            }
+
+
         }
     }
 }

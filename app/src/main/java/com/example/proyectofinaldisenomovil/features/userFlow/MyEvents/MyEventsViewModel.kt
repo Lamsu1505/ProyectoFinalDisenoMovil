@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.MyEvents
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
@@ -26,13 +27,21 @@ data class MyEventsUiState(
 @HiltViewModel
 class MyEventsViewModel @Inject constructor(
     private val eventRepository: EventRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MyEventsUiState())
     val uiState: StateFlow<MyEventsUiState> = _uiState.asStateFlow()
 
     init {
+        val initialStatusName: String? = savedStateHandle["status"] as String?
+        initialStatusName?.let { name ->
+            try {
+                val status = EventStatus.valueOf(name)
+                _uiState.update { it.copy(selectedStatus = status) }
+            } catch (e: Exception) { /* fallback al default */ }
+        }
         loadMyEvents()
     }
 
