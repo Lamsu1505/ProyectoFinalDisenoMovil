@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -137,228 +138,248 @@ fun ProfileScreen(
         bottomBar = { AppBottomBar(selectedRoute = "") },
         containerColor = whiteBackground
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        // MANEJO DE ESTADO DE CARGA
+        if (uiState.isLoading == true) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(bottomStart = 80.dp, bottomEnd = 80.dp))
-                    .background(green)
-                    .padding(bottom = 32.dp)
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
             ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                CircularProgressIndicator(color = green)
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(bottomStart = 80.dp, bottomEnd = 80.dp))
+                        .background(green)
+                        .padding(bottom = 32.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFFB0BEC5)),
-                        contentAlignment = Alignment.Center
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Image(
-                            painter = rememberAsyncImagePainter(uiState.profileImageUrl),
-                            contentDescription = "Profile Image",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
+                        Box(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFB0BEC5)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = rememberAsyncImagePainter(uiState.profileImageUrl),
+                                contentDescription = "Profile Image",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    uiState.name?.let {
-                        Log.i("ProfileScreen", "Nombre en perfil: $it")
-                        Text(
-                            text = it,
-                            color = Color.White,
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Default.LocationOn,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        uiState.location?.let {
+                        uiState.name?.let {
+                            Log.i("ProfileScreen", "Nombre en perfil: $it")
                             Text(
                                 text = it,
-                                color = Color.White.copy(alpha = 0.8f),
-                                fontSize = 14.sp
+                                color = Color.White,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.LocationOn,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            uiState.location?.let {
+                                Text(
+                                    text = it,
+                                    color = Color.White.copy(alpha = 0.8f),
+                                    fontSize = 14.sp
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    shape = RoundedCornerShape(24.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                uiState.levelEmoji?.let { emoji ->
+                                    Text(
+                                        text = emoji,
+                                        fontSize = 20.sp
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                }
+                                uiState.levelName?.let { levelName ->
+                                    Text(
+                                        text = levelName,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp,
+                                        color = green
+                                    )
+                                }
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFD700), modifier = Modifier.size(18.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                uiState.points?.let { points ->
+                                    Text(
+                                        text = stringResource(R.string.gamification_points, points),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 13.sp,
+                                        color = Color(0xFFFFD700)
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        uiState.level?.let { level ->
+                            val progress = calculateProgress(uiState.points ?: 0, level)
+                            LinearProgressIndicator(
+                                progress = { progress },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(10.dp)
+                                    .clip(RoundedCornerShape(5.dp)),
+                                color = green,
+                                trackColor = Color(0xFFE0E0E0),
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        uiState.pointsToNextLevel?.let { pointsRemaining ->
+                            Text(
+                                text = stringResource(R.string.gamification_points_remaining, pointsRemaining),
+                                fontSize = 12.sp,
+                                color = Color.Gray
                             )
                         }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                shape = RoundedCornerShape(24.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            uiState.levelEmoji?.let { emoji ->
-                                Text(
-                                    text = emoji,
-                                    fontSize = 20.sp
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                            }
-                            uiState.levelName?.let { levelName ->
-                                Text(
-                                    text = levelName,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 14.sp,
-                                    color = green
-                                )
-                            }
-                        }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFD700), modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            uiState.points?.let { points ->
-                                Text(
-                                    text = stringResource(R.string.gamification_points, points),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 13.sp,
-                                    color = Color(0xFFFFD700)
-                                )
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    
-                    uiState.level?.let { level ->
-                        val progress = calculateProgress(uiState.points ?: 0, level)
-                        LinearProgressIndicator(
-                            progress = { progress },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(10.dp)
-                                .clip(RoundedCornerShape(5.dp)),
-                            color = green,
-                            trackColor = Color(0xFFE0E0E0),
-                        )
-                    }
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    uiState.pointsToNextLevel?.let { pointsRemaining ->
-                        Text(
-                            text = stringResource(R.string.gamification_points_remaining, pointsRemaining),
-                            fontSize = 12.sp,
-                            color = Color.Gray
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-            SectionTitle(stringResource(R.string.profile_my_events))
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, Color.LightGray)
-            ) {
-                Row(
+                Spacer(modifier = Modifier.height(20.dp))
+                SectionTitle(stringResource(R.string.profile_my_events))
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                        .padding(horizontal = 24.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = BorderStroke(1.dp, Color.LightGray)
                 ) {
-                    EventStat(
-                        icon = Icons.Default.CheckCircle,
-                        label = stringResource(R.string.profile_active),
-                        count = uiState.activeEvents.toString(),
-                        color = blue,
-                        onClick = { onMyEventsClick(EventStatus.VERIFIED) }
-                    )
-                    Box(modifier = Modifier.width(1.dp).height(50.dp).background(Color.LightGray))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        EventStat(
+                            icon = Icons.Default.CheckCircle,
+                            label = stringResource(R.string.profile_active),
+                            count = uiState.activeEvents.toString(),
+                            color = blue,
+                            onClick = { onMyEventsClick(EventStatus.VERIFIED) }
+                        )
+                        Box(modifier = Modifier
+                            .width(1.dp)
+                            .height(50.dp)
+                            .background(Color.LightGray))
 
-                    EventStat(
-                        icon = Icons.Default.Cancel,
-                        label = stringResource(R.string.profile_completed),
-                        count = uiState.completedEvents.toString(),
-                        color = green,
-                        onClick = { onMyEventsClick(EventStatus.REJECTED) }
-                    )
-                    Box(modifier = Modifier.width(1.dp).height(50.dp).background(Color.LightGray))
+                        EventStat(
+                            icon = Icons.Default.Cancel,
+                            label = stringResource(R.string.profile_completed),
+                            count = uiState.completedEvents.toString(),
+                            color = green,
+                            onClick = { onMyEventsClick(EventStatus.REJECTED) }
+                        )
+                        Box(modifier = Modifier
+                            .width(1.dp)
+                            .height(50.dp)
+                            .background(Color.LightGray))
 
-                    EventStat(
-                        icon = Icons.Default.DateRange,
-                        label = stringResource(R.string.profile_pending),
-                        count = uiState.pendingEvents.toString(),
-                        color = Color(0xFFFFA000),
-                        onClick = { onMyEventsClick(EventStatus.PENDING_REVIEW) }
-                    )
-                }
-            }
-
-            SectionTitle(stringResource(R.string.profile_badges))
-            BadgesCarousel(
-                badges = uiState.badges,
-                onViewAllClick = { /* TODO: Navigate to all badges screen */ }
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, Color.LightGray)
-            ) {
-                Column {
-                    MenuItem(Icons.Default.Edit, stringResource(R.string.profile_edit), false) {
-                        onEditProfileClick()
+                        EventStat(
+                            icon = Icons.Default.DateRange,
+                            label = stringResource(R.string.profile_pending),
+                            count = uiState.pendingEvents.toString(),
+                            color = Color(0xFFFFA000),
+                            onClick = { onMyEventsClick(EventStatus.PENDING_REVIEW) }
+                        )
                     }
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
-
-                    MenuItem(Icons.Default.Language, stringResource(R.string.profile_language), false) {
-                        showLanguageDialog = true
-                    }
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
-
-                    MenuItem(Icons.Default.Article, stringResource(R.string.profile_terms), false) {}
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
-
-                    MenuItem(
-                        icon = Icons.AutoMirrored.Filled.ExitToApp,
-                        text = stringResource(R.string.profile_logout),
-                        isLogout = true
-                    ) { onLogout() }
                 }
+
+                SectionTitle(stringResource(R.string.profile_badges))
+                BadgesCarousel(
+                    badges = uiState.badges,
+                    onViewAllClick = { /* TODO: Navigate to all badges screen */ }
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = BorderStroke(1.dp, Color.LightGray)
+                ) {
+                    Column {
+                        MenuItem(Icons.Default.Edit, stringResource(R.string.profile_edit), false) {
+                            onEditProfileClick()
+                        }
+                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
+
+                        MenuItem(Icons.Default.Language, stringResource(R.string.profile_language), false) {
+                            showLanguageDialog = true
+                        }
+                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
+
+                        MenuItem(Icons.Default.Article, stringResource(R.string.profile_terms), false) {}
+                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
+
+                        MenuItem(
+                            icon = Icons.AutoMirrored.Filled.ExitToApp,
+                            text = stringResource(R.string.profile_logout),
+                            isLogout = true
+                        ) { onLogout() }
+                    }
+                }
+                Spacer(modifier = Modifier.height(24.dp))
             }
-            Spacer(modifier = Modifier.height(24.dp))
         }
+
+
     }
 
     if (showLanguageDialog) {
