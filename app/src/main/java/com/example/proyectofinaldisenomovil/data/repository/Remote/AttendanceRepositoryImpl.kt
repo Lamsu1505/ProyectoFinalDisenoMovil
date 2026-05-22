@@ -2,6 +2,7 @@ package com.example.proyectofinaldisenomovil.data.repository.Remote
 
 import android.util.Log
 import com.example.proyectofinaldisenomovil.data.repository.AttendanceRepository
+import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.Attendance
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
@@ -16,7 +17,8 @@ import javax.inject.Singleton
 
 @Singleton
 class AttendanceRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val userRepository: UserRepository
 ): AttendanceRepository {
 
 
@@ -56,6 +58,8 @@ class AttendanceRepositoryImpl @Inject constructor(
                         FieldValue.increment(1)
                     )
                     .await()
+
+                userRepository.addReputationPoints(uid, 10)
             }
         } catch (e: Exception) {
             Log.e(
@@ -93,6 +97,9 @@ class AttendanceRepositoryImpl @Inject constructor(
                         FieldValue.increment(-1)
                     )
                     .await()
+
+                userRepository.addReputationPoints(uid, 10)
+
             }
 
         } catch (e: Exception) {

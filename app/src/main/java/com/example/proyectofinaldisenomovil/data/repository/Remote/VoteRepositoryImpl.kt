@@ -6,13 +6,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 import javax.inject.Singleton
 import android.util.Log
+import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.tasks.await
 
 @Singleton
 class VoteRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val userRepository: UserRepository
 ): VoteRepository {
 
     override suspend fun castVote(
@@ -51,6 +53,7 @@ class VoteRepositoryImpl @Inject constructor(
                         FieldValue.increment(1)
                     )
                     .await()
+                userRepository.addReputationPoints(uid, 5)
             }
 
         } catch (e: Exception) {
@@ -91,6 +94,8 @@ class VoteRepositoryImpl @Inject constructor(
                         FieldValue.increment(-1)
                     )
                     .await()
+
+                userRepository.addReputationPoints(uid, -5)
             }
 
         } catch (e: Exception) {

@@ -32,4 +32,5 @@ interface UserRepository {
     suspend fun getLoggedInUser(): User?
     fun logOut()
     suspend fun getUserEvents(uid: String): List<Event>?
+    suspend fun addReputationPoints(uid: String, pointsToAdd: Int)
 }

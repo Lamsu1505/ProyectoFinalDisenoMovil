@@ -1,6 +1,7 @@
 package com.example.proyectofinaldisenomovil.data.repository.Remote
 
 import android.util.Log
+import androidx.activity.result.launch
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
@@ -11,7 +12,10 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -229,6 +233,10 @@ class EventRepositoryImpl @Inject constructor(
                 )
             )
             .addOnSuccessListener {
+                CoroutineScope(Dispatchers.IO).launch {
+                    userRepository.addReputationPoints(event.authorUid, 20)
+                }
+
                 Log.i(
                     "EVENT_ACCEPT",
                     "Evento aprobado correctamente"

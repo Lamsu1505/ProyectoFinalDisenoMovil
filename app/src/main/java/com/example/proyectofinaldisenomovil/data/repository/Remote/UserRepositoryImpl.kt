@@ -5,6 +5,7 @@ import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.example.proyectofinaldisenomovil.domain.model.User.User
+import com.example.proyectofinaldisenomovil.domain.model.User.UserLevel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -124,6 +125,42 @@ class UserRepositoryImpl @Inject constructor(
             emptyList()
         }
     }
+
+    // ... dentro de UserRepositoryImpl.kt
+
+    override suspend fun addReputationPoints(uid: String, pointsToAdd: Int) {
+        try {
+            val userRef = collection.document(uid)
+            firestore.runTransaction { transaction ->
+                val snapshot = transaction.get(userRef)
+
+                // Obtenemos puntos actuales
+                val currentPoints = snapshot.getLong("reputationPoints")?.toInt() ?: 0
+                val newPoints = (currentPoints + pointsToAdd).coerceAtLeast(0)
+
+                // Calculamos nuevo nivel basado en los puntos
+                val newLevel = UserLevel.fromPoints(newPoints)
+
+                // Calculamos cuánto falta para el siguiente nivel
+                val nextLevel = newLevel.nextLevel()
+                val pointsToNext = if (nextLevel != null) {
+                    nextLevel.minPoints - newPoints
+                } else {
+                    0 // Nivel máximo alcanzado
+                }
+
+                transaction.update(userRef, mapOf(
+                    "reputationPoints" to newPoints,
+                    "level" to newLevel.name,
+                    "pointsToNextLevel" to pointsToNext
+                ))
+            }.await()
+            Log.d("PUNTOS", "Usuario $uid ahora tiene $pointsToAdd puntos más.")
+        } catch (e: Exception) {
+            Log.e("USER_REPO", "Error actualizando reputación: ${e.message}")
+        }
+    }
+
 
     override suspend fun createUser(user: User) {
         TODO("Not yet implemented")

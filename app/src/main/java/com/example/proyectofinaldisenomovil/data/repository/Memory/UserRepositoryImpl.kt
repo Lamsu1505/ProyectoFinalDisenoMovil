@@ -207,4 +207,8 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun addReputationPoints(uid: String, points: Int) {
+        TODO("Not yet implemented")
+    }
+
 }
