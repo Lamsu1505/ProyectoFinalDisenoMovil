@@ -46,4 +46,5 @@ data class User(
     /** Points still needed to reach the next level, or null if already max */
     fun pointsToNextLevel(): Int? =
         nextLevel()?.let { it.minPoints - reputationPoints }
+
 }

@@ -1,5 +1,6 @@
 package com.example.proyectofinaldisenomovil.data.repository
 
+import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.User.User
 import kotlinx.coroutines.flow.Flow
 
@@ -30,4 +31,5 @@ interface UserRepository {
 
     suspend fun getLoggedInUser(): User?
     fun logOut()
+    suspend fun getUserEvents(uid: String): List<Event>?
 }

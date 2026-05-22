@@ -297,7 +297,7 @@
     <string name="profile_points_remaining">%1$d points remaining to level up.</string>
     <string name="profile_my_events">My Events</string>
     <string name="profile_active">Active</string>
-    <string name="profile_completed">Completed</string>
+    <string name="profile_completed">Rejected</string>
     <string name="profile_pending">Pending</string>
     <string name="profile_first_publication">First\npublication</string>
     <string name="profile_10_completed">+10\nCompleted</string>

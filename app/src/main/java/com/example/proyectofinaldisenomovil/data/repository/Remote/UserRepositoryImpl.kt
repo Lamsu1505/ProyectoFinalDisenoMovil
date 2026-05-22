@@ -2,11 +2,13 @@ package com.example.proyectofinaldisenomovil.data.repository.Remote
 
 import android.util.Log
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
+import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.example.proyectofinaldisenomovil.domain.model.User.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -100,6 +102,27 @@ class UserRepositoryImpl @Inject constructor(
     override fun logOut() {
         // Cerrar sesión en Firebase Authentication
         auth.signOut()
+    }
+
+    override suspend fun getUserEvents(uid: String): List<Event>? {
+        return try {
+            val snapshot = firestore
+                .collection("events")
+                .whereEqualTo("authorUid", uid)
+                .get()
+                .await()
+
+            snapshot.documents.mapNotNull { document ->
+                document.toObject(Event::class.java)
+                    ?.copy(id = document.id)
+            }
+        } catch (e: Exception) {
+            Log.e(
+                "GET_USER_EVENTS",
+                e.stackTraceToString()
+            )
+            emptyList()
+        }
     }
 
     override suspend fun createUser(user: User) {

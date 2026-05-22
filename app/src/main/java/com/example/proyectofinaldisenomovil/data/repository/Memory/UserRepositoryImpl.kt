@@ -5,6 +5,7 @@ import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository.MOCK_PASSWORD
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.BadgeType
+import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.example.proyectofinaldisenomovil.domain.model.User.User
 import com.example.proyectofinaldisenomovil.domain.model.User.UserLevel
@@ -201,4 +202,9 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
     override fun logOut() {
         TODO("Not yet implemented")
     }
+
+    override suspend fun getUserEvents(uid: String): List<Event>? {
+        TODO("Not yet implemented")
+    }
+
 }

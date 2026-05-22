@@ -1,6 +1,7 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.Profile
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.R
@@ -8,9 +9,13 @@ import com.example.proyectofinaldisenomovil.core.utils.RequestResult
 import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
 import com.example.proyectofinaldisenomovil.core.utils.ValidatedField
 import com.example.proyectofinaldisenomovil.data.local.SettingsDataStore
+import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.data.repository.Remote.CloudinaryRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.BadgeType
+import com.example.proyectofinaldisenomovil.domain.model.Event.Event
+import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.domain.model.User.User
 import com.example.proyectofinaldisenomovil.domain.model.User.UserLevel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,7 +42,8 @@ data class ProfileUiState(
     val pendingEvents: Int?,
     val rating: Double?,
     val isLoading: Boolean?,
-    val badges: List<BadgeType> = emptyList()
+    val badges: List<BadgeType> = emptyList(),
+    val profileImageUrl: String? = null
 )
 
 data class EditProfileUiState(
@@ -60,7 +66,9 @@ data class EditProfileUiState(
 class ProfileViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val settingsDataStore: SettingsDataStore,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val cloudinaryRepository: CloudinaryRepository,
+    private  val eventRepository: EventRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState(
@@ -76,7 +84,8 @@ class ProfileViewModel @Inject constructor(
         pendingEvents = null,
         rating = null,
         isLoading = true,
-        badges = emptyList()
+        badges = emptyList(),
+        profileImageUrl = null
     ))
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
@@ -118,7 +127,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
-            delay(500)
+            delay(100)
 
             val loggedInUser = userRepository.getLoggedInUser()
             val user = loggedInUser?.let { userRepository.getUserById(it.uid) }
@@ -132,12 +141,13 @@ class ProfileViewModel @Inject constructor(
                     levelEmoji = currentLevel.emoji,
                     points = user.reputationPoints,
                     pointsToNextLevel = user.pointsToNextLevel() ?: 0,
-                    activeEvents = 10,
-                    completedEvents = 13,
-                    pendingEvents = 20,
+                    activeEvents = getEventByUserAndStatus(user, EventStatus.VERIFIED.label)?.size,
+                    completedEvents = getEventByUserAndStatus(user, EventStatus.REJECTED.label)?.size,
+                    pendingEvents = getEventByUserAndStatus(user, EventStatus.PENDING_REVIEW.label)?.size,
                     rating = user.rating,
                     isLoading = false,
-                    badges = user.badges
+                    badges = user.badges,
+                    profileImageUrl = user.profileImageUrl
                 )
             } else {
                 _uiState.value = _uiState.value.copy(isLoading = false)
@@ -145,10 +155,23 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    suspend fun getEventByUserAndStatus(
+        user: User,
+        status: String
+    ): List<Event>? {
+
+        val currentUser = userRepository.getLoggedInUser()
+        if (currentUser == null) {
+            return null
+        }
+        val events = userRepository.getUserEvents(currentUser.uid)
+        return events?.filter { it.status.label == status }
+    }
+
     fun loadCurrentUser() {
         viewModelScope.launch {
             _editUiState.update { it.copy(isLoading = true) }
-            val currentUser = MockDataRepository.getLoggedInUser()
+            val currentUser = userRepository.getLoggedInUser()
             if (currentUser != null) {
                 val user = userRepository.getUserById(currentUser.uid)
                 if (user != null) {
@@ -248,17 +271,36 @@ class ProfileViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            _editUiState.update { it.copy(isLoading = true) }
             state.user?.let { currentUser ->
+                var profileImageUrl = currentUser.profileImageUrl
+                val currentPhotoUri = state.photoUri
+                
+                if (currentPhotoUri != null) {
+                    val uriString = currentPhotoUri.toString()
+                    if (uriString.startsWith("content://") || uriString.startsWith("file://")) {
+                        try {
+                            profileImageUrl = cloudinaryRepository.uploadImage(currentPhotoUri)
+                        } catch (e: Exception) {
+                             _saveProfileResult.value = RequestResult.Failure(e.message ?: "Error uploading image")
+                             _editUiState.update { it.copy(isLoading = false) }
+                             return@launch
+                        }
+                    } else {
+                        profileImageUrl = uriString
+                    }
+                }
+
                 val updatedUser = currentUser.copy(
                     firstName = state.name.value,
                     lastName = state.lastName.value,
                     city = state.city.value,
-                    profileImageUrl = state.photoUri?.toString() ?: currentUser.profileImageUrl
+                    profileImageUrl = profileImageUrl
                 )
                 userRepository.updateUser(updatedUser)
                 MockDataRepository.setLoggedInUser(updatedUser)
                 _editUiState.update {
-                    it.copy(user = updatedUser, isEditMode = false, saveSuccess = true)
+                    it.copy(user = updatedUser, isEditMode = false, saveSuccess = true, isLoading = false)
                 }
                 _saveProfileResult.value = RequestResult.Success(resourceProvider.getString(R.string.profile_update_success))
                 loadUserProfile()
@@ -275,6 +317,7 @@ class ProfileViewModel @Inject constructor(
                 lastName = ValidatedField(value = user?.lastName ?: "", isValid = true),
                 city = ValidatedField(value = user?.city ?: "", isValid = true),
                 address = ValidatedField(value = user?.location?.let { loc -> "Lat: ${loc.latitude}, Lon: ${loc.longitude}" } ?: ""),
+                phone = ValidatedField(value = ""),
                 photoUri = user?.profileImageUrl?.let { Uri.parse(it) }
             )
         }
