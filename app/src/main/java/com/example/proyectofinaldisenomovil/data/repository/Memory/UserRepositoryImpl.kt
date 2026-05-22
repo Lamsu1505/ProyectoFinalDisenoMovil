@@ -26,22 +26,6 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
 
     private var _users = mutableListOf(
         User(
-            uid = "user_001",
-            firstName = "Camilo",
-            lastName = "Torres",
-            email = "a@g.com",
-            password = MOCK_PASSWORD,
-            profileImageUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200",
-            location = defaultLocation,
-            city = "Armenia, Quindío",
-            role = UserRole.USER,
-            reputationPoints = 450,
-            level = UserLevel.CREADOR,
-            badges = listOf(BadgeType.FUNDADOR, BadgeType.EARLY_ADOPTER),
-            isActive = true,
-            rating = 4.5
-        ),
-        User(
             uid = "user_002",
             firstName = "Laura",
             lastName = "Gómez",

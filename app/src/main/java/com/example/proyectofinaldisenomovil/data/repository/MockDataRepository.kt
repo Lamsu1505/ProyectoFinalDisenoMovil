@@ -30,7 +30,7 @@ object MockDataRepository {
             city = "Armenia, Quindío",
             role = UserRole.USER,
             reputationPoints = 450,
-            level = UserLevel.CREADOR,
+            level = UserLevel.ORGANIZADOR,
             badges = listOf(BadgeType.FUNDADOR, BadgeType.EARLY_ADOPTER),
             isActive = true
         ),

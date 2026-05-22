@@ -144,7 +144,6 @@
 //            city = "Armenia, Quindío",
 //            role = UserRole.USER,
 //            reputationPoints = 42,
-//            level = UserLevel.NOVATO,
 //            badges = emptyList(),
 //            isActive = true
 //        ),

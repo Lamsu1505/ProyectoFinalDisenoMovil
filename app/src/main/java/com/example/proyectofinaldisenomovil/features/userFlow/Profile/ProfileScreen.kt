@@ -707,13 +707,10 @@ private fun calculateProgress(points: Int, level: Int): Float {
     if (level < 1 || level > 7) return 0f
     
     val levels = listOf(
-        0 to 100,    // ESPECTADOR -> NOVATO (100)
-        100 to 300, // NOVATO -> PARTICIPANTE (200)
-        300 to 600, // PARTICIPANTE -> ENTUSIASTA (300)
-        600 to 1200, // ENTUSIASTA -> CREADOR (600)
-        1200 to 2500, // CREADOR -> ORGANIZADOR (1300)
-        2500 to 5000, // ORGANIZADOR -> LIDER (2500)
-        5000 to 5000  // LIDER max
+        0 to 200,    // ESPECTADOR -> PARTICIPANTE (100)
+        200 to 500, // PARTICIPANTE -> ORGANIZADOR (200)
+        500 to 1000, // ORGANIZADOR -> LIDER COMUNITARIO (600)
+
     )
     
     val (minPoints, maxPoints) = levels.getOrElse(level - 1) { 0 to 100 }
