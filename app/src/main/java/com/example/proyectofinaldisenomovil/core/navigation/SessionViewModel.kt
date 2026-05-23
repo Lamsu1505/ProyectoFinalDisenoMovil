@@ -131,13 +131,15 @@ class SessionViewModel @Inject constructor(
         )
     }
 
-    private fun parseBadges(json: String): List<BadgeType> {
+    private fun parseBadges(json: String): List<String> {
         if (json.isEmpty() || json == "[]") return emptyList()
         return try {
             val jsonArray = JSONArray(json)
             (0 until jsonArray.length()).mapNotNull { i ->
+                val badgeName = jsonArray.getString(i)
                 try {
-                    BadgeType.valueOf(jsonArray.getString(i))
+                    BadgeType.valueOf(badgeName)
+                    badgeName
                 } catch (e: Exception) {
                     null
                 }

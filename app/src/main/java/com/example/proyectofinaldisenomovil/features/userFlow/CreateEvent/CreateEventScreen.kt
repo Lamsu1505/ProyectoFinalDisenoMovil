@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.DatePickerModal
@@ -54,6 +54,7 @@ import com.example.proyectofinaldisenomovil.core.component.mapbox.MapBox
 import com.example.proyectofinaldisenomovil.core.theme.*
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Location
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -89,9 +90,10 @@ fun CreateEventScreen(
             is CreateEventResult.Success -> {
                 scope.launch {
                     snackbarHostState.showSnackbar("Evento creado exitosamente")
+                    delay(1000)
+                    onEventCreated()
+                    viewModel.resetResult()
                 }
-                viewModel.resetResult()
-                onEventCreated()
             }
             is CreateEventResult.Error -> {
                 scope.launch {
@@ -106,7 +108,7 @@ fun CreateEventScreen(
     if (showExitDialog) {
         AlertDialog(
             onDismissRequest = { showExitDialog = false },
-            title = { Text(stringResource(R.string.create_event_info)) },
+            title = { Text(stringResource(R.string.dialog_close)) },
             text = { Text(stringResource(R.string.create_event_info)) },
             confirmButton = {
                 Button(
@@ -115,7 +117,7 @@ fun CreateEventScreen(
                         onBackClick()
                     }
                 ) {
-                    Text(stringResource(R.string.create_event_info))
+                    Text(stringResource(R.string.dialog_confirm))
                 }
             },
             dismissButton = {
@@ -712,7 +714,7 @@ fun dateSection(
 fun ButtonsSection(
     uiState: CreateEventUiState,
     viewModel: CreateEventViewModel,
-    isLoading : Boolean
+    isLoading: Boolean
 ) {
     Button(
         onClick = { viewModel.createEvent() },
@@ -725,20 +727,19 @@ fun ButtonsSection(
         shape = RoundedCornerShape(20.dp)
     ) {
         if (isLoading) {
-            CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = MaterialTheme.colorScheme.onSecondary,
+                strokeWidth = 2.dp
+            )
         } else {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Folder, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    stringResource(R.string.create_event_button),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Text(stringResource(R.string.create_event_button), fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
-
 }
 
 @Composable

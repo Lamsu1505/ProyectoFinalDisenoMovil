@@ -2,6 +2,7 @@ package com.example.proyectofinaldisenomovil.data.repository.Remote
 
 import com.example.proyectofinaldisenomovil.data.repository.VoteRepository
 import com.example.proyectofinaldisenomovil.domain.model.Vote
+import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -53,15 +54,20 @@ class VoteRepositoryImpl @Inject constructor(
                         FieldValue.increment(1)
                     )
                     .await()
+                
+                // Award points to the voter
                 userRepository.addReputationPoints(uid, 5)
+                
+                // Increment total likes RECEIVED for the author
+                val eventDoc = firestore.collection("events").document(eventId).get().await()
+                val event = eventDoc.toObject(Event::class.java)
+                event?.authorUid?.let { authorId ->
+                    userRepository.incrementTotalLikes(authorId, 1)
+                }
             }
 
         } catch (e: Exception) {
-
-            Log.e(
-                "CAST_VOTE",
-                e.stackTraceToString()
-            )
+            Log.e("CAST_VOTE", e.stackTraceToString())
         }
     }
 
@@ -95,15 +101,19 @@ class VoteRepositoryImpl @Inject constructor(
                     )
                     .await()
 
+                // Deduct points from the voter
                 userRepository.addReputationPoints(uid, -5)
+                
+                // Decrement total likes RECEIVED for the author
+                val eventDoc = firestore.collection("events").document(eventId).get().await()
+                val event = eventDoc.toObject(Event::class.java)
+                event?.authorUid?.let { authorId ->
+                    userRepository.incrementTotalLikes(authorId, -1)
+                }
             }
 
         } catch (e: Exception) {
-
-            Log.e(
-                "REMOVE_VOTE",
-                e.stackTraceToString()
-            )
+            Log.e("REMOVE_VOTE", e.stackTraceToString())
         }
     }
 
@@ -121,7 +131,6 @@ class VoteRepositoryImpl @Inject constructor(
                 .exists()
 
         } catch (e: Exception) {
-
             false
         }
     }
@@ -137,23 +146,15 @@ class VoteRepositoryImpl @Inject constructor(
                 hasVoted(eventId, uid)
 
             if (currentlyVoted) {
-
                 removeVote(eventId, uid)
-
             } else {
-
                 castVote(eventId, uid)
             }
 
             !currentlyVoted
 
         } catch (e: Exception) {
-
-            Log.e(
-                "TOGGLE_VOTE",
-                e.stackTraceToString()
-            )
-
+            Log.e("TOGGLE_VOTE", e.stackTraceToString())
             false
         }
     }
@@ -179,12 +180,7 @@ class VoteRepositoryImpl @Inject constructor(
                 }
 
         } catch (e: Exception) {
-
-            Log.e(
-                "GET_LIKED_EVENTS",
-                e.stackTraceToString()
-            )
-
+            Log.e("GET_LIKED_EVENTS", e.stackTraceToString())
             emptyList()
         }
     }

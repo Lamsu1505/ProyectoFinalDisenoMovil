@@ -37,7 +37,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             role = UserRole.USER,
             reputationPoints = 280,
             level = UserLevel.ORGANIZADOR,
-            badges = listOf(BadgeType.ASISTENTE_FIEL),
+            badges = listOf(BadgeType.CINCUENTA_LIKES.name),
             isActive = true,
             rating = 4.7
         ),
@@ -69,7 +69,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             role = UserRole.MODERATOR,
             reputationPoints = 1000,
             level = UserLevel.LIDER_COMUNITARIO,
-            badges = listOf(BadgeType.MODERATOR),
+            badges = listOf(BadgeType.CINCO_PUBLICACIONES.name),
             isActive = true
         ),
         User(
@@ -84,7 +84,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             role = UserRole.MODERATOR,
             reputationPoints = 1000,
             level = UserLevel.LIDER_COMUNITARIO,
-            badges = listOf(BadgeType.MODERATOR),
+            badges = listOf(BadgeType.UN_ANO_ANTIGUEDAD.name),
             isActive = true
         )
     )
@@ -192,6 +192,18 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
     }
 
     override suspend fun addReputationPoints(uid: String, points: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun incrementVerifiedEvents(uid: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun incrementTotalLikes(uid: String, increment: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun checkAndAwardBadges(uid: String) {
         TODO("Not yet implemented")
     }
 

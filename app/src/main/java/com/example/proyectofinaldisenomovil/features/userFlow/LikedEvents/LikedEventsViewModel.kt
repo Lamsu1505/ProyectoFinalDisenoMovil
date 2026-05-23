@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
-import com.example.proyectofinaldisenomovil.data.repository.Memory.VoteRepositoryImpl
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.data.repository.VoteRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
@@ -24,7 +23,9 @@ data class FavoriteEvent(
     val location: String,
     val distance: String,
     val attendees: Int,
-    val imageUrl: String?
+    val imageUrl: String?,
+    val startTimeMillis: Long? = null,
+    val endTimeMillis: Long? = null
 )
 
 data class FavoritesUiState(
@@ -60,9 +61,9 @@ class FavoritesViewModel @Inject constructor(
                 val idLikedEvents = voteRepositoryImpl.getLikedEventsIdByUserID(currentUser.uid)
                 Log.i("Liked events" , "el usuario " + currentUser.uid + " tiene " + idLikedEvents.size.toString() + " eventos favoritos")
 
-                val likedEvents = eventRepository.getEventsByIds(idLikedEvents)
+                allFavoriteEvents = eventRepository.getEventsByIds(idLikedEvents)
                 _uiState.value = _uiState.value.copy(
-                    favoriteEvents = likedEvents.map { it.toFavoriteEvent() }
+                    favoriteEvents = allFavoriteEvents.map { it.toFavoriteEvent() }
                 )
             }
         }
@@ -124,7 +125,9 @@ class FavoritesViewModel @Inject constructor(
             location = this.address,
             distance = "",
             attendees = this.currentAttendees,
-            imageUrl = this.thumbnailUrl
+            imageUrl = this.thumbnailUrl,
+            startTimeMillis = this.startDate?.toDate()?.time,
+            endTimeMillis = this.endDate?.toDate()?.time
         )
     }
 

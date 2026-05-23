@@ -1,7 +1,13 @@
-package com.example.proyectofinaldisenomovil.features.LikedEvents
+package com.example.proyectofinaldisenomovil.features.userFlow.SavedEvents
 
-
-import androidx.compose.foundation.Image
+import android.Manifest
+import android.content.ContentValues
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.provider.CalendarContract
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -26,15 +33,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryEventsSelectorBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SearchTopBarApp
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
-import com.example.proyectofinaldisenomovil.R
-import com.example.proyectofinaldisenomovil.features.userFlow.SavedEvents.SavedEventsViewModel
 import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.FavoriteEvent
 import com.example.proyectofinaldisenomovil.features.userFlow.home.DistanceComboBox
 import com.example.proyectofinaldisenomovil.features.userFlow.home.OrderByComboBox
@@ -49,6 +55,36 @@ fun SavedEventsScreen(
     onEventClick: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            uiState.eventToAddToCalendar?.let { event ->
+                addEventToCalendar(context, event)
+                viewModel.onCalendarEventHandled()
+            }
+        } else {
+            Toast.makeText(context, "Permiso de calendario denegado", Toast.LENGTH_SHORT).show()
+            viewModel.onCalendarEventHandled()
+        }
+    }
+
+    LaunchedEffect(uiState.eventToAddToCalendar) {
+        uiState.eventToAddToCalendar?.let { event ->
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.WRITE_CALENDAR
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                addEventToCalendar(context, event)
+                viewModel.onCalendarEventHandled()
+            } else {
+                permissionLauncher.launch(Manifest.permission.WRITE_CALENDAR)
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -64,11 +100,11 @@ fun SavedEventsScreen(
             )
         },
         containerColor = MaterialTheme.colorScheme.background
-    ) { paddingValues ->
+    ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(padding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
@@ -94,7 +130,10 @@ fun SavedEventsScreen(
                     onUnsave = {
                         viewModel.onUnsaveEvent(event.id)
                     },
-                    onEventClick = onEventClick
+                    onEventClick = onEventClick,
+                    onAddToCalendar = {
+                        viewModel.onAddToCalendar(event)
+                    }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -104,6 +143,18 @@ fun SavedEventsScreen(
             }
         }
     }
+}
+
+private fun addEventToCalendar(context: android.content.Context, event: FavoriteEvent) {
+    val intent = Intent(Intent.ACTION_INSERT)
+        .setData(CalendarContract.Events.CONTENT_URI)
+        .putExtra(CalendarContract.Events.TITLE, event.title)
+        .putExtra(CalendarContract.Events.EVENT_LOCATION, event.location)
+        .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, event.startTimeMillis ?: System.currentTimeMillis())
+        .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, event.endTimeMillis ?: (System.currentTimeMillis() + 3600000))
+        .putExtra(CalendarContract.Events.DESCRIPTION, "Categoría: ${event.category}")
+    
+    context.startActivity(intent)
 }
 
 @Composable
@@ -164,7 +215,8 @@ fun SavedEventsFilters(
 fun SavedEventCard(
     event: FavoriteEvent,
     onUnsave: () -> Unit,
-    onEventClick : (String) -> Unit
+    onEventClick : (String) -> Unit,
+    onAddToCalendar: () -> Unit
 ) {
     val numberFormat = NumberFormat.getNumberInstance(Locale("es", "CO"))
 
@@ -246,7 +298,7 @@ fun SavedEventCard(
 
                         Button(
                             modifier = Modifier.fillMaxWidth().height(30.dp),
-                            onClick = { },
+                            onClick = { onAddToCalendar() },
                             contentPadding = PaddingValues(2.dp),
                             shape = RoundedCornerShape(15.dp),
                             colors = ButtonDefaults.outlinedButtonColors(
@@ -289,3 +341,14 @@ fun IconInfoRowSavedEvents(icon: ImageVector, text: String) {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun SavedEventsScreenPreview() {
+    ProyectoFinalDisenoMovilTheme {
+        SavedEventsScreen(
+            paddingValues = PaddingValues(),
+            onNotificationClick = {},
+            onEventClick = {}
+        )
+    }
+}

@@ -133,6 +133,13 @@ class ProfileViewModel @Inject constructor(
             val user = loggedInUser?.let { userRepository.getUserById(it.uid) }
             if (user != null) {
                 val currentLevel = UserLevel.fromPoints(user.reputationPoints)
+                val mappedBadges = user.badges.mapNotNull { badgeName ->
+                    try {
+                        BadgeType.valueOf(badgeName)
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
                 _uiState.value = _uiState.value.copy(
                     name = user.fullName,
                     location = user.city,
@@ -146,7 +153,7 @@ class ProfileViewModel @Inject constructor(
                     pendingEvents = getEventByUserAndStatus(user, EventStatus.PENDING_REVIEW.label)?.size,
                     rating = user.rating,
                     isLoading = false,
-                    badges = user.badges,
+                    badges = mappedBadges,
                     profileImageUrl = user.profileImageUrl
                 )
             } else {

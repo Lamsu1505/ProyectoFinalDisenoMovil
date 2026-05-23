@@ -6,18 +6,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -26,45 +15,24 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Article
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Forum
-import androidx.compose.material.icons.filled.Groups
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.TrendingUp
-import androidx.compose.material.icons.filled.WorkspacePremium
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -76,15 +44,14 @@ import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppSnackbarHost
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
-import com.example.proyectofinaldisenomovil.core.theme.blue
-import com.example.proyectofinaldisenomovil.core.theme.green
-import com.example.proyectofinaldisenomovil.core.theme.red
-import com.example.proyectofinaldisenomovil.core.theme.whiteBackground
+import com.example.proyectofinaldisenomovil.core.theme.*
 import com.example.proyectofinaldisenomovil.core.utils.RequestResult
-import com.example.proyectofinaldisenomovil.domain.model.BadgeCategory
 import com.example.proyectofinaldisenomovil.domain.model.BadgeType
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
+import com.example.proyectofinaldisenomovil.domain.model.User.UserLevel
 import com.example.proyectofinaldisenomovil.features.settings.SettingsViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -104,6 +71,7 @@ fun ProfileScreen(
     val context = LocalContext.current
 
     var showLanguageDialog by remember { mutableStateOf(false) }
+    var selectedBadge by remember { mutableStateOf<BadgeType?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
@@ -138,7 +106,6 @@ fun ProfileScreen(
         bottomBar = { AppBottomBar(selectedRoute = "") },
         containerColor = whiteBackground
     ) { innerPadding ->
-        // MANEJO DE ESTADO DE CARGA
         if (uiState.isLoading == true) {
             Box(
                 modifier = Modifier
@@ -185,7 +152,6 @@ fun ProfileScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         uiState.name?.let {
-                            Log.i("ProfileScreen", "Nombre en perfil: $it")
                             Text(
                                 text = it,
                                 color = Color.White,
@@ -215,6 +181,7 @@ fun ProfileScreen(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
+                // Level and Points Card
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -234,10 +201,7 @@ fun ProfileScreen(
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 uiState.levelEmoji?.let { emoji ->
-                                    Text(
-                                        text = emoji,
-                                        fontSize = 20.sp
-                                    )
+                                    Text(text = emoji, fontSize = 20.sp)
                                     Spacer(modifier = Modifier.width(6.dp))
                                 }
                                 uiState.levelName?.let { levelName ->
@@ -281,7 +245,9 @@ fun ProfileScreen(
 
                         uiState.pointsToNextLevel?.let { pointsRemaining ->
                             Text(
-                                text = stringResource(R.string.gamification_points_remaining, pointsRemaining),
+                                text = if (pointsRemaining > 0)
+                                    stringResource(R.string.gamification_points_remaining, pointsRemaining)
+                                else "¡Nivel máximo alcanzado!",
                                 fontSize = 12.sp,
                                 color = Color.Gray
                             )
@@ -308,41 +274,37 @@ fun ProfileScreen(
                         EventStat(
                             icon = Icons.Default.CheckCircle,
                             label = stringResource(R.string.profile_active),
-                            count = uiState.activeEvents.toString(),
+                            count = uiState.activeEvents?.toString() ?: "0",
                             color = blue,
                             onClick = { onMyEventsClick(EventStatus.VERIFIED) }
                         )
-                        Box(modifier = Modifier
-                            .width(1.dp)
-                            .height(50.dp)
-                            .background(Color.LightGray))
+                        Box(modifier = Modifier.width(1.dp).height(50.dp).background(Color.LightGray))
 
                         EventStat(
                             icon = Icons.Default.Cancel,
-                            label = stringResource(R.string.profile_completed),
-                            count = uiState.completedEvents.toString(),
-                            color = green,
+                            label = "Rechazados",
+                            count = uiState.completedEvents?.toString() ?: "0",
+                            color = red,
                             onClick = { onMyEventsClick(EventStatus.REJECTED) }
                         )
-                        Box(modifier = Modifier
-                            .width(1.dp)
-                            .height(50.dp)
-                            .background(Color.LightGray))
+                        Box(modifier = Modifier.width(1.dp).height(50.dp).background(Color.LightGray))
 
                         EventStat(
                             icon = Icons.Default.DateRange,
                             label = stringResource(R.string.profile_pending),
-                            count = uiState.pendingEvents.toString(),
+                            count = uiState.pendingEvents?.toString() ?: "0",
                             color = Color(0xFFFFA000),
                             onClick = { onMyEventsClick(EventStatus.PENDING_REVIEW) }
                         )
                     }
                 }
 
-                SectionTitle(stringResource(R.string.profile_badges))
-                BadgesCarousel(
-                    badges = uiState.badges,
-                    onViewAllClick = { /* TODO: Navigate to all badges screen */ }
+                Spacer(modifier = Modifier.height(20.dp))
+
+                SectionTitle("Trofeos")
+                TrophiesGrid(
+                    earnedBadges = uiState.badges,
+                    onBadgeClick = { selectedBadge = it }
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -365,7 +327,7 @@ fun ProfileScreen(
                         }
                         HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
-                        MenuItem(Icons.Default.Article, stringResource(R.string.profile_terms), false) {}
+                        MenuItem(Icons.Default.Article, "Términos y Condiciones", false) {}
                         HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray)
 
                         MenuItem(
@@ -378,8 +340,6 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
-
-
     }
 
     if (showLanguageDialog) {
@@ -400,6 +360,164 @@ fun ProfileScreen(
             onDismiss = { showLanguageDialog = false }
         )
     }
+
+    selectedBadge?.let { badge ->
+        BadgeDetailDialog(
+            badge = badge,
+            isEarned = uiState.badges.any { it.name == badge.name },
+            onDismiss = { selectedBadge = null }
+        )
+    }
+}
+
+@Composable
+fun TrophiesGrid(
+    earnedBadges: List<BadgeType>,
+    onBadgeClick: (BadgeType) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, Color.LightGray)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            val allBadges = BadgeType.entries
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                allBadges.take(4).forEach { badge ->
+                    BadgeIconItem(
+                        badge = badge,
+                        isEarned = earnedBadges.any { it.name == badge.name },
+                        onClick = { onBadgeClick(badge) }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                allBadges.drop(4).forEach { badge ->
+                    BadgeIconItem(
+                        badge = badge,
+                        isEarned = earnedBadges.any { it.name == badge.name },
+                        onClick = { onBadgeClick(badge) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun BadgeIconItem(
+    badge: BadgeType,
+    isEarned: Boolean,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .clickable { onClick() }
+            .padding(4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .clip(CircleShape)
+                .background(if (isEarned) green.copy(alpha = 0.1f) else Color.LightGray.copy(alpha = 0.2f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = badge.img),
+                contentDescription = badge.label,
+                modifier = Modifier
+                    .size(36.dp)
+                    .then(
+                        if (!isEarned) Modifier.drawWithGrayscale() else Modifier
+                    )
+            )
+        }
+    }
+}
+
+fun Modifier.drawWithGrayscale(): Modifier = this.then(
+    Modifier.drawWithContent {
+
+        val paint = Paint()
+
+        val colorMatrix = ColorMatrix().apply {
+            setToSaturation(0f)
+        }
+
+        paint.colorFilter = ColorFilter.colorMatrix(
+            androidx.compose.ui.graphics.ColorMatrix(
+                floatArrayOf(
+                    0.33f, 0.33f, 0.33f, 0f, 0f,
+                    0.33f, 0.33f, 0.33f, 0f, 0f,
+                    0.33f, 0.33f, 0.33f, 0f, 0f,
+                    0f,    0f,    0f,    1f, 0f
+                )
+            )
+        )
+
+        drawContext.canvas.saveLayer(size.toRect(), paint)
+        drawContent()
+        drawContext.canvas.restore()
+    }
+)
+
+@Composable
+fun BadgeDetailDialog(
+    badge: BadgeType,
+    isEarned: Boolean,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Image(
+                painter = painterResource(id = badge.img),
+                contentDescription = badge.label,
+                modifier = Modifier.size(64.dp)
+            )
+        },
+        title = {
+            Text(text = badge.label, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+        },
+        text = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = badge.description,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                if (isEarned) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = green, modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("¡Conseguido!", color = green, fontWeight = FontWeight.Bold)
+                    }
+                } else {
+                    Text("Aún no has conseguido este trofeo", color = Color.Gray, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cerrar", color = green)
+            }
+        },
+        shape = RoundedCornerShape(24.dp),
+        containerColor = Color.White
+    )
 }
 
 @Composable
@@ -411,23 +529,16 @@ fun SectionTitle(title: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp, vertical = 12.dp),
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Center,
+        color = MaterialTheme.colorScheme.primary
     )
 }
 
 @Composable
-fun EventStat(
-    icon: ImageVector,
-    label: String,
-    count: String,
-    color: Color,
-    onClick: () -> Unit
-) {
+fun EventStat(icon: ImageVector, label: String, count: String, color: Color, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clickable { onClick() }
-            .padding(8.dp)
+        modifier = Modifier.clickable { onClick() }.padding(8.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(18.dp))
@@ -435,168 +546,6 @@ fun EventStat(
             Text(text = label, fontWeight = FontWeight.Bold, fontSize = 12.sp)
         }
         Text(text = count, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = color)
-    }
-}
-
-@Composable
-fun BadgesCarousel(
-    badges: List<BadgeType>,
-    onViewAllClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color.LightGray)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            if (badges.isEmpty()) {
-                EmptyBadgesState()
-            } else {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "${badges.size} insignias",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.Gray
-                    )
-                    TextButton(onClick = onViewAllClick) {
-                        Text(
-                            text = stringResource(R.string.gamification_view_all_badges),
-                            fontSize = 12.sp,
-                            color = blue
-                        )
-                        Icon(
-                            Icons.Default.ArrowForward,
-                            contentDescription = null,
-                            tint = blue,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(badges.take(6)) { badge ->
-                        BadgeCard(badge = badge)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun BadgeCard(badge: BadgeType) {
-    val (icon, tint) = getBadgeIconAndColor(badge)
-    
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(70.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(56.dp)
-                .clip(CircleShape)
-                .background(tint.copy(alpha = 0.15f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = badge.label,
-                tint = tint,
-                modifier = Modifier.size(28.dp)
-            )
-        }
-        Spacer(modifier = Modifier.height(6.dp))
-        Text(
-            text = badge.label,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Medium,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            color = Color.DarkGray
-        )
-    }
-}
-
-@Composable
-fun EmptyBadgesState() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = Icons.Default.EmojiEvents,
-            contentDescription = null,
-            tint = Color.LightGray,
-            modifier = Modifier.size(48.dp)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = stringResource(R.string.gamification_no_badges),
-            fontSize = 14.sp,
-            color = Color.Gray
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = stringResource(R.string.gamification_earn_badges),
-            fontSize = 12.sp,
-            color = Color.LightGray
-        )
-    }
-}
-
-fun getBadgeIconAndColor(badge: BadgeType): Pair<ImageVector, Color> {
-    return when (badge.category) {
-        BadgeCategory.CREADOR -> when (badge) {
-            BadgeType.PRIMERA_PUBLICACION -> Icons.Default.Edit to Color(0xFF4CAF50)
-            BadgeType.PRODUCTOR -> Icons.Default.EmojiEvents to Color(0xFF8BC34A)
-            BadgeType.ORGANIZADOR_EXPERTO -> Icons.Default.Star to Color(0xFFFFD700)
-            BadgeType.MAESTRO_EVENTOS -> Icons.Default.WorkspacePremium to Color(0xFFFF9800)
-            else -> Icons.Default.EmojiEvents to Color(0xFF4CAF50)
-        }
-        BadgeCategory.SOCIAL -> when (badge) {
-            BadgeType.PRIMER_PASO -> Icons.Default.CheckCircle to Color(0xFF2196F3)
-            BadgeType.ASISTENTE_FIEL -> Icons.Default.Groups to Color(0xFF03A9F4)
-            BadgeType.VETERANO -> Icons.Default.Groups to Color(0xFF00BCD4)
-            BadgeType.LEYENDA -> Icons.Default.Star to Color(0xFF9C27B0)
-            else -> Icons.Default.Groups to Color(0xFF2196F3)
-        }
-        BadgeCategory.COMUNIDAD -> when (badge) {
-            BadgeType.PRIMER_COMENTARIO -> Icons.Default.Forum to Color(0xFF607D8B)
-            BadgeType.CONVERSADOR -> Icons.Default.Forum to Color(0xFF795548)
-            BadgeType.HISTORIADOR -> Icons.Default.Forum to Color(0xFF9E9E9E)
-            BadgeType.VOZ_COMUNIDAD -> Icons.Default.Forum to Color(0xFF3F51B5)
-            else -> Icons.Default.Forum to Color(0xFF607D8B)
-        }
-        BadgeCategory.POPULAR -> when (badge) {
-            BadgeType.RELEVANTE -> Icons.Default.TrendingUp to Color(0xFFE91E63)
-            BadgeType.POPULAR -> Icons.Default.TrendingUp to Color(0xFFFF5722)
-            BadgeType.ESTRELLA -> Icons.Default.Star to Color(0xFFFFD700)
-            BadgeType.ICONO -> Icons.Default.WorkspacePremium to Color(0xFFFF9800)
-            else -> Icons.Default.TrendingUp to Color(0xFFE91E63)
-        }
-        BadgeCategory.ESPECIAL -> when (badge) {
-            BadgeType.FUNDADOR -> Icons.Default.WorkspacePremium to Color(0xFFFFD700)
-            BadgeType.EARLY_ADOPTER -> Icons.Default.Star to Color(0xFF9C27B0)
-            BadgeType.MODERATOR -> Icons.Default.CheckCircle to Color(0xFF4CAF50)
-            BadgeType.VOLUNTARIO -> Icons.Default.Groups to Color(0xFF2196F3)
-            else -> Icons.Default.WorkspacePremium to Color(0xFFFFD700)
-        }
     }
 }
 
@@ -704,20 +653,17 @@ fun LanguageChangeDialog(
 }
 
 private fun calculateProgress(points: Int, level: Int): Float {
-    if (level < 1 || level > 7) return 0f
-    
-    val levels = listOf(
-        0 to 200,    // ESPECTADOR -> PARTICIPANTE (100)
-        200 to 500, // PARTICIPANTE -> ORGANIZADOR (200)
-        500 to 1000, // ORGANIZADOR -> LIDER COMUNITARIO (600)
+    val levels = UserLevel.entries
+    val currentLevelIndex = (level - 1).coerceIn(0, levels.size - 1)
+    val currentLevel = levels[currentLevelIndex]
+    val nextLevel = currentLevel.nextLevel() ?: return 1f
 
-    )
-    
-    val (minPoints, maxPoints) = levels.getOrElse(level - 1) { 0 to 100 }
+    val minPoints = currentLevel.minPoints
+    val maxPoints = nextLevel.minPoints
     val range = maxPoints - minPoints
-    
+
     if (range <= 0) return 1f
-    
+
     val progress = (points - minPoints).toFloat() / range.toFloat()
     return progress.coerceIn(0f, 1f)
 }

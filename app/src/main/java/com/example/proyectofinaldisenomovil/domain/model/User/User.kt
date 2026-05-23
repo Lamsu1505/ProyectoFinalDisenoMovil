@@ -1,8 +1,5 @@
 package com.example.proyectofinaldisenomovil.domain.model.User
 
-//import com.google.firebase.Timestamp
-//import com.vivetuzona.data.model.UserLevel
-//import com.vivetuzona.data.model.UserRole
 import com.example.proyectofinaldisenomovil.domain.model.BadgeType
 import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.google.firebase.Timestamp
@@ -15,13 +12,17 @@ data class User(
     val password: String = "",
     val profileImageUrl: String? = null,
     /** Latitude of the user's home / reference location */
-    val location : Location? =null,
+    val location : Location? = null,
     val city: String = "",
+    val address: String = "",
+    val phone: String = "",
     val role: UserRole = UserRole.USER,
     val reputationPoints: Int = 0,
     val pointsToNextLevel: Int = 0,
     val level: UserLevel = UserLevel.ESPECTADOR,
-    val badges: List<BadgeType> = emptyList(),
+    val badges: List<String> = emptyList(),
+    val verifiedEventsCount: Int = 0,
+    val totalLikesReceived: Int = 0,
     /** Firebase Cloud Messaging device token — updated on every app launch */
     val fcmToken: String? = null,
     /** Soft-delete flag: false = account disabled but data preserved */
@@ -46,5 +47,4 @@ data class User(
     /** Points still needed to reach the next level, or null if already max */
     fun pointsToNextLevel(): Int? =
         nextLevel()?.let { it.minPoints - reputationPoints }
-
 }

@@ -3,8 +3,8 @@ package com.example.proyectofinaldisenomovil.features.userFlow.EditProfile
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.widget.Button
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -50,6 +50,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -89,6 +90,7 @@ import com.example.proyectofinaldisenomovil.core.theme.orange
 import com.example.proyectofinaldisenomovil.core.theme.red
 import com.example.proyectofinaldisenomovil.core.theme.whiteBackground
 import com.example.proyectofinaldisenomovil.features.userFlow.Profile.ProfileViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -102,11 +104,11 @@ fun EditProfileScreen(
     val uiState by viewModel.editUiState.collectAsState()
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     var photoUri by remember { mutableStateOf<Uri?>(null) }
     var cityExpanded by remember { mutableStateOf(false) }
-
-    val snackbarHostState = remember { SnackbarHostState() }
+    var showExitDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.loadCurrentUser()
@@ -114,10 +116,42 @@ fun EditProfileScreen(
 
     LaunchedEffect(uiState.saveSuccess) {
         if (uiState.saveSuccess) {
-            snackbarHostState.showSnackbar(context.getString(R.string.profile_save_success))
-            viewModel.clearSaveSuccess()
-            onBackClick()
+            scope.launch {
+                snackbarHostState.showSnackbar(context.getString(R.string.profile_save_success))
+                delay(1000)
+                onBackClick()
+                viewModel.clearSaveSuccess()
+            }
         }
+    }
+
+    val handleBack = {
+        showExitDialog = true
+    }
+
+    BackHandler(onBack = handleBack)
+
+    if (showExitDialog) {
+        AlertDialog(
+            onDismissRequest = { showExitDialog = false },
+            title = { Text(stringResource(R.string.dialog_close)) },
+            text = { Text(stringResource(R.string.create_event_info)) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showExitDialog = false
+                        onBackClick()
+                    }
+                ) {
+                    Text(stringResource(R.string.dialog_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExitDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -162,7 +196,7 @@ fun EditProfileScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
+                    IconButton(onClick = handleBack) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back),
@@ -175,12 +209,11 @@ fun EditProfileScreen(
         },
         containerColor = whiteBackground
     ) { paddingValues ->
-        if(uiState.isLoading){
+        if (uiState.isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = green)
             }
-        }
-        else{
+        } else {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -368,16 +401,6 @@ fun EditProfileScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    Button ( onClick = { viewModel.onSave() },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = green)
-                    ) {
-                        Text(stringResource(R.string.save))
-                    }
-
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
                     TextButton(
                         onClick = { viewModel.onShowPasswordDialog() },
                         modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -396,7 +419,7 @@ fun EditProfileScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         OutlinedButton(
-                            onClick = { viewModel.onCancel(); onBackClick() },
+                            onClick = handleBack,
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(20.dp)
                         ) {
@@ -421,7 +444,6 @@ fun EditProfileScreen(
                 }
             }
         }
-
     }
 
     if (uiState.showImagePickerSheet) {
@@ -457,10 +479,7 @@ fun EditProfileScreen(
                                     ) == PackageManager.PERMISSION_GRANTED
 
                                     if (hasCameraPermission) {
-                                        val file = File(
-                                            context.cacheDir,
-                                            "profile_photo_${System.currentTimeMillis()}.jpg"
-                                        )
+                                        val file = File(context.cacheDir, "profile_photo_${System.currentTimeMillis()}.jpg")
                                         photoUri = FileProvider.getUriForFile(
                                             context,
                                             "${context.packageName}.fileprovider",
@@ -537,14 +556,6 @@ fun EditProfileScreen(
             containerColor = Color.White,
             shape = RoundedCornerShape(20.dp)
         )
-    }
-
-    if (uiState.saveSuccess) {
-        LaunchedEffect(Unit) {
-            Toast.makeText(context, context.getString(R.string.profile_save_success), Toast.LENGTH_SHORT).show()
-            viewModel.clearSaveSuccess()
-            onBackClick()
-        }
     }
 }
 

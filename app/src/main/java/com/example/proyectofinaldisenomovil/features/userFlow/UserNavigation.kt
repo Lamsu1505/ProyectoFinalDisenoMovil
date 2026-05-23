@@ -14,7 +14,6 @@ import androidx.navigation.navArgument
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
-import com.example.proyectofinaldisenomovil.features.LikedEvents.SavedEventsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.LikedEventsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.Notifications.NotificationsScreen
@@ -22,6 +21,7 @@ import com.example.proyectofinaldisenomovil.features.userFlow.EditProfile.EditPr
 import com.example.proyectofinaldisenomovil.features.userFlow.EditEvent.EditEventScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.MyEvents.MyEventsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.Profile.ProfileScreen
+import com.example.proyectofinaldisenomovil.features.userFlow.SavedEvents.SavedEventsScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent.ViewEventScreen
 import com.example.proyectofinaldisenomovil.features.userFlow.home.HomeScreen
 
@@ -145,6 +145,9 @@ fun UserNavigation(
                     },
                     onMyEventsClick = { status ->
                         userNavController.navigate("${UserRoutes.MY_EVENTS}/${status.name}")
+                    },
+                    onNotificationClick = {
+                        userNavController.navigate(UserRoutes.NOTIFICATIONS)
                     }
                 )
             }

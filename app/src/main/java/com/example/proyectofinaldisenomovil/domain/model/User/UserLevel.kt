@@ -12,9 +12,12 @@ package com.example.proyectofinaldisenomovil.domain.model.User
  */
 enum class UserLevel(val label: String, val minPoints: Int, val emoji: String) {
     ESPECTADOR("Espectador", 0, "👀"),
-    PARTICIPANTE("Participante", 200, "🏋🏼‍♂️"),
-    ORGANIZADOR("Organizador", 500, "🧠"),
-    LIDER_COMUNITARIO("Líder Comunitario", 1000, "👑");
+    NOVATO("Novato", 100, "🌱"),
+    PARTICIPANTE("Participante", 200, "🎯"),
+    ENTUSIASTA("Entusiasta", 300, "⭐"),
+    CREADOR("Creador", 400, "🎪"),
+    ORGANIZADOR("Organizador", 500, "🏆"),
+    LIDER_COMUNITARIO("Líder Comunitario", 600, "👑");
 
     /** Returns the next level in the progression, or null if already at max. */
     fun nextLevel(): UserLevel? {

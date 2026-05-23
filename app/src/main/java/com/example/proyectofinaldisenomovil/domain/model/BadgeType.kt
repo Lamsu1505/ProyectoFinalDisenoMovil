@@ -1,156 +1,74 @@
 package com.example.proyectofinaldisenomovil.domain.model
 
+import com.example.proyectofinaldisenomovil.R
+
 /**
  * Collectible badges a user can earn through participation.
  *
- * Stored as a [List]<[BadgeType]> inside the [com.example.proyectofinaldisenomovil.domain.model.User.User] document.
+ * Stored as a [List]<[String]> (storing the enum names) inside the User document.
  *
  * @property label       Short badge name shown in the UI chip/card.
  * @property description Tooltip / achievement description.
- * @property iconRes     Resource name of the badge drawable (prefix "ic_badge_").
+ * @property img         Mipmap resource ID of the badge image.
  * @property category    Badge category for UI grouping.
  */
 enum class BadgeType(
     val label: String,
     val description: String,
-    val iconRes: String,
+    val img: Int,
     val category: BadgeCategory
 ) {
-    // === CREADOR: Crear eventos ===
+    // === PUBLICACIONES VERIFICADAS ===
     PRIMERA_PUBLICACION(
-        label       = "Primera Publicación",
-        description = "Creaste tu primer evento",
-        iconRes     = "ic_badge_first_event",
+        label       = "Iniciador",
+        description = "Primer evento verificado",
+        img         = R.mipmap.badget_1event,
         category    = BadgeCategory.CREADOR
     ),
-    PRODUCTOR(
+    CINCO_PUBLICACIONES(
         label       = "Productor",
-        description = "5 eventos creados",
-        iconRes     = "ic_badge_producer",
+        description = "5 eventos verificados",
+        img         = R.mipmap.badget_5events,
         category    = BadgeCategory.CREADOR
     ),
-    ORGANIZADOR_EXPERTO(
+    VEINTE_PUBLICACIONES(
         label       = "Organizador Experto",
-        description = "10 eventos verificados",
-        iconRes     = "ic_badge_expert_organizer",
-        category    = BadgeCategory.CREADOR
-    ),
-    MAESTRO_EVENTOS(
-        label       = "Maestro de Eventos",
-        description = "25 eventos creados",
-        iconRes     = "ic_badge_master",
+        description = "20 eventos verificados",
+        img         = R.mipmap.badget_20events,
         category    = BadgeCategory.CREADOR
     ),
 
-    // === SOCIAL: Participar en eventos ===
-    PRIMER_PASO(
-        label       = "Primer Paso",
-        description = "Primera asistencia confirmada",
-        iconRes     = "ic_badge_first_step",
-        category    = BadgeCategory.SOCIAL
-    ),
-    ASISTENTE_FIEL(
-        label       = "Asistente Fiel",
-        description = "10 asistencias confirmadas",
-        iconRes     = "ic_badge_faithful",
-        category    = BadgeCategory.SOCIAL
-    ),
-    VETERANO(
-        label       = "Veterano",
-        description = "25 asistencias confirmadas",
-        iconRes     = "ic_badge_veteran",
-        category    = BadgeCategory.SOCIAL
-    ),
-    LEYENDA(
-        label       = "Leyenda",
-        description = "50 asistencias confirmadas",
-        iconRes     = "ic_badge_legend",
-        category    = BadgeCategory.SOCIAL
-    ),
-
-    // === COMUNIDAD: Comentar ===
-    PRIMER_COMENTARIO(
-        label       = "Primer Comentario",
-        description = "Dejaste tu primer comentario",
-        iconRes     = "ic_badge_first_comment",
-        category    = BadgeCategory.COMUNIDAD
-    ),
-    CONVERSADOR(
-        label       = "Conversador",
-        description = "25 comentarios publicados",
-        iconRes     = "ic_badge_talker",
-        category    = BadgeCategory.COMUNIDAD
-    ),
-    HISTORIADOR(
-        label       = "Historiador",
-        description = "50 comentarios publicados",
-        iconRes     = "ic_badge_historian",
-        category    = BadgeCategory.COMUNIDAD
-    ),
-    VOZ_COMUNIDAD(
-        label       = "Voz de la Comunidad",
-        description = "100 comentarios publicados",
-        iconRes     = "ic_badge_voice",
-        category    = BadgeCategory.COMUNIDAD
-    ),
-
-    // === POPULAR: Votos y reputación ===
-    RELEVANTE(
+    // === LIKES RECIBIDOS ===
+    CINCUENTA_LIKES(
         label       = "Relevante",
-        description = "10 votos recibidos en tus eventos",
-        iconRes     = "ic_badge_relevant",
+        description = "50+ likes en tus publicaciones",
+        img         = R.mipmap.badget_50likes,
         category    = BadgeCategory.POPULAR
     ),
-    POPULAR(
+    DOSCIENTOS_LIKES(
         label       = "Popular",
-        description = "50 votos recibidos",
-        iconRes     = "ic_badge_popular",
+        description = "200+ likes en tus publicaciones",
+        img         = R.mipmap.badget_200likes,
         category    = BadgeCategory.POPULAR
     ),
-    ESTRELLA(
-        label       = "Estrella",
-        description = "100 votos recibidos",
-        iconRes     = "ic_badge_star",
-        category    = BadgeCategory.POPULAR
-    ),
-    ICONO(
+    MIL_LIKES(
         label       = "Ícono",
-        description = "250 votos recibidos",
-        iconRes     = "ic_badge_icon",
+        description = "1000+ likes en tus publicaciones",
+        img         = R.mipmap.badget_1000likes,
         category    = BadgeCategory.POPULAR
     ),
 
-    // === ESPECIALES ===
-    FUNDADOR(
-        label       = "Fundador",
-        description = "Usuario de la primera hora",
-        iconRes     = "ic_badge_founder",
-        category    = BadgeCategory.ESPECIAL
-    ),
-    EARLY_ADOPTER(
-        label       = "Early Adopter",
-        description = "Uno de los primeros 100 usuarios",
-        iconRes     = "ic_badge_early_adopter",
-        category    = BadgeCategory.ESPECIAL
-    ),
-    MODERATOR(
-        label       = "Moderador",
-        description = "Equipo de moderación de la plataforma",
-        iconRes     = "ic_badge_moderator",
-        category    = BadgeCategory.ESPECIAL
-    ),
-    VOLUNTARIO(
-        label       = "Voluntario",
-        description = "Participaste en eventos de voluntariado",
-        iconRes     = "ic_badge_volunteer",
+    // === ANTIGUEDAD ===
+    UN_ANO_ANTIGUEDAD(
+        label       = "Veterano",
+        description = "1+ año de antigüedad",
+        img         = R.mipmap.badget_1year,
         category    = BadgeCategory.ESPECIAL
     ),
 }
 
 enum class BadgeCategory(val label: String) {
     CREADOR("Creador"),
-    SOCIAL("Social"),
-    COMUNIDAD("Comunidad"),
     POPULAR("Popular"),
     ESPECIAL("Especiales")
 }

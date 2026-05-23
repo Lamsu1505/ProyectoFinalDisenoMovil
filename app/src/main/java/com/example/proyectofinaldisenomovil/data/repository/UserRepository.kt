@@ -33,4 +33,7 @@ interface UserRepository {
     fun logOut()
     suspend fun getUserEvents(uid: String): List<Event>?
     suspend fun addReputationPoints(uid: String, pointsToAdd: Int)
+    suspend fun incrementVerifiedEvents(uid: String)
+    suspend fun incrementTotalLikes(uid: String, increment: Int)
+    suspend fun checkAndAwardBadges(uid: String)
 }

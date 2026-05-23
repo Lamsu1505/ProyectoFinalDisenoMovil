@@ -31,7 +31,7 @@ object MockDataRepository {
             role = UserRole.USER,
             reputationPoints = 450,
             level = UserLevel.ORGANIZADOR,
-            badges = listOf(BadgeType.FUNDADOR, BadgeType.EARLY_ADOPTER),
+            badges = listOf(BadgeType.CINCUENTA_LIKES.name, BadgeType.VEINTE_PUBLICACIONES.name),
             isActive = true
         ),
         User(
@@ -45,7 +45,7 @@ object MockDataRepository {
             role = UserRole.MODERATOR,
             reputationPoints = 1000,
             level = UserLevel.LIDER_COMUNITARIO,
-            badges = listOf(BadgeType.MODERATOR),
+            badges = listOf(BadgeType.VEINTE_PUBLICACIONES.name),
             isActive = true
         ),
         User(
@@ -59,7 +59,7 @@ object MockDataRepository {
             role = UserRole.MODERATOR,
             reputationPoints = 1000,
             level = UserLevel.LIDER_COMUNITARIO,
-            badges = listOf(BadgeType.MODERATOR),
+            badges = listOf(BadgeType.MIL_LIKES.name),
             isActive = true
         )
     )
