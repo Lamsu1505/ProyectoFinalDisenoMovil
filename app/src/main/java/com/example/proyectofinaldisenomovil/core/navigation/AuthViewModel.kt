@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.local.SessionManager
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -76,7 +75,6 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             Log.i("DEBUG", "Iniciando proceso de Logout")
             sessionManager.clearSession()
-            MockDataRepository.logout()
             _authState.value = AuthState.NotAuthenticated
             Log.i("DEBUG", "authState cambiado a NotAuthenticated")
         }

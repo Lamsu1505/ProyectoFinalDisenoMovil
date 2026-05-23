@@ -1,7 +1,8 @@
 package com.example.proyectofinaldisenomovil.data.repository.Memory
 
 import com.example.proyectofinaldisenomovil.data.repository.AttendanceRepository
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
+import com.example.proyectofinaldisenomovil.data.repository.EventRepository
+import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.Attendance
 import com.example.proyectofinaldisenomovil.domain.model.User.User
 import com.example.proyectofinaldisenomovil.domain.model.Vote
@@ -17,6 +18,8 @@ import kotlin.collections.set
 
 @Singleton
 class AttendanceRepositoryImpl @Inject constructor(
+    private val userRepository: UserRepository,
+    private val eventRepository: EventRepository
 ): AttendanceRepository {
 
     // Para el observeUserAttendances necesitamos algo más dinámico
@@ -60,9 +63,9 @@ class AttendanceRepositoryImpl @Inject constructor(
             )
             _allAttendances.value = current
 
-            val event = MockDataRepository.getEventById(eventId)
+            val event = eventRepository.getEventById(eventId)
             event?.let {
-                MockDataRepository.updateEvent(
+                eventRepository.updateEvent(
                     it.copy(currentAttendees = it.currentAttendees + 1)
                 )
             }
@@ -79,9 +82,9 @@ class AttendanceRepositoryImpl @Inject constructor(
         if(updated.size != current.size){
             _allAttendances.value = updated
 
-            val event = MockDataRepository.getEventById(eventId)
+            val event = eventRepository.getEventById(eventId)
             event?.let {
-                MockDataRepository.updateEvent(
+                eventRepository.updateEvent(
                     it.copy(currentAttendees = (it.currentAttendees - 1).coerceAtLeast(0))
                 )
             }

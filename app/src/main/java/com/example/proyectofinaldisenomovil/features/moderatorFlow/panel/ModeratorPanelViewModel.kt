@@ -7,7 +7,6 @@ import com.example.proyectofinaldisenomovil.core.component.moderator.state.Moder
 import com.example.proyectofinaldisenomovil.core.component.moderator.state.SortOption
 import com.example.proyectofinaldisenomovil.data.local.SessionDataStore
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
@@ -93,7 +92,6 @@ class ModeratorPanelViewModel @Inject constructor(
     fun onLogoutConfirm() {
         viewModelScope.launch {
             sessionDataStore.clearSession()
-            MockDataRepository.logout()
             _uiState.update { it.copy(showLogoutDialog = false) }
         }
     }
@@ -111,11 +109,6 @@ class ModeratorPanelViewModel @Inject constructor(
         val event = _uiState.value.eventToReject ?: return
         eventRepository.onEventReject(event, reason)
         _uiState.update { it.copy(showRejectDialog = false, eventToReject = null) }
-        loadEvents()
-    }
-
-    fun onEventReverify(event: Event) {
-        MockDataRepository.approveEvent(event.id)
         loadEvents()
     }
 

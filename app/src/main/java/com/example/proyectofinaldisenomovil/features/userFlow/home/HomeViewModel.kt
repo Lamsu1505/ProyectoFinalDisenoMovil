@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.data.repository.VoteRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
@@ -49,7 +48,6 @@ class HomeViewModel @Inject constructor(
 
     init {
         loadEvents()
-        Log.d("HOME", "Usuario en sesion "+ MockDataRepository.getLoggedInUser()?.firstName)
     }
 
     fun loadEvents() {

@@ -1,8 +1,6 @@
 package com.example.proyectofinaldisenomovil.data.repository.Memory
 
 import android.util.Log
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository.MOCK_PASSWORD
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.BadgeType
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event

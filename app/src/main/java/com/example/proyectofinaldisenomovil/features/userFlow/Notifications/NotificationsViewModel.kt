@@ -2,7 +2,6 @@ package com.example.proyectofinaldisenomovil.features.userFlow.Notifications
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.AppNotification
 import com.example.proyectofinaldisenomovil.domain.model.NotificationType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,16 +40,7 @@ class NotificationsViewModel @Inject constructor(
     fun loadNotifications() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
-            
-            val userId = MockDataRepository.getLoggedInUser()?.uid ?: return@launch
-            val notifications = MockDataRepository.getNotificationsForUser(userId)
-            val unreadCount = MockDataRepository.getUnreadNotificationCount(userId)
-            
-            _uiState.value = NotificationsUiState(
-                notifications = notifications,
-                isLoading = false,
-                unreadCount = unreadCount
-            )
+
         }
     }
 
@@ -75,14 +65,14 @@ class NotificationsViewModel @Inject constructor(
     }
 
     fun markAsRead(notificationId: String) {
-        MockDataRepository.markNotificationAsRead(notificationId)
+        //MockDataRepository.markNotificationAsRead(notificationId)
         loadNotifications()
     }
 
     fun markAllAsRead() {
-        val userId = MockDataRepository.getLoggedInUser()?.uid ?: return
-        MockDataRepository.markAllNotificationsAsRead(userId)
-        loadNotifications()
+//        val userId = MockDataRepository.getLoggedInUser()?.uid ?: return
+//        MockDataRepository.markAllNotificationsAsRead(userId)
+//        loadNotifications()
     }
 
     fun getTimeAgo(timestamp: com.google.firebase.Timestamp?): String {

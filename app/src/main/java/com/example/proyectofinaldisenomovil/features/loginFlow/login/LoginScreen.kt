@@ -64,7 +64,6 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.SnackbarC
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.core.theme.green
 import com.example.proyectofinaldisenomovil.core.utils.RequestResult
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
 import com.example.proyectofinaldisenomovil.features.settings.SettingsViewModel
 import kotlinx.coroutines.flow.StateFlow
@@ -91,7 +90,7 @@ fun LoginScreen(
             when (result) {
                 is RequestResult.Success -> {
                     snackbarHostState.showSnackbar(result.message)
-                    val user = MockDataRepository.getLoggedInUser()
+                    val user = loginViewModel.getLoggedInUser()
                     if (user != null) {
                         val mappedRole = when (user.role) {
                             UserRole.USER -> com.example.proyectofinaldisenomovil.domain.model.UserRole.USER

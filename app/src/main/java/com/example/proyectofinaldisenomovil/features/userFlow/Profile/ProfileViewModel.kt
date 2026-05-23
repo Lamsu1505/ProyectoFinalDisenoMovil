@@ -10,7 +10,6 @@ import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
 import com.example.proyectofinaldisenomovil.core.utils.ValidatedField
 import com.example.proyectofinaldisenomovil.data.local.SettingsDataStore
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.data.repository.Remote.CloudinaryRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.BadgeType
@@ -305,7 +304,6 @@ class ProfileViewModel @Inject constructor(
                     profileImageUrl = profileImageUrl
                 )
                 userRepository.updateUser(updatedUser)
-                MockDataRepository.setLoggedInUser(updatedUser)
                 _editUiState.update {
                     it.copy(user = updatedUser, isEditMode = false, saveSuccess = true, isLoading = false)
                 }

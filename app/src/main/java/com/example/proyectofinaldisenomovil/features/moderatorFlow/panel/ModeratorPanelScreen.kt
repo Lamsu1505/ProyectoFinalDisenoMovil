@@ -54,7 +54,6 @@ import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilT
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.moderator.ConfirmationDialog
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository.printEvents
 
 @Composable
 fun ModeratorPanelScreen(

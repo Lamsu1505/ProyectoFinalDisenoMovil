@@ -3,7 +3,6 @@ package com.example.proyectofinaldisenomovil.core.navigation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.local.SessionDataStore
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.BadgeType
 import com.example.proyectofinaldisenomovil.domain.model.User.UserLevel
@@ -94,13 +93,11 @@ class SessionViewModel @Inject constructor(
                             badges = parseBadges(badges),
                             profileImageUrl = profileImageUrl ?: user.profileImageUrl
                         )
-                        MockDataRepository.setLoggedInUser(updatedUser)
                     } else {
                         val newUser = createUserFromDataStore(session.userId, firstName, lastName, email, city, points, level, badges, profileImageUrl)
-                        MockDataRepository.setLoggedInUser(newUser)
                     }
                 } else {
-                    MockDataRepository.setLoggedInUser(null)
+
                 }
             }.collect { }
         }

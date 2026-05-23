@@ -9,11 +9,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.data.local.SessionDataStore
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.utils.RequestResult
 import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
+import com.example.proyectofinaldisenomovil.domain.model.User.User
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
 import com.example.proyectofinaldisenomovil.domain.model.UserSession
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -105,5 +105,9 @@ class LoginViewModel @Inject constructor(
 
     fun resetResult() {
         _loginResult.value = null
+    }
+
+    suspend fun getLoggedInUser(): User? {
+        return userRepository.getLoggedInUser()
     }
 }

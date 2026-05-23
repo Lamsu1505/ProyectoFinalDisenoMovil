@@ -2,7 +2,6 @@ package com.example.proyectofinaldisenomovil.data.repository.Memory
 
 import android.util.Log
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
@@ -357,8 +356,8 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
         Log.i("Crear evento" , "Info que llego a crear evento: Titulo: $title Descripcion: $description Categoria: $category Direccion: $address Url imagenes: $imageUrls FechaInicio: $startDate Fecha fin:$endDate Max attendees: $maxAttendees")
         val newEvent = Event(
             id = "event_${UUID.randomUUID().toString().take(8)}",
-            authorUid = MockDataRepository.getLoggedInUser()?.uid ?: "",
-            authorName = MockDataRepository.getLoggedInUser()?.fullName ?: "",
+            authorUid = "user_001",//MockDataRepository.getLoggedInUser()?.uid ?: "",
+            authorName = "No hay", //MockDataRepository.getLoggedInUser()?.fullName ?: "",
             title = title,
             description = description,
             category = category,
@@ -389,7 +388,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
             // Actualizamos el elemento en la copia mutable
             currentList[index] = currentList[index].copy(
                 status = EventStatus.VERIFIED,
-                moderatorUid = MockDataRepository.getLoggedInUser()?.uid,
+                moderatorUid = "",//MockDataRepository.getLoggedInUser()?.uid,
                 updatedAt = Timestamp.now()
             )
             // Asignamos la nueva lista al StateFlow para notificar a la UI
@@ -405,7 +404,7 @@ class EventRepositoryImpl @Inject constructor(): EventRepository {
             // Actualizamos el elemento en la copia mutable
             currentList[index] = currentList[index].copy(
                 status = EventStatus.REJECTED,
-                moderatorUid = MockDataRepository.getLoggedInUser()?.uid,
+                moderatorUid = "",//MockDataRepository.getLoggedInUser()?.uid,
                 updatedAt = Timestamp.now(),
                 rejectionReason = reason
             )

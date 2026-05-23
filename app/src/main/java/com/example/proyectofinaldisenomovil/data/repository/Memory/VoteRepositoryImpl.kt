@@ -2,7 +2,6 @@ package com.example.proyectofinaldisenomovil.data.repository.Memory
 
 import android.util.Log
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
-import com.example.proyectofinaldisenomovil.data.repository.MockDataRepository
 import com.example.proyectofinaldisenomovil.data.repository.VoteRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.User.User
@@ -70,12 +69,12 @@ class VoteRepositoryImpl @Inject constructor(
             )
             _votes.value = current
 
-            val event = MockDataRepository.getEventById(eventId)
-            event?.let {
-                MockDataRepository.updateEvent(
-                    it.copy(importantVotes = it.importantVotes + 1)
-                )
-            }
+//            val event = MockDataRepository.getEventById(eventId)
+//            event?.let {
+//                MockDataRepository.updateEvent(
+//                    it.copy(importantVotes = it.importantVotes + 1)
+//                )
+//            }
         }
     }
 
@@ -89,12 +88,12 @@ class VoteRepositoryImpl @Inject constructor(
         if (updated.size != current.size) {
             _votes.value = updated
 
-            val event = MockDataRepository.getEventById(eventId)
-            event?.let {
-                MockDataRepository.updateEvent(
-                    it.copy(importantVotes = (it.importantVotes - 1).coerceAtLeast(0))
-                )
-            }
+//            val event = MockDataRepository.getEventById(eventId)
+//            event?.let {
+//                MockDataRepository.updateEvent(
+//                    it.copy(importantVotes = (it.importantVotes - 1).coerceAtLeast(0))
+//                )
+//            }
         }
     }
 
