@@ -7,6 +7,8 @@ import com.example.proyectofinaldisenomovil.core.component.moderator.state.Moder
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
+import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
+import com.example.proyectofinaldisenomovil.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ModeratorEventDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val eventId: String = savedStateHandle.get<String>("eventId") ?: ""
@@ -62,7 +65,7 @@ class ModeratorEventDetailViewModel @Inject constructor(
         val event = _uiState.value.event ?: return
 
         if (currentReason.isBlank()) {
-            _uiState.update { it.copy(rejectionReasonError = "Por favor ingrese un motivo") }
+            _uiState.update { it.copy(rejectionReasonError = resourceProvider.getString(R.string.moderator_reject_placeholder)) }
             return
         }
 

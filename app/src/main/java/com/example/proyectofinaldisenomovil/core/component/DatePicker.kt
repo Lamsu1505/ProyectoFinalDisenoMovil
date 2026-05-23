@@ -26,12 +26,12 @@ fun DatePickerModal(
                 onDateSelected(datePickerState.selectedDateMillis)
                 onDismiss()
             }) {
-                Text(stringResource(R.string.datepicker_ok))
+                Text(stringResource(R.string.datePicker_confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.datepicker_cancel))
+                Text(stringResource(R.string.datePicker_cancel))
             }
         }
     ) {

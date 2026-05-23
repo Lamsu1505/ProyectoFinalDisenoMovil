@@ -17,6 +17,15 @@
     <string name="retry">Reintentar</string>
     <string name="yes">Sí</string>
     <string name="no">No</string>
+    <string name="send">Enviar</string>
+    <string name="dialog_close">Cerrar</string>
+    <string name="dialog_confirm">Confirmar</string>
+    <string name="search_placeholder">Buscar...</string>
+
+    <!-- Formats -->
+    <string name="date_format_full">EEEE d \'de\' MMMM</string>
+    <string name="date_format_year">d \'de\' MMMM \'del\' yyyy</string>
+    <string name="time_format">h:mm a</string>
 
     <!-- Login Screen -->
     <string name="login_title">Inicia Sesión</string>
@@ -24,31 +33,58 @@
     <string name="login_password">Contraseña</string>
     <string name="login_button">Iniciar Sesión</string>
     <string name="login_no_account">¿No tienes cuenta?</string>
-    <string name="login_create_here">Créala aquí</string>
+    <string name="login_create_here">Regístrate aquí</string>
     <string name="login_forgot_password">¿Olvidaste tu contraseña?</string>
-    <string name="login_error_empty">Por favor completa todos los campos</string>
-    <string name="login_error_invalid">Email o contraseña incorrectos</string>
     <string name="login_success">¡Bienvenido! Sesión iniciada correctamente</string>
     <string name="login_error">Credenciales incorrectas. Intenta de nuevo</string>
+    <string name="login_error_empty">Por favor completa todos los campos</string>
+    <string name="login_error_invalid">Email o contraseña incorrectos</string>
 
     <!-- Register Screen -->
     <string name="register_title">Crear Cuenta</string>
-    <string name="register_name">Nombre</string>
-    <string name="register_lastname">Apellido</string>
-    <string name="register_email">Email</string>
-    <string name="register_password">Contraseña</string>
-    <string name="register_confirm_password">Confirmar Contraseña</string>
-    <string name="register_button">Registrarse</string>
-    <string name="register_have_account">¿Ya tienes cuenta?</string>
-    <string name="register_login_here">Inicia sesión aquí</string>
-    <string name="register_error_passwords">Las contraseñas no coinciden</string>
+    <string name="register_sign_up">Regístrate</string>
+    <string name="register_first_name">Nombre</string>
+    <string name="register_last_name">Apellido</string>
+    <string name="register_email_field">Email</string>
+    <string name="register_password_field">Contraseña</string>
+    <string name="register_confirm_password_field">Confirmar Contraseña</string>
+    <string name="register_button_sign_up">Registrarse</string>
+    <string name="register_success">Registro exitoso</string>
+    <string name="register_complete_fields">Por favor completa todos los campos correctamente</string>
+    <string name="register_email_exists">El correo ya está registrado</string>
     <string name="register_error_fields">Por favor completa todos los campos</string>
+    <string name="label_password_visibility">Mostrar/Ocultar contraseña</string>
+
+    <!-- Validations -->
+    <string name="validation_email_invalid">Email no válido</string>
+    <string name="validation_password_short">La contraseña debe tener al menos 8 caracteres</string>
+    <string name="validation_password_uppercase">Debe contener al menos una mayúscula</string>
+    <string name="validation_password_digit">Debe contener al menos un número</string>
+    <string name="validation_passwords_not_match">Las contraseñas no coinciden</string>
+    <string name="validation_name_required">El nombre es obligatorio</string>
+    <string name="validation_lastname_required">El apellido es obligatorio</string>
+    <string name="validation_city_required">La ciudad es obligatoria</string>
+    <string name="validation_phone_invalid">Formato de teléfono no válido</string>
+    <string name="validation_name_short">Nombre muy corto</string>
+    <string name="validation_lastname_short">Apellido muy corto</string>
 
     <!-- Forgot Password Screen -->
-    <string name="forgot_title">Recuperar Contraseña</string>
-    <string name="forgot_email">Email registrado</string>
+    <string name="forgot_password_title">Olvidaste la contraseña</string>
+    <string name="forgot_password_description">Escribe tu correo registrado y recibe un link para crear una nueva contraseña.</string>
+    <string name="forgot_password_back_login">Volver al login</string>
     <string name="forgot_button">Enviar</string>
-    <string name="forgot_back_login">Volver al login</string>
+    <string name="forgot_success">Link enviado al correo</string>
+    <string name="forgot_error">Hubo un error en el envío del correo</string>
+
+    <!-- Recover Password Screen -->
+    <string name="recover_password_title">Restablecer Contraseña</string>
+    <string name="recover_password_code_hint">Ingresa el código enviado</string>
+    <string name="recover_password_new">Nueva Contraseña</string>
+    <string name="recover_password_confirm">Confirmar Nueva Contraseña</string>
+    <string name="recover_password_button">Restablecer</string>
+    <string name="recover_password_continue">Continuar</string>
+    <string name="recover_password_invalid_code">Código incorrecto</string>
+    <string name="recover_password_success">Contraseña restablecida correctamente</string>
 
     <!-- Home Screen -->
     <string name="home_title">Inicio</string>
@@ -74,6 +110,34 @@
     <string name="create_event_success">Evento publicado correctamente</string>
     <string name="create_event_error">Error al publicar el evento</string>
     <string name="create_event_required">Los campos marcados con * son obligatorios</string>
+    <string name="create_event_error_title_short">El título debe tener al menos 5 caracteres</string>
+    <string name="create_event_error_desc_short">La descripción debe tener al menos 20 caracteres</string>
+    <string name="create_event_error_address_short">Dirección muy corta</string>
+    <string name="create_event_missing_fields">Falta completar: %s</string>
+    <string name="create_event_info">¿Estás seguro de que quieres salir? Los cambios no se guardarán.</string>
+
+    <string name="create_event_title_label">Título del evento</string>
+    <string name="create_event_title_placeholder">Ej: Concierto de Rock</string>
+    <string name="create_event_description_label">Descripción</string>
+    <string name="create_event_description_placeholder">Describe de qué trata tu evento...</string>
+    <string name="create_event_description_tip">Mínimo 20 caracteres</string>
+    <string name="create_event_category_label">Categoría</string>
+    <string name="create_event_category_placeholder">Selecciona una categoría</string>
+    <string name="create_event_capacity_label">Capacidad</string>
+    <string name="create_event_capacity_placeholder">Ej: 100</string>
+    <string name="create_event_add_images_hint">Añade hasta 5 fotos de tu evento</string>
+    <string name="create_event_images_added_one">%d imagen seleccionada</string>
+    <string name="create_event_images_added_other">%d imágenes seleccionadas</string>
+    <string name="create_event_direct_address">Dirección exacta</string>
+    <string name="create_event_address_placeholder">Ej: Calle 10 # 5-20</string>
+    <string name="create_event_start">Inicio del evento</string>
+    <string name="create_event_date_label">Fecha</string>
+    <string name="create_event_time_label">Hora</string>
+    <string name="create_event_end_optional">Fin del evento (Opcional)</string>
+    <string name="create_event_button">Publicar Evento</string>
+    <string name="create_event_images_label">Imágenes</string>
+    <string name="create_event_location_label">Ubicación</string>
+    <string name="create_event_date_time">Fecha y Hora</string>
 
     <!-- Saved Events Screen -->
     <string name="saved_events_title">Eventos Guardados</string>
@@ -86,42 +150,71 @@
     <string name="liked_events_title">Eventos que me importan</string>
     <string name="liked_events_empty">No has dado importancia a ningún evento</string>
 
-    <!-- Edit Profile Screen -->
-    <string name="edit_profile_title_screen">Editar Perfil</string>
-    <string name="edit_profile_joined">Se unio el %1$s</string>
-    <string name="edit_profile_first_names">Nombre(s)</string>
-    <string name="edit_profile_last_names">Apellido(s)</string>
-    <string name="edit_profile_email">Correo electronico</string>
-    <string name="edit_profile_save_data">Guardar datos</string>
-    <string name="edit_profile_password">Contraseña</string>
-    <string name="edit_profile_change_password">Cambiar contraseña</string>
-    <string name="edit_profile_delete_account">Eliminar cuenta</string>
-    <string name="edit_profile_photo">Edit photo</string>
-
     <!-- Profile Screen -->
     <string name="profile_title">Perfil</string>
     <string name="profile_edit">Editar Perfil</string>
     <string name="profile_language">Cambiar idioma</string>
+    <string name="profile_active">Activos</string>
+    <string name="profile_pending">Pendientes</string>
+    <string name="profile_rejected_events">Rechazados</string>
     <string name="profile_events_created">Eventos Creados</string>
     <string name="profile_events_attended">Eventos Asistidos</string>
     <string name="profile_reputation">Reputación</string>
     <string name="profile_badges">Insignias</string>
     <string name="profile_logout">Cerrar Sesión</string>
     <string name="profile_logout_confirm">¿Estás seguro de cerrar sesión?</string>
+    <string name="profile_logout_question">¿Estás seguro de que deseas cerrar sesión?</string>
+    <string name="profile_logout_yes">Sí, cerrar sesión</string>
     <string name="profile_continue_online">Seguir en línea</string>
     <string name="profile_select_language">Selecciona un idioma</string>
+    <string name="profile_level_max">¡Nivel máximo alcanzado!</string>
+    <string name="profile_trophies">Trofeos</string>
+    <string name="profile_terms">Términos y Condiciones</string>
+    <string name="profile_image_desc">Imagen de perfil</string>
+    <string name="profile_update_success">Perfil actualizado correctamente</string>
+    <string name="profile_save_success">Perfil guardado correctamente</string>
+    <string name="profile_my_events">Mis Eventos</string>
+    <string name="profile_phone">Teléfono</string>
+    <string name="profile_select_photo">Seleccionar Foto</string>
+    <string name="profile_camera">Cámara</string>
+    <string name="profile_gallery">Galería</string>
+    <string name="profile_password_change_message">Funcionalidad de cambio de contraseña próximamente.</string>
 
+    <string name="gamification_points">%d puntos</string>
+    <string name="gamification_points_remaining">Faltan %d puntos para el siguiente nivel</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_english">Inglés</string>
 
-
-    <!-- Edit Profile Screen -->
+    <!-- Edit Profile -->
     <string name="edit_profile_title">Editar Perfil</string>
-    <string name="edit_profile_name">Nombre</string>
-    <string name="edit_profile_lastname">Apellido</string>
+    <string name="edit_profile_title_screen">Editar Perfil</string>
+    <string name="edit_profile_joined">Se unió el %1$s</string>
+    <string name="edit_profile_first_names">Nombre(s)</string>
+    <string name="edit_profile_last_names">Apellido(s)</string>
+    <string name="edit_profile_email">Correo electrónico</string>
+    <string name="edit_profile_save_data">Guardar datos</string>
+    <string name="edit_profile_password">Contraseña</string>
+    <string name="edit_profile_change_password">Cambiar contraseña</string>
+    <string name="edit_profile_delete_account">Eliminar cuenta</string>
+    <string name="edit_profile_photo">Editar foto</string>
     <string name="edit_profile_city">Ciudad</string>
     <string name="edit_profile_address">Dirección</string>
     <string name="edit_profile_save">Guardar Cambios</string>
     <string name="edit_profile_success">Perfil actualizado</string>
     <string name="edit_profile_error">Error al actualizar el perfil</string>
+
+    <!-- Badge Dialog -->
+    <string name="badge_earned">¡Conseguido!</string>
+    <string name="badge_not_earned">Aún no has conseguido este trofeo</string>
+
+    <!-- User Levels -->
+    <string name="level_spectator">Espectador</string>
+    <string name="level_newbie">Novato</string>
+    <string name="level_participant">Participante</string>
+    <string name="level_enthusiast">Entusiasta</string>
+    <string name="level_creator">Creador</string>
+    <string name="level_organizer">Organizador</string>
+    <string name="level_community_leader">Líder Comunitario</string>
 
     <!-- View Event Screen -->
     <string name="view_event_details">Detalles del Evento</string>
@@ -158,14 +251,20 @@
     <string name="view_event_image">Imagen del evento</string>
     <string name="view_event_likes">%1$s me gusta</string>
     <string name="detail_success">Evento cargado correctamente</string>
-
-
+    <string name="comment_now">Ahora</string>
+    <string name="comment_hours_ago">Hace %d h</string>
+    <string name="comment_button">Hacer comentario</string>
+    <string name="comment_placeholder">Escribe tu comentario…</string>
 
     <!-- Notifications Screen -->
     <string name="notifications_title">Notificaciones</string>
     <string name="notifications_back">Volver</string>
     <string name="notifications_mark_all_read">Marcar todo como leído</string>
     <string name="notifications_empty">No tienes notificaciones</string>
+    <string name="notifications_filter_all">Todas</string>
+    <string name="notifications_filter_unread">No leídas</string>
+    <string name="notifications_filter_events">Eventos</string>
+    <string name="notifications_filter_comments">Comentarios</string>
     <string name="notification_event_approved">Tu evento ha sido aprobado</string>
     <string name="notification_event_rejected">Tu evento ha sido rechazado</string>
     <string name="notification_new_comment">Nuevo comentario en tu evento</string>
@@ -174,6 +273,15 @@
     <string name="notification_event_verified">Evento verificado</string>
     <string name="notification_new_event">Nuevo evento</string>
     <string name="notification_event_finalized">Evento finalizado</string>
+
+    <!-- Time relative -->
+    <string name="time_now">Ahora mismo</string>
+    <string name="time_minutes_ago">Hace %d min</string>
+    <string name="time_hours_ago">Hace %d h</string>
+    <string name="time_yesterday">Ayer</string>
+    <string name="time_days_ago">Hace %d días</string>
+    <string name="time_today">Hoy</string>
+    <string name="time_older">Anteriores</string>
 
     <!-- Moderator Panel -->
     <string name="moderator_title">Moderación de eventos</string>
@@ -193,6 +301,14 @@
     <string name="moderator_back">Volver</string>
     <string name="moderator_logout">Cerrar sesión</string>
     <string name="moderator_description_label">Descripción</string>
+    <string name="moderator_rejection_reason_label">Motivo de rechazo:</string>
+    <string name="moderator_verificar">Verificar</string>
+
+    <!-- Event Status -->
+    <string name="event_status_pending">Pendiente de verificación</string>
+    <string name="event_status_verified">Verificado</string>
+    <string name="event_status_rejected">Rechazado</string>
+    <string name="event_status_resolved">Resuelto</string>
 
     <!-- Logout Dialog -->
     <string name="logout_confirm">¿Está seguro de cerrar sesión de la cuenta de %s?</string>
@@ -203,6 +319,7 @@
     <string name="filter_distance">Distancia:</string>
     <string name="filter_name">Nombre</string>
     <string name="filter_date">Fecha</string>
+    <string name="filter_popularity">Popularidad</string>
     <string name="filter_distance_sort">Distancia</string>
     <string name="filter_votes">Votos</string>
     <string name="filter_more">Más filtros</string>
@@ -218,222 +335,20 @@
     <string name="category_food">Gastronomía</string>
     <string name="category_tech">Tecnología</string>
     <string name="category_art">Arte</string>
+    <string name="category_hobby">Pasatiempo</string>
+    <string name="category_academic">Académico</string>
+
+    <!-- UI Elements -->
+    <string name="datePicker_cancel">Cancelar</string>
+    <string name="datePicker_confirm">Confirmar</string>
+    <string name="app_bottom_home">Inicio</string>
+    <string name="app_bottom_create">Crear</string>
+    <string name="app_bottom_saved">Ire</string>
+    <string name="app_bottom_profile">Perfil</string>
+    <string name="app_bottom_liked">Me gusta</string>
+    <string name="app_topbar_notifications">Notificaciones</string>
 
     <!-- Errors -->
     <string name="error_network">Error de conexión. Intenta de nuevo.</string>
-    <string name="error_unknown">Ocurrió un error inesperado</string>
-    <string name="error_no_results">No se encontraron resultados</string>
-
-    <!-- Date & Time -->
-    <string name="date_today">Hoy</string>
-    <string name="date_tomorrow">Mañana</string>
-    <string name="time_format">h:mm a</string>
-
-    <!-- Validation Errors -->
-    <string name="validation_email_invalid">Email mal escrito, revisa el formato</string>
-    <string name="validation_password_short">La contraseña debe tener al menos 8 caracteres</string>
-
-    <!-- Labels -->
-    <string name="label_password">Contraseña</string>
-    <string name="label_password_visibility">Mostrar contraseña</string>
-    <string name="label_password_hide">Ocultar contraseña</string>
-    <string name="label_remember_me">Recordarme</string>
-    <string name="label_forgot_password">¿Olvidaste tu contraseña?</string>
-    <string name="label_no_account">No tienes cuenta?</string>
-    <string name="label_create_here">Créala Aqui</string>
-    <string name="label_have_account">¿Ya tienes cuenta?</string>
-    <string name="label_login_here">Inicia sesión aquí</string>
-
-    <!-- Recover Password -->
-    <string name="recover_password_title">Recuperar Contraseña</string>
-    <string name="recover_password_email_sent">Se ha enviado un correo para recuperar tu contraseña</string>
-    <string name="recover_password_back_login">Volver al login</string>
-
-    <!-- Register Screen -->
-    <string name="register_sign_up">Registrarse</string>
-    <string name="register_first_name">Nombre(s)</string>
-    <string name="register_last_name">Apellido(s)</string>
-    <string name="register_email_field">Correo electrónico</string>
-    <string name="register_password_field">Contraseña</string>
-    <string name="register_confirm_password_field">Confirmar contraseña</string>
-    <string name="register_button_sign_up">Registrarse</string>
-    <string name="register_success">Registro exitoso. Ahora puedes iniciar sesión.</string>
-    <string name="register_email_exists">El email ya está registrado</string>
-    <string name="register_complete_fields">Por favor complete todos los campos correctamente</string>
-
-    <!-- Validation -->
-    <string name="validation_name_short">Nombre muy corto</string>
-    <string name="validation_lastname_short">Apellido muy corto</string>
-    <string name="validation_password_uppercase">La contraseña debe tener al menos una mayúscula</string>
-    <string name="validation_password_digit">La contraseña debe tener al menos un número</string>
-    <string name="validation_passwords_not_match">Las contraseñas no coinciden</string>
-    <string name="validation_name_required">El nombre es obligatorio</string>
-    <string name="validation_lastname_required">El apellido es obligatorio</string>
-    <string name="validation_city_required">La ciudad es obligatoria</string>
-    <string name="validation_phone_invalid">Formato de teléfono inválido</string>
-    <string name="profile_update_success">Perfil actualizado correctamente</string>
-
-    <!-- Forgot Password -->
-    <string name="forgot_password_title">Olvidaste tu Contraseña</string>
-    <string name="forgot_password_description">Ingresa el correo asosicado a tu cuenta y recibe un codigo para cambiar tu contraseña</string>
-    <string name="forgot_password_send_code">Enviar codigo</string>
-    <string name="forgot_password_back_login">Regresar a Iniciar sesion</string>
-
-    <!-- Recover Password -->
-    <string name="recover_password_new_title">Nueva Contraseña</string>
-    <string name="recover_password_code">Código de verificación</string>
-    <string name="recover_password_continue">Continuar</string>
-    <string name="recover_password_success">La contraseña ha sido recuperada correctamente</string>
-    <string name="recover_password_enter_code">Ingresa el código de verificación</string>
-    <string name="recover_password_invalid_code">Código incorrecto. Intenta de nuevo.</string>
-
-    <!-- Forgot Password Extended -->
-    <string name="forgot_password_email_not_found">No se encontró una cuenta con este correo</string>
-    <string name="forgot_password_code_sent">Código de recuperación enviado</string>
-
-    <!-- Profile Screen Extended -->
-    <string name="profile_level">Nivel %1$s: %2$s</string>
-    <string name="profile_points">%1$d puntos</string>
-    <string name="profile_points_remaining">Faltan %1$d puntos para subir de nivel.</string>
-    <string name="profile_my_events">Mis eventos</string>
-    <string name="profile_active">Activos</string>
-    <string name="profile_completed">Rechazados</string>
-    <string name="profile_pending">Pendientes</string>
-    <string name="profile_first_publication">Primera\npublicación</string>
-    <string name="profile_10_completed">+10\nFinalizados</string>
-    <string name="profile_50_completed">+50\nFinalizados</string>
-    <string name="profile_rating">Prom.\nCalificación</string>
-    <string name="profile_terms">Terminos y condiciones</string>
-    <string name="profile_phone">Teléfono</string>
-    <string name="profile_address">Dirección</string>
-    <string name="profile_select_photo">Seleccionar foto de perfil</string>
-    <string name="profile_camera">Cámara</string>
-    <string name="profile_gallery">Galería</string>
-    <string name="profile_password_change_message">Por seguridad, el cambio de contraseña debe realizarse a través del flujo de recuperación en la pantalla de inicio de sesión.</string>
-
-    <!-- Create Event Screen Extended -->
-    <string name="create_event_new_title">Crear Nuevo Evento</string>
-    <string name="create_event_info">Información</string>
-    <string name="create_event_images_label">Imagenes</string>
-    <string name="create_event_location_label">Ubicación</string>
-    <string name="create_event_date_time">Fecha y Hora</string>
-    <string name="create_event_title_label">Titulo del evento</string>
-    <string name="create_event_title_placeholder">Agrega un titulo llamativo</string>
-    <string name="create_event_description_label">Descripción</string>
-    <string name="create_event_description_placeholder">Describe de que se trata el evento</string>
-    <string name="create_event_description_tip">Las descripciones detalladas reciben un 35% mas audiencia.</string>
-    <string name="create_event_category_label">Categoria</string>
-    <string name="create_event_category_placeholder">Categoria</string>
-    <string name="create_event_capacity_label">Capacidad</string>
-    <string name="create_event_capacity_placeholder">Ejm: 100</string>
-    <string name="create_event_add_images_hint">Añade imagenes relevantes para el evento</string>
-    <string name="create_event_images_added_one">%d Imagen añadida</string>
-    <string name="create_event_images_added_other">%d Imagenes añadidas</string>
-    <string name="create_event_direct_address">Dirección directa</string>
-    <string name="create_event_address_placeholder">Agrega la dirección del evento</string>
-    <string name="create_event_select_map">Seleccionar en el mapa</string>
-    <string name="create_event_start">Inicio del evento</string>
-    <string name="create_event_date_label">Fecha</string>
-    <string name="create_event_time_label">Hora</string>
-    <string name="create_event_end_optional">Fin del evento (Opcional)</string>
-    <string name="create_event_button">Crear evento</string>
-
-    <!-- Search & Components -->
-    <string name="search_placeholder">Buscar eventos...</string>
-    <string name="notification_badge">3</string>
-    <string name="notifications_description">Notificaciones</string>
-
-    <!-- Notification Filters -->
-    <string name="notification_filter_all">Todas</string>
-    <string name="notification_filter_unread">No leídas</string>
-    <string name="notification_filter_events">Eventos</string>
-    <string name="notification_filter_comments">Comentarios</string>
-
-    <!-- Home Filters -->
-    <string name="order_by_name">Nombre</string>
-    <string name="order_by_popularity">Popularidad</string>
-    <string name="order_by_date">Fecha</string>
-
-    <!-- Common Components -->
-    <string name="datepicker_ok">OK</string>
-    <string name="datepicker_cancel">Cancelar</string>
-    <string name="app_bottom_home">Inicio</string>
-    <string name="app_bottom_saved">Iré</string>
-    <string name="app_bottom_add">Agregar</string>
-    <string name="app_bottom_liked">Me gusta</string>
-    <string name="app_bottom_profile">Perfil</string>
-    <string name="app_topbar_back">Volver</string>
-    <string name="app_topbar_notifications">Notificaciones</string>
-    <string name="app_topbar_notification_badge">3</string>
-
-    <!-- Moderator Components -->
-    <string name="moderator_search_placeholder">Buscar Eventos....</string>
-    <string name="moderator_search_description">Buscar</string>
-    <string name="moderator_close_description">Cerrar</string>
-    <string name="moderator_logout_description">Cerrar sesión</string>
-    <string name="moderator_date_not_defined_short">Fecha no definida</string>
-    <string name="moderator_location_not_defined_short">Ubicacion no definida</string>
-    <string name="moderator_more_filters">Mas filtros</string>
-    <string name="moderator_category_more">Más categorías</string>
-    <string name="moderator_category_close">Cerrar categorías</string>
-
-    <!-- Moderator Dialog -->
-    <string name="logout_confirm_title">¿Está seguro de cerrar sesion de la cuenta de moderador de %1$s?</string>
-    <string name="logout_stay_online">Seguir en linea</string>
-    <string name="logout_button">Cerrar sesion</string>
-    <string name="dialog_confirm">Confirmar</string>
-    <string name="dialog_close">Cerrar</string>
-
-    <!-- Language Settings -->
-    <string name="language_spanish">Español</string>
-    <string name="language_english">English</string>
-    <string name="language_change_success">Idioma cambiado correctamente</string>
-    <string name="language_current">Idioma actual</string>
-    <string name="language_login_title">Cambiar idioma</string>
-
-<!-- Profile Messages -->
-    <string name="profile_success_load">Perfil cargado correctamente</string>
-    <string name="profile_error_load">Error al cargar el perfil</string>
-    <string name="profile_save_success">Cambios guardados</string>
-    <string name="profile_save_error">Error al guardar los cambios</string>
-
-    <!-- Gamification System -->
-    <string name="gamification_level">Nivel %1$d</string>
-    <string name="gamification_points">%1$d pts</string>
-    <string name="gamification_points_remaining">%1$d pts para el siguiente nivel</string>
-    <string name="gamification_progress">Progreso</string>
-    <string name="gamification_view_all_badges">Ver todas las insignias</string>
-    <string name="gamification_no_badges">Aún no tienes insignias</string>
-    <string name="gamification_earn_badges">¡Participa en eventos para ganar insignias!</string>
-    
-    <!-- Badge Categories -->
-    <string name="badge_category_creator">Creador</string>
-    <string name="badge_category_social">Social</string>
-    <string name="badge_category_community">Comunidad</string>
-    <string name="badge_category_popular">Popular</string>
-    <string name="badge_category_special">Especiales</string>
-    
-    <!-- Badge Labels -->
-    <string name="badge_primera_publicacion">Primera Publicación</string>
-    <string name="badge_productor">Productor</string>
-    <string name="badge_organizador_experto">Organizador Experto</string>
-    <string name="badge_maestro_eventos">Maestro de Eventos</string>
-    <string name="badge_primer_paso">Primer Paso</string>
-    <string name="badge_asistente_fiel">Asistente Fiel</string>
-    <string name="badge_veterano">Veterano</string>
-    <string name="badge_leyenda">Leyenda</string>
-    <string name="badge_primer_comentario">Primer Comentario</string>
-    <string name="badge_conversador">Conversador</string>
-    <string name="badge_historador">Historiador</string>
-    <string name="badge_voz_comunidad">Voz de la Comunidad</string>
-    <string name="badge_relevante">Relevante</string>
-    <string name="badge_popular">Popular</string>
-    <string name="badge_estrella">Estrella</string>
-    <string name="badge_icono">Ícono</string>
-    <string name="badge_founder">Fundador</string>
-    <string name="badge_early_adopter">Early Adopter</string>
-    <string name="badge_moderator">Moderador</string>
-    <string name="badge_voluntario">Voluntario</string>
-<!-- Login Messages -->
-    <string name="login_error_credentials">Credenciales incorrectas</string>
+    <string name="error_unknown">Ocurrió un error inesperado.</string>
 </resources>

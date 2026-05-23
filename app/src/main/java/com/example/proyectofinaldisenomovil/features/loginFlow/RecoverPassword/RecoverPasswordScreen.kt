@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -44,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -140,7 +138,7 @@ fun RecoverPasswordScreen(
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
                     Text(
-                        text = stringResource(R.string.recover_password_new_title),
+                        text = stringResource(R.string.recover_password_title),
                         fontSize = 40.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
@@ -149,7 +147,7 @@ fun RecoverPasswordScreen(
                     )
 
                     Text(
-                        text = stringResource(R.string.recover_password_enter_code),
+                        text = stringResource(R.string.recover_password_code_hint),
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center
@@ -170,7 +168,7 @@ fun RecoverPasswordScreen(
                             onValueChange = recoverPasswordViewModel::onNewPasswordChange,
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(15.dp),
-                            label = { Text(stringResource(R.string.register_password_field)) },
+                            label = { Text(stringResource(R.string.recover_password_new)) },
                             visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             trailingIcon = {
                                 IconButton(onClick = { recoverPasswordViewModel.togglePasswordVisibility() }) {
@@ -199,7 +197,7 @@ fun RecoverPasswordScreen(
                             onValueChange = recoverPasswordViewModel::onConfirmPasswordChange,
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(15.dp),
-                            label = { Text(stringResource(R.string.register_confirm_password_field)) },
+                            label = { Text(stringResource(R.string.recover_password_confirm)) },
                             visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             trailingIcon = {
                                 IconButton(onClick = { recoverPasswordViewModel.toggleConfirmPasswordVisibility() }) {
@@ -245,7 +243,7 @@ fun RecoverPasswordScreen(
                             )
                         } else {
                             Text(
-                                text = stringResource(R.string.recover_password_continue),
+                                text = stringResource(R.string.recover_password_button),
                                 fontSize = 20.sp
                             )
                         }

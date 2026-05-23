@@ -82,7 +82,7 @@ fun AppBottomBar(
                     onCreateEvent()
                 }
             ) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.app_bottom_add), modifier = Modifier.size(40.dp))
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.app_bottom_create), modifier = Modifier.size(40.dp))
             }
         }
 

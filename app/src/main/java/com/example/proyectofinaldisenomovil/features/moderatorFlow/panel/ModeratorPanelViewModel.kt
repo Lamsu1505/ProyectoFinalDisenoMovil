@@ -10,6 +10,8 @@ import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
+import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
+import com.example.proyectofinaldisenomovil.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,14 +23,14 @@ import javax.inject.Inject
 @HiltViewModel
 class ModeratorPanelViewModel @Inject constructor(
     private val sessionDataStore: SessionDataStore,
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ModeratorPanelUiState())
     val uiState: StateFlow<ModeratorPanelUiState> = _uiState.asStateFlow()
 
     init {
-        Log.i("Recarga de ventana" , "Recarga de ventana home moderadores")
         loadEvents()
     }
 
@@ -37,7 +39,6 @@ class ModeratorPanelViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
 
             val allEvents = eventRepository.getAllEvents()
-            Log.i("Recarga de ventana" , "Recarga de ventana home moderadores : $allEvents")
 
             val pendingEvents = allEvents.filter { it.status == EventStatus.PENDING_REVIEW }
             val verifiedEvents = allEvents.filter { it.status == EventStatus.VERIFIED }

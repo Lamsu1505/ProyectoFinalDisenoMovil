@@ -7,19 +7,22 @@ import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.FavoriteEvent
+import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
+import com.example.proyectofinaldisenomovil.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import java.util.Locale
 
 data class SavedEventsUiState(
     val savedEvents: List<FavoriteEvent> = emptyList(),
-    val categories: List<String> = listOf("Deportes", "Pasatiempo", "Academico"),
+    val categories: List<String> = emptyList(),
     val selectedCategory: String? = null,
     val searchQuery: String = "",
-    val selectedOrder: String = "Nombre",
+    val selectedOrder: String = "",
     val eventToAddToCalendar: FavoriteEvent? = null
 )
 
@@ -27,7 +30,8 @@ data class SavedEventsUiState(
 class SavedEventsViewModel @Inject constructor(
     private val eventRepository: EventRepository,
     private val attendanceRepository: AttendanceRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private var allSavedEvents: List<Event> = emptyList()
@@ -35,6 +39,14 @@ class SavedEventsViewModel @Inject constructor(
     val uiState: StateFlow<SavedEventsUiState> = _uiState.asStateFlow()
 
     init {
+        _uiState.value = _uiState.value.copy(
+            categories = listOf(
+                resourceProvider.getString(R.string.category_sports),
+                resourceProvider.getString(R.string.category_hobby),
+                resourceProvider.getString(R.string.category_academic)
+            ),
+            selectedOrder = resourceProvider.getString(R.string.filter_name)
+        )
         loadSavedEvents()
     }
 
@@ -62,9 +74,9 @@ class SavedEventsViewModel @Inject constructor(
         }
 
         filtered = when (currentState.selectedOrder) {
-            "Nombre" -> filtered.sortedBy { it.title }
-            "Fecha" -> filtered.sortedBy { it.startDate }
-            "Popularidad" -> filtered.sortedByDescending { it.currentAttendees }
+            resourceProvider.getString(R.string.filter_name) -> filtered.sortedBy { it.title }
+            resourceProvider.getString(R.string.filter_date) -> filtered.sortedBy { it.startDate }
+            resourceProvider.getString(R.string.filter_popularity) -> filtered.sortedByDescending { it.currentAttendees }
             else -> filtered
         }
 
@@ -82,16 +94,17 @@ class SavedEventsViewModel @Inject constructor(
     }
 
     private fun Event.toFavoriteEvent(): FavoriteEvent {
+        val currentLocale = Locale.getDefault()
         return FavoriteEvent(
             id = this.id,
             title = this.title,
             category = this.category.label,
             date = this.startDate?.let {
-                val dateFormat = java.text.SimpleDateFormat("EEEE d 'de' MMMM", java.util.Locale("es", "CO"))
+                val dateFormat = java.text.SimpleDateFormat(resourceProvider.getString(R.string.date_format_full), currentLocale)
                 dateFormat.format(it.toDate())
             } ?: "",
             time = this.startDate?.let {
-                val timeFormat = java.text.SimpleDateFormat("h:mm a", java.util.Locale("es", "CO"))
+                val timeFormat = java.text.SimpleDateFormat(resourceProvider.getString(R.string.time_format), currentLocale)
                 timeFormat.format(it.toDate())
             } ?: "",
             location = this.address,

@@ -12,6 +12,8 @@ import com.example.proyectofinaldisenomovil.data.repository.Memory.VoteRepositor
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.User.User
 import com.example.proyectofinaldisenomovil.domain.model.User.UserRole
+import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
+import com.example.proyectofinaldisenomovil.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,7 +31,8 @@ sealed class RegisterResult {
 class RegisterViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val voteRepositoryImpl: VoteRepositoryImpl,
-    private val attendanceRepository: AttendanceRepository
+    private val attendanceRepository: AttendanceRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     var name by mutableStateOf("")
@@ -101,7 +104,7 @@ class RegisterViewModel @Inject constructor(
 
       fun register() {
         if (!validateForm()) {
-            _registerResult.value = RegisterResult.Error("register_complete_fields")
+            _registerResult.value = RegisterResult.Error(resourceProvider.getString(R.string.register_error_fields))
             return
         }
 
@@ -118,8 +121,6 @@ class RegisterViewModel @Inject constructor(
             val user = userRepository.registerUser(
                 newUser
             )
-
-            Log.i("Register user", "Se creo el usuario " + user?.firstName + " con id " +user?.uid + " correo " + user?.email + " y contraseña " + user?.password)
 
             _registerResult.value = when {
                 user == null -> RegisterResult.EmailAlreadyExists

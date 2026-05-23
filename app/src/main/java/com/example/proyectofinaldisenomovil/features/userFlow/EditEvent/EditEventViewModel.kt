@@ -10,6 +10,8 @@ import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Location
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventResult
 import com.example.proyectofinaldisenomovil.features.userFlow.CreateEvent.CreateEventUiState
+import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
+import com.example.proyectofinaldisenomovil.R
 import com.google.firebase.Timestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class EditEventViewModel @Inject constructor(
     private val eventRepository: EventRepository,
-    private val cloudinaryRepository: CloudinaryRepository
+    private val cloudinaryRepository: CloudinaryRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateEventUiState())
@@ -136,23 +139,18 @@ class EditEventViewModel @Inject constructor(
     fun saveChanges() {
         val state = _uiState.value
         val eventId = state.idEvent ?: return
-        Log.i("Editar evento", "Guardando cambios del evento $eventId")
 
         viewModelScope.launch {
             _editResult.value = CreateEventResult.Loading
             try {
-                val originalEvent = eventRepository.getEventById(eventId) ?: throw Exception("No se encontró el evento original")
+                val originalEvent = eventRepository.getEventById(eventId) ?: throw Exception(resourceProvider.getString(R.string.moderator_event_not_found))
 
-                // Robust check for local vs remote URIs to fix LocalUriNotFoundException
                 val uploadedImageUrls = if (state.images.isNotEmpty()) {
                     state.images.map { imageUri ->
                         val scheme = imageUri.scheme
                         if (scheme != null && (scheme.equals("http", true) || scheme.equals("https", true))) {
-                            // If it's already a web link (Cloudinary/Unsplash), keep it as is
                             imageUri.toString()
                         } else {
-                            // Only upload if it's a local URI (content://, file://, etc)
-                            Log.i("EditEvent", "Uploading local image: $imageUri")
                             cloudinaryRepository.uploadImage(imageUri)
                         }
                     }
@@ -176,8 +174,7 @@ class EditEventViewModel @Inject constructor(
                 eventRepository.editEvent(eventId, updatedEvent)
                 _editResult.value = CreateEventResult.Success
             } catch (e: Exception) {
-                Log.e("EditEvent", "Error al guardar: ${e.message}")
-                _editResult.value = CreateEventResult.Error("Error: ${e.message}")
+                _editResult.value = CreateEventResult.Error(resourceProvider.getString(R.string.error_unknown) + ": ${e.message}")
             }
         }
     }

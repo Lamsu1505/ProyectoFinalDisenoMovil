@@ -8,6 +8,8 @@ import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.data.repository.VoteRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
+import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
+import com.example.proyectofinaldisenomovil.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +19,8 @@ import javax.inject.Inject
 
 
 data class HomeUiState(
-    val likedEvents: Map<String, Boolean> = emptyMap()
+    val likedEvents: Map<String, Boolean> = emptyMap(),
+    val sortOptions: List<String> = emptyList()
 )
 
 
@@ -25,7 +28,8 @@ data class HomeUiState(
 class HomeViewModel @Inject constructor(
     private val repository: EventRepository,
     private val userRepository: UserRepository,
-    private val voteRepository: VoteRepository
+    private val voteRepository: VoteRepository,
+    private val resourceProvider: ResourceProvider
 ): ViewModel() {
 
     private var allEvents: List<Event> = emptyList()
@@ -38,7 +42,7 @@ class HomeViewModel @Inject constructor(
     private val _selectedCategory = MutableStateFlow<EventCategory?>(null)
     val selectedCategory: StateFlow<EventCategory?> = _selectedCategory.asStateFlow()
 
-    private val _orderBy = MutableStateFlow("Nombre")
+    private val _orderBy = MutableStateFlow("")
     val orderBy: StateFlow<String> = _orderBy.asStateFlow()
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -47,6 +51,14 @@ class HomeViewModel @Inject constructor(
     private var currentSearchQuery = ""
 
     init {
+        val nameOption = resourceProvider.getString(R.string.filter_name)
+        val popularityOption = resourceProvider.getString(R.string.filter_popularity)
+        val dateOption = resourceProvider.getString(R.string.filter_date)
+        
+        _uiState.value = _uiState.value.copy(
+            sortOptions = listOf(nameOption, dateOption, popularityOption)
+        )
+        _orderBy.value = nameOption
         loadEvents()
     }
 
@@ -55,14 +67,9 @@ class HomeViewModel @Inject constructor(
             _isLoading.value = true
 
             try {
-                // Realmente la que carga los eventos
                 val verifiedEvents = repository.getVerifiedEvents()
-                Log.d("HOME", "Eventos recibidos: ${verifiedEvents.size}")
                 allEvents = verifiedEvents
-
-                // Cargar estado inicial de likes para los eventos
                 loadLikedState(verifiedEvents)
-
                 applyFilters()
             } catch (e: Exception) {
                 Log.e("HOME", "Error loading events", e)
@@ -112,9 +119,9 @@ class HomeViewModel @Inject constructor(
         }
 
         result = when (_orderBy.value) {
-            "Nombre" -> result.sortedBy { it.title }
-            "Popularidad" -> result.sortedByDescending { it.importantVotes }
-            "Fecha" -> result.sortedBy { it.startDate }
+            resourceProvider.getString(R.string.filter_name) -> result.sortedBy { it.title }
+            resourceProvider.getString(R.string.filter_popularity) -> result.sortedByDescending { it.importantVotes }
+            resourceProvider.getString(R.string.filter_date) -> result.sortedBy { it.startDate }
             else -> result
         }
 
@@ -128,11 +135,7 @@ class HomeViewModel @Inject constructor(
     fun onLikeClick(eventId: String) {
         viewModelScope.launch {
             val userId = userRepository.getLoggedInUser()?.uid ?: return@launch
-
-            // Cambia el voto y obtiene el nuevo estado
             val isNowInterested = voteRepository.toggleVote(eventId, userId)
-
-            // Actualiza el UiState
             _uiState.value = _uiState.value.copy(
                 likedEvents = _uiState.value.likedEvents.toMutableMap().apply {
                     this[eventId] = isNowInterested

@@ -56,9 +56,9 @@ class ForgotPasswordViewModel @Inject constructor(
         viewModelScope.launch {
             val success = userRepository.resetPassword(email)
             if (success) {
-                _requestResult.value = RequestResult.Success("Link enviado al correo")
+                _requestResult.value = RequestResult.Success(resourceProvider.getString(R.string.success))
             } else {
-                _requestResult.value = RequestResult.Failure("Hubo un error en el envio del correo")
+                _requestResult.value = RequestResult.Failure(resourceProvider.getString(R.string.error_unknown))
             }
         }
     }

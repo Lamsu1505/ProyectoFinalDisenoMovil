@@ -132,7 +132,7 @@ fun CreateEventScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             AppTopBar(
-                title = stringResource(R.string.create_event_new_title),
+                title = stringResource(R.string.create_event_title),
                 onNotificationsClick = onNotificationClick,
                 onBackClick = handleBack
             )
@@ -160,7 +160,7 @@ fun CreateEventScreen(
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                CategoryBadge(icon = Icons.Default.AddAPhoto, label = stringResource(R.string.create_event_images_label))
+                CategoryBadge(icon = Icons.Default.AddAPhoto, label = stringResource(R.string.create_event_add_image))
                 imageSection(
                     uiState,
                     viewModel
@@ -170,7 +170,7 @@ fun CreateEventScreen(
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                CategoryBadge(icon = Icons.Default.LocationOn, label = stringResource(R.string.create_event_location_label))
+                CategoryBadge(icon = Icons.Default.LocationOn, label = stringResource(R.string.create_event_location))
                 locationSection(
                     uiState,
                     viewModel)
@@ -179,7 +179,7 @@ fun CreateEventScreen(
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                CategoryBadge(icon = Icons.Default.DateRange, label = stringResource(R.string.create_event_date_time))
+                CategoryBadge(icon = Icons.Default.DateRange, label = stringResource(R.string.create_event_date))
                 dateSection(uiState, viewModel)
                 Spacer(modifier = Modifier.height(5.dp))
             }

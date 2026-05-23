@@ -203,7 +203,7 @@ fun ForgotPasswordForm(
                 )
             } else {
                 Text(
-                    text = stringResource(R.string.forgot_password_send_code),
+                    text = "",
                     fontSize = 20.sp
                 )
             }

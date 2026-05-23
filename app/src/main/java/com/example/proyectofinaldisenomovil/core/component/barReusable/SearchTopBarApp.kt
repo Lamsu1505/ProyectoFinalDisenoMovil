@@ -98,7 +98,7 @@ fun SearchTopBarApp(
             ) {
                 Icon(
                     imageVector = Icons.Default.Notifications,
-                    contentDescription = stringResource(R.string.notifications_description),
+                    contentDescription = "Esta en SearchTopBarApp",
                     tint = Color.White,
                     modifier = Modifier.size(35.dp)
                         .clickable(

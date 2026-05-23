@@ -52,7 +52,7 @@ fun AppTopBar(
             }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = stringResource(R.string.app_topbar_back),
+                    contentDescription ="",
                     tint = Color.White,
                     modifier = Modifier.size(28.dp)
                         .clickable(
@@ -73,7 +73,7 @@ fun AppTopBar(
                         containerColor = Color.Red,
                         contentColor = Color.White
                     ) {
-                        Text(stringResource(R.string.app_topbar_notification_badge), fontSize = 11.sp)
+                        Text(text = "4", fontSize = 11.sp)
                     }
                 }
             ) {

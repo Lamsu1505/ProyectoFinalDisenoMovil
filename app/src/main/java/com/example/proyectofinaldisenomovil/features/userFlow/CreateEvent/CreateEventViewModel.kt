@@ -8,6 +8,8 @@ import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.Remote.CloudinaryRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Location
+import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
+import com.example.proyectofinaldisenomovil.R
 import com.google.firebase.Timestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,7 +52,8 @@ data class CreateEventUiState(
 @HiltViewModel
 class CreateEventViewModel @Inject constructor(
     private val eventRepository: EventRepository,
-    private val cloudinaryRepository: CloudinaryRepository
+    private val cloudinaryRepository: CloudinaryRepository,
+    private val resourceProvider: ResourceProvider
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateEventUiState())
@@ -80,7 +83,7 @@ class CreateEventViewModel @Inject constructor(
         updateState { 
             it.copy(
                 title = newTitle,
-                titleError = if (newTitle.isNotEmpty() && newTitle.length < 5) "El título debe tener al menos 5 caracteres" else ""
+                titleError = if (newTitle.isNotEmpty() && newTitle.length < 5) resourceProvider.getString(R.string.create_event_error_title_short) else ""
             ) 
         }
     }
@@ -89,7 +92,7 @@ class CreateEventViewModel @Inject constructor(
         updateState { 
             it.copy(
                 description = newDescription,
-                descriptionError = if (newDescription.isNotEmpty() && newDescription.length < 20) "La descripción debe tener al menos 20 caracteres" else ""
+                descriptionError = if (newDescription.isNotEmpty() && newDescription.length < 20) resourceProvider.getString(R.string.create_event_error_desc_short) else ""
             ) 
         }
     }
@@ -106,7 +109,7 @@ class CreateEventViewModel @Inject constructor(
         updateState { 
             it.copy(
                 address = newAddress,
-                addressError = if (newAddress.isNotEmpty() && newAddress.length < 10) "Dirección muy corta" else ""
+                addressError = if (newAddress.isNotEmpty() && newAddress.length < 10) resourceProvider.getString(R.string.create_event_error_address_short) else ""
             ) 
         }
     }
@@ -133,7 +136,6 @@ class CreateEventViewModel @Inject constructor(
         millis?.let {
             val dateString = dateFormatter.format(Date(it))
             val timeString = timeFormatter.format(Date(it))
-            Log.i("CreateEvent", "Fecha seleccionada: $dateString")
             updateState { state ->
                 state.copy(
                     startDate = dateString,
@@ -167,19 +169,19 @@ class CreateEventViewModel @Inject constructor(
             val missingFields = mutableListOf<String>()
 
             if (state.title.length < 1)
-                missingFields.add("Título (mín. 1)")
+                missingFields.add(resourceProvider.getString(R.string.create_event_name))
 
             if (state.description.length < 1)
-                missingFields.add("Descripción (mín. 1)")
+                missingFields.add(resourceProvider.getString(R.string.create_event_description))
 
             if (state.address.length < 1)
-                missingFields.add("Dirección (mín. 1)")
+                missingFields.add(resourceProvider.getString(R.string.create_event_address))
 
             if (state.startDate.toString().isEmpty())
-                missingFields.add("Fecha Inicio")
+                missingFields.add(resourceProvider.getString(R.string.create_event_date))
 
             _createResult.value = CreateEventResult.Error(
-                "Falta completar: ${missingFields.joinToString(", ")}"
+                resourceProvider.getString(R.string.create_event_missing_fields, missingFields.joinToString(", "))
             )
 
             return
@@ -192,12 +194,6 @@ class CreateEventViewModel @Inject constructor(
             try {
                 val capacity =
                     state.capacity.replace(".", "").toIntOrNull()
-
-                Log.i("CreateEvent", "Subiendo imágenes...")
-
-                // =========================
-                // SUBIR IMÁGENES CLOUDINARY
-                // =========================
 
                 val uploadedImageUrls =
                     if (state.images.isNotEmpty()) {
@@ -212,26 +208,6 @@ class CreateEventViewModel @Inject constructor(
                         )
                     }
 
-                Log.i(
-                    "CreateEvent",
-                    "Imágenes subidas: $uploadedImageUrls"
-                )
-
-                Log.i(
-                    "CreateEvent",
-                    "Fecha seleccionada: ${state.startDate}"
-                )
-
-                Log.i(
-                    "CreateEvent",
-                    "Ubicacion seleccionada: ${state.pointerAddres}"
-                )
-
-
-                // =========================
-                // CREAR EVENTO
-                // =========================
-
                 val dateTimestamp = state.startDate.toTimeStamp()
 
                 val location = Location(
@@ -239,51 +215,29 @@ class CreateEventViewModel @Inject constructor(
                     state.pointerAddres.longitude
                 )
 
-                val eventCreated =
-                    eventRepository.createEvent(
+                eventRepository.createEvent(
                         title = state.title.trim(),
-
                         description = state.description.trim(),
-
                         category = state.category,
-
                         address = state.address.trim(),
-
                         location = location,
-
                         imageUrls = uploadedImageUrls,
-
                         startDate = dateTimestamp,
-
                         endDate = Timestamp(
                             Date(
                                 System.currentTimeMillis() +
                                         24 * 60 * 60 * 1000
                             )
                         ),
-
                         maxAttendees = capacity
                     )
 
-                Log.i(
-                    "CreateEvent",
-                    "Evento creado: $eventCreated"
-                )
-
-                _createResult.value =
-                    CreateEventResult.Success
+                _createResult.value = CreateEventResult.Success
 
             } catch (e: Exception) {
-
-                Log.e(
-                    "CreateEvent",
-                    "Error: ${e.message}"
+                _createResult.value = CreateEventResult.Error(
+                    resourceProvider.getString(R.string.create_event_error) + ": ${e.message}"
                 )
-
-                _createResult.value =
-                    CreateEventResult.Error(
-                        "Error: ${e.message}"
-                    )
             }
         }
     }
@@ -301,7 +255,7 @@ class CreateEventViewModel @Inject constructor(
         val formats = listOf(
             SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()),
             SimpleDateFormat("d 'de' MMMM 'del' yyyy", Locale("es")),
-            SimpleDateFormat("d 'de' MMMM 'de' yyyy", Locale("es"))  // some pickers use "de" not "del"
+            SimpleDateFormat("d 'de' MMMM 'de' yyyy", Locale("es")) 
         )
 
         for (sdf in formats) {
@@ -310,7 +264,6 @@ class CreateEventViewModel @Inject constructor(
                 val date = sdf.parse(this)
                 if (date != null) return Timestamp(date)
             } catch (e: Exception) {
-                // try next format
             }
         }
 

@@ -71,6 +71,7 @@ fun ProfileScreen(
     val context = LocalContext.current
 
     var showLanguageDialog by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
     var selectedBadge by remember { mutableStateOf<BadgeType?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -301,7 +302,7 @@ fun ProfileScreen(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                SectionTitle("Trofeos")
+                SectionTitle(stringResource(R.string.profile_trophies))
                 TrophiesGrid(
                     earnedBadges = uiState.badges,
                     onBadgeClick = { selectedBadge = it }
@@ -334,7 +335,7 @@ fun ProfileScreen(
                             icon = Icons.AutoMirrored.Filled.ExitToApp,
                             text = stringResource(R.string.profile_logout),
                             isLogout = true
-                        ) { onLogout() }
+                        ) { showLogoutDialog = true }
                     }
                 }
                 Spacer(modifier = Modifier.height(24.dp))
@@ -358,6 +359,29 @@ fun ProfileScreen(
                 }
             },
             onDismiss = { showLanguageDialog = false }
+        )
+    }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text(text = stringResource(R.string.profile_logout)) },
+            text = { Text(text = "¿Estás seguro de que deseas cerrar sesión?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showLogoutDialog = false
+                    onLogout()
+                }) {
+                    Text(text = "Sí, cerrar sesión", color = red)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text(text = "Cancelar", color = Color.Gray)
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(24.dp)
         )
     }
 

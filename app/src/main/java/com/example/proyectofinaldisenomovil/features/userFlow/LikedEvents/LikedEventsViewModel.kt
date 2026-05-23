@@ -7,12 +7,15 @@ import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.data.repository.VoteRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
+import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
+import com.example.proyectofinaldisenomovil.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import java.util.Locale
 
 data class FavoriteEvent(
     val id: String,
@@ -30,37 +33,40 @@ data class FavoriteEvent(
 
 data class FavoritesUiState(
     val favoriteEvents: List<FavoriteEvent> = emptyList(),
-    val categories: List<String> = listOf("Deportes", "Pasatiempo", "Academico"),
-    val selectedCategory: String = "Deportes",
+    val categories: List<String> = emptyList(),
+    val selectedCategory: String? = null,
     val searchQuery: String = "",
-    val selectedOrder: String = "Nombre"
+    val selectedOrder: String = ""
 )
 
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
     private val eventRepository: EventRepository,
     private val voteRepositoryImpl: VoteRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val resourceProvider: ResourceProvider
 ): ViewModel() {
     private var allFavoriteEvents: List<Event> = emptyList()
     private val _uiState = MutableStateFlow(FavoritesUiState())
     val uiState: StateFlow<FavoritesUiState> = _uiState.asStateFlow()
 
     init {
-        Log.i("liked events screen" , "llego al init")
+        _uiState.value = _uiState.value.copy(
+            categories = listOf(
+                resourceProvider.getString(R.string.category_sports),
+                resourceProvider.getString(R.string.category_hobby),
+                resourceProvider.getString(R.string.category_academic)
+            ),
+            selectedOrder = resourceProvider.getString(R.string.filter_name)
+        )
         loadLikedEvents()
     }
 
     private fun loadLikedEvents() {
         viewModelScope.launch {
-            Log.i("liked events screen" , "entro al launch")
             val currentUser = userRepository.getLoggedInUser()
-            Log.i("liked events screen" , "capturo al usuario " + currentUser.toString())
-
             if (currentUser != null) {
                 val idLikedEvents = voteRepositoryImpl.getLikedEventsIdByUserID(currentUser.uid)
-                Log.i("Liked events" , "el usuario " + currentUser.uid + " tiene " + idLikedEvents.size.toString() + " eventos favoritos")
-
                 allFavoriteEvents = eventRepository.getEventsByIds(idLikedEvents)
                 _uiState.value = _uiState.value.copy(
                     favoriteEvents = allFavoriteEvents.map { it.toFavoriteEvent() }
@@ -75,7 +81,7 @@ class FavoritesViewModel @Inject constructor(
     }
 
     fun onCategorySelect(category: String?) {
-        category?.let { _uiState.value = _uiState.value.copy(selectedCategory = it) }
+        _uiState.value = _uiState.value.copy(selectedCategory = category)
         applyFilters()
     }
 
@@ -88,21 +94,18 @@ class FavoritesViewModel @Inject constructor(
         val currentState = _uiState.value
         var filtered = allFavoriteEvents
 
-        // Filter by Category
         if (currentState.selectedCategory != null) {
             filtered = filtered.filter { it.category.label == currentState.selectedCategory }
         }
 
-        // Filter by Search
         if (currentState.searchQuery.isNotBlank()) {
             filtered = filtered.filter { it.title.contains(currentState.searchQuery, ignoreCase = true) }
         }
 
-        // Sort
         filtered = when (currentState.selectedOrder) {
-            "Nombre" -> filtered.sortedBy { it.title }
-            "Fecha" -> filtered.sortedBy { it.startDate }
-            "Popularidad" -> filtered.sortedByDescending { it.currentAttendees }
+            resourceProvider.getString(R.string.filter_name) -> filtered.sortedBy { it.title }
+            resourceProvider.getString(R.string.filter_date) -> filtered.sortedBy { it.startDate }
+            resourceProvider.getString(R.string.filter_popularity) -> filtered.sortedByDescending { it.currentAttendees }
             else -> filtered
         }
 
@@ -110,16 +113,17 @@ class FavoritesViewModel @Inject constructor(
     }
 
     private fun Event.toFavoriteEvent(): FavoriteEvent {
+        val currentLocale = Locale.getDefault()
         return FavoriteEvent(
             id = this.id,
             title = this.title,
             category = this.category.label,
             date = this.startDate?.let {
-                val dateFormat = java.text.SimpleDateFormat("EEEE d 'de' MMMM", java.util.Locale("es", "CO"))
+                val dateFormat = java.text.SimpleDateFormat(resourceProvider.getString(R.string.date_format_full), currentLocale)
                 dateFormat.format(it.toDate())
             } ?: "",
             time = this.startDate?.let {
-                val timeFormat = java.text.SimpleDateFormat("h:mm a", java.util.Locale("es", "CO"))
+                val timeFormat = java.text.SimpleDateFormat(resourceProvider.getString(R.string.time_format), currentLocale)
                 timeFormat.format(it.toDate())
             } ?: "",
             location = this.address,

@@ -234,7 +234,7 @@ fun LoginForm(
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
                             imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                            contentDescription = stringResource(R.string.label_password_visibility)
+                            contentDescription = ""
                         )
                     }
                 }
@@ -287,12 +287,12 @@ fun LoginForm(
 
         Row {
             Text(
-                text = stringResource(R.string.label_no_account),
+                text = stringResource(R.string.login_no_account),
                 fontSize = 15.sp,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = stringResource(R.string.label_create_here),
+                text = stringResource(R.string.login_create_here),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.secondary,
@@ -336,7 +336,7 @@ fun LanguageLoginDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = stringResource(R.string.language_login_title),
+                text = stringResource(R.string.profile_select_language),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )

@@ -61,6 +61,7 @@ import com.example.proyectofinaldisenomovil.core.component.moderator.state.Moder
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.R
+import com.example.proyectofinaldisenomovil.core.component.mapbox.MapBox
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -217,20 +218,6 @@ fun ModeratorEventDetailScreenContent(
                 onLogout()
             },
             onDismiss = onLogoutDismiss,
-        )
-    }
-
-    if (uiState.showRejectDialog) {
-        ConfirmationDialog(
-            title = stringResource(R.string.moderator_confirm_title),
-            bodyText = stringResource(R.string.moderator_confirm_reject),
-            showReasonField = true,
-            reasonValue = uiState.rejectionReason,
-            onReasonChange = onRejectionReasonChange,
-            reasonError = uiState.rejectionReasonError,
-            isLoading = uiState.isSubmittingVerification,
-            onConfirm = onRejectConfirm,
-            onDismiss = onRejectDialogDismiss,
         )
     }
 }
@@ -457,6 +444,18 @@ private fun EventDetailContent(
                 )
             }
         }
+
+        MapBox(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .padding(horizontal = 16.dp)
+                .clip(RoundedCornerShape(12.dp)),
+            event = event,
+            activateClick = false
+        )
+
+        Spacer(Modifier.height(24.dp))
 
         Row(
             modifier = Modifier
