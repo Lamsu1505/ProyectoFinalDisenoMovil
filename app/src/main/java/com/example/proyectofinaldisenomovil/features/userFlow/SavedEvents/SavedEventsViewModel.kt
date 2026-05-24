@@ -6,6 +6,7 @@ import com.example.proyectofinaldisenomovil.data.repository.AttendanceRepository
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
+import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.features.userFlow.LikedEvents.FavoriteEvent
 import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
 import com.example.proyectofinaldisenomovil.R
@@ -20,7 +21,7 @@ import java.util.Locale
 data class SavedEventsUiState(
     val savedEvents: List<FavoriteEvent> = emptyList(),
     val categories: List<String> = emptyList(),
-    val selectedCategory: String? = null,
+    val selectedCategory: EventCategory? = null,
     val searchQuery: String = "",
     val selectedOrder: String = "",
     val eventToAddToCalendar: FavoriteEvent? = null
@@ -66,7 +67,7 @@ class SavedEventsViewModel @Inject constructor(
         var filtered = allSavedEvents
 
         if (currentState.selectedCategory != null) {
-            filtered = filtered.filter { it.category.label == currentState.selectedCategory }
+            filtered = filtered.filter { it.category == currentState.selectedCategory }
         }
 
         if (currentState.searchQuery.isNotBlank()) {
@@ -83,13 +84,22 @@ class SavedEventsViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(savedEvents = filtered.map { it.toFavoriteEvent() })
     }
 
-    fun onCategorySelect(category: String?) {
+    fun onCategorySelect(category: EventCategory?) {
         _uiState.value = _uiState.value.copy(selectedCategory = category)
         applyFilters()
     }
 
     fun onOrderSelect(order: String) {
         _uiState.value = _uiState.value.copy(selectedOrder = order)
+        applyFilters()
+    }
+
+    fun clearFilters() {
+        _uiState.value = _uiState.value.copy(
+            selectedCategory = null,
+            searchQuery = "",
+            selectedOrder = resourceProvider.getString(R.string.filter_name)
+        )
         applyFilters()
     }
 

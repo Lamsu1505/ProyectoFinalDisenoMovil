@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FilterListOff
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -24,14 +25,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.CategoryEventsSelectorBar
 import com.example.proyectofinaldisenomovil.core.component.barReusable.SearchTopBarApp
 import com.example.proyectofinaldisenomovil.core.theme.ProyectoFinalDisenoMovilTheme
 import com.example.proyectofinaldisenomovil.R
+import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.features.userFlow.home.DistanceComboBox
 import com.example.proyectofinaldisenomovil.features.userFlow.home.OrderByComboBox
 import java.text.NumberFormat
@@ -69,10 +70,36 @@ fun LikedEventsScreen(
         ) {
             item {
                 CategoryEventsSelectorBar(
+                    selectedCategory = uiState.selectedCategory,
                     onCategorySelected = { category ->
-                        viewModel.onCategorySelect(category?.label)
+                        viewModel.onCategorySelect(category)
                     }
                 )
+                
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(
+                        onClick = { viewModel.clearFilters() },
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FilterListOff,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.colorScheme.secondary
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Limpiar filtros",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
@@ -84,13 +111,25 @@ fun LikedEventsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            items(uiState.favoriteEvents) { event ->
-                FavoriteEventCard(
-                    event = event,
-                    onToggleLike = { viewModel.onToggleFavorite(event.id) },
-                    onEventClick = onEventClick
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+            if (uiState.favoriteEvents.isEmpty()) {
+                item {
+                    Box(modifier = Modifier.fillParentMaxHeight(0.6f), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = stringResource(R.string.liked_events_empty),
+                            color = Color.Gray,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            } else {
+                items(uiState.favoriteEvents) { event ->
+                    FavoriteEventCard(
+                        event = event,
+                        onToggleLike = { viewModel.onToggleFavorite(event.id) },
+                        onEventClick = onEventClick
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
 
             item {

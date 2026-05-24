@@ -48,7 +48,8 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    private var currentSearchQuery = ""
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     init {
         val nameOption = resourceProvider.getString(R.string.filter_name)
@@ -99,7 +100,14 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onSearchQueryChanged(query: String) {
-        currentSearchQuery = query
+        _searchQuery.value = query
+        applyFilters()
+    }
+
+    fun clearFilters() {
+        _selectedCategory.value = null
+        _searchQuery.value = ""
+        _orderBy.value = resourceProvider.getString(R.string.filter_name)
         applyFilters()
     }
 
@@ -110,11 +118,11 @@ class HomeViewModel @Inject constructor(
             result = result.filter { it.category == category }
         }
 
-        if (currentSearchQuery.isNotBlank()) {
+        if (_searchQuery.value.isNotBlank()) {
             result = result.filter {
-                it.title.contains(currentSearchQuery, ignoreCase = true) ||
-                        it.description.contains(currentSearchQuery, ignoreCase = true) ||
-                        it.address.contains(currentSearchQuery, ignoreCase = true)
+                it.title.contains(_searchQuery.value, ignoreCase = true) ||
+                        it.description.contains(_searchQuery.value, ignoreCase = true) ||
+                        it.address.contains(_searchQuery.value, ignoreCase = true)
             }
         }
 

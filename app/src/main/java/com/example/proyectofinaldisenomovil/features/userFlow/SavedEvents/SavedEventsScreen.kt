@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.FilterListOff
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -34,7 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottomBar
@@ -109,10 +110,36 @@ fun SavedEventsScreen(
         ) {
             item {
                 CategoryEventsSelectorBar(
+                    selectedCategory = uiState.selectedCategory,
                     onCategorySelected = { category ->
-                        viewModel.onCategorySelect(category?.label)
+                        viewModel.onCategorySelect(category)
                     }
                 )
+                
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(
+                        onClick = { viewModel.clearFilters() },
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FilterListOff,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.colorScheme.secondary
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Limpiar filtros",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
@@ -124,18 +151,30 @@ fun SavedEventsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            items(uiState.savedEvents) { event ->
-                SavedEventCard(
-                    event = event,
-                    onUnsave = {
-                        viewModel.onUnsaveEvent(event.id)
-                    },
-                    onEventClick = onEventClick,
-                    onAddToCalendar = {
-                        viewModel.onAddToCalendar(event)
+            if (uiState.savedEvents.isEmpty()) {
+                item {
+                    Box(modifier = Modifier.fillParentMaxHeight(0.6f), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = stringResource(R.string.saved_events_empty),
+                            color = Color.Gray,
+                            fontSize = 16.sp
+                        )
                     }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+                }
+            } else {
+                items(uiState.savedEvents) { event ->
+                    SavedEventCard(
+                        event = event,
+                        onUnsave = {
+                            viewModel.onUnsaveEvent(event.id)
+                        },
+                        onEventClick = onEventClick,
+                        onAddToCalendar = {
+                            viewModel.onAddToCalendar(event)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
 
             item {

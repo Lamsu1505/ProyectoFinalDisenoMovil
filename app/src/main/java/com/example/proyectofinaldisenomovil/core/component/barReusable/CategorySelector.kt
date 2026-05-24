@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.features.userFlow.Notifications.NotificationFilter
+import com.example.proyectofinaldisenomovil.core.theme.green
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -39,7 +40,9 @@ fun CategoryEventsSelectorBar(
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -72,9 +75,15 @@ fun CategoryEventsSelectorBar(
             }
         }
 
-        AnimatedVisibility(visible = expanded, enter = expandVertically(), exit = shrinkVertically()) {
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(),
+            exit = shrinkVertically()
+        ) {
             FlowRow(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -90,23 +99,40 @@ fun CategoryEventsSelectorBar(
                 }
             }
         }
-        HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp), color = Color(0xFFD0D0D0), thickness = 1.dp)
+        HorizontalDivider(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+            color = Color(0xFFD0D0D0),
+            thickness = 1.dp
+        )
     }
 }
 
 @Composable
-private fun CategoryChip(label: String, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun CategoryChip(
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Button(
         onClick = onClick,
         modifier = modifier.height(42.dp),
         shape = RoundedCornerShape(50),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) Color(0xFF4A8C5C) else Color(0xFFE0E0E0),
+            containerColor = if (isSelected) green else Color(0xFFE0E0E0),
             contentColor = if (isSelected) Color.White else Color(0xFF6B6B6B)
         ),
-        border = if (!isSelected) BorderStroke(1.dp, Color(0xFFBDBDBD)) else null
+        border = if (!isSelected) BorderStroke(1.dp, Color(0xFFBDBDBD)) else null,
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = if (isSelected) 4.dp else 0.dp
+        )
     ) {
-        Text(text = label, fontSize = 14.sp, fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal, maxLines = 1)
+        Text(
+            text = label,
+            fontSize = 14.sp,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+            maxLines = 1
+        )
     }
 }
 
@@ -152,7 +178,12 @@ fun CategoryBarNotifications(
 }
 
 @Composable
-private fun NotificationTab(label: String, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun NotificationTab(
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(50))

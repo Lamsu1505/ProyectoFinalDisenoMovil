@@ -7,6 +7,7 @@ import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.data.repository.VoteRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
+import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
 import com.example.proyectofinaldisenomovil.R
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,7 +35,7 @@ data class FavoriteEvent(
 data class FavoritesUiState(
     val favoriteEvents: List<FavoriteEvent> = emptyList(),
     val categories: List<String> = emptyList(),
-    val selectedCategory: String? = null,
+    val selectedCategory: EventCategory? = null,
     val searchQuery: String = "",
     val selectedOrder: String = ""
 )
@@ -68,9 +69,7 @@ class FavoritesViewModel @Inject constructor(
             if (currentUser != null) {
                 val idLikedEvents = voteRepositoryImpl.getLikedEventsIdByUserID(currentUser.uid)
                 allFavoriteEvents = eventRepository.getEventsByIds(idLikedEvents)
-                _uiState.value = _uiState.value.copy(
-                    favoriteEvents = allFavoriteEvents.map { it.toFavoriteEvent() }
-                )
+                applyFilters()
             }
         }
     }
@@ -80,7 +79,7 @@ class FavoritesViewModel @Inject constructor(
         applyFilters()
     }
 
-    fun onCategorySelect(category: String?) {
+    fun onCategorySelect(category: EventCategory?) {
         _uiState.value = _uiState.value.copy(selectedCategory = category)
         applyFilters()
     }
@@ -90,12 +89,21 @@ class FavoritesViewModel @Inject constructor(
         applyFilters()
     }
 
+    fun clearFilters() {
+        _uiState.value = _uiState.value.copy(
+            selectedCategory = null,
+            searchQuery = "",
+            selectedOrder = resourceProvider.getString(R.string.filter_name)
+        )
+        applyFilters()
+    }
+
     private fun applyFilters() {
         val currentState = _uiState.value
         var filtered = allFavoriteEvents
 
         if (currentState.selectedCategory != null) {
-            filtered = filtered.filter { it.category.label == currentState.selectedCategory }
+            filtered = filtered.filter { it.category == currentState.selectedCategory }
         }
 
         if (currentState.searchQuery.isNotBlank()) {

@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.FilterListOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -72,13 +74,12 @@ fun HomeScreen(
     onNotificationClick: () -> Unit,
     onEventClick : (String) -> Unit
 ) {
-    var query by remember { mutableStateOf("") }
-
-    // Observa el estado del ViewModel
     val events by homeViewModel.events.collectAsState(initial = emptyList())
     val orderBy by homeViewModel.orderBy.collectAsState()
     val uiState by homeViewModel.uiState.collectAsState()
     val isLoading by homeViewModel.isLoading.collectAsState()
+    val selectedCategory by homeViewModel.selectedCategory.collectAsState()
+    val searchQuery by homeViewModel.searchQuery.collectAsState()
 
     Column(
         modifier = Modifier
@@ -86,25 +87,42 @@ fun HomeScreen(
             .background(MaterialTheme.colorScheme.background)
             .padding(paddingValues)
     ) {
-        // TopBar suelta, sin Scaffold
         SearchTopBarApp(
-            query = query,
-            onQueryChange = {
-                query = it
-                homeViewModel.onSearchQueryChanged(it)
-            },
+            query = searchQuery,
+            onQueryChange = { homeViewModel.onSearchQueryChanged(it) },
             onNotificationsClick = onNotificationClick
         )
 
-        // Barra de categorías
         CategoryEventsSelectorBar(
+            selectedCategory = selectedCategory,
             onCategorySelected = { homeViewModel.onCategorySelected(it) }
         )
-        //si
 
-        Spacer(modifier = Modifier.size(7.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            TextButton(
+                onClick = { homeViewModel.clearFilters() },
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FilterListOff,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "Limpiar filtros",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
+        }
 
-        // Filtros de orden y distancia
         FiltersBar(
             selectedOrder = orderBy,
             onOrderSelected = { homeViewModel.onOrderByChanged(it) }
