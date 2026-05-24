@@ -100,6 +100,7 @@ fun HomeScreen(
         CategoryEventsSelectorBar(
             onCategorySelected = { homeViewModel.onCategorySelected(it) }
         )
+        //si
 
         Spacer(modifier = Modifier.size(7.dp))
 
