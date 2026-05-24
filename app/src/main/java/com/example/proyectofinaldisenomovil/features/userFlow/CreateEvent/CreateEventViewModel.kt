@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.proyectofinaldisenomovil.BuildConfig
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
 import com.example.proyectofinaldisenomovil.data.repository.Remote.CloudinaryRepository
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
@@ -24,7 +25,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-
 sealed class CreateEventResult {
     data object Idle : CreateEventResult()
     data object Loading : CreateEventResult()
@@ -286,6 +286,7 @@ class CreateEventViewModel @Inject constructor(
 
 
     fun suggestCategory() {
+
         val state = _uiState.value
         if (state.title.isBlank() || state.description.isBlank()) return
 
@@ -319,9 +320,12 @@ class CreateEventViewModel @Inject constructor(
                         put("temperature", 0)
                     }
 
+
+                    val apiKey = BuildConfig.OPENAI_API_KEY
+
                     val request = okhttp3.Request.Builder()
                         .url("https://api.openai.com/v1/chat/completions")
-                        .addHeader("Authorization", "Bearer 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")
+                        .addHeader("Authorization", "Bearer "+ apiKey)
                         .addHeader("Content-Type", "application/json")
                         .post(okhttp3.RequestBody.create(
                             "application/json".toMediaTypeOrNull(),
