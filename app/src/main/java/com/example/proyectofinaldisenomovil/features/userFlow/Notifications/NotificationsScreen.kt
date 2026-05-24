@@ -297,6 +297,8 @@ private fun NotificationIcon(notification: AppNotification) {
                 modifier = Modifier.size(iconSize)
             )
         }
+
+        else -> {}
     }
 }
 

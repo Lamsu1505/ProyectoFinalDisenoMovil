@@ -4,12 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinaldisenomovil.R
 import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
+import com.example.proyectofinaldisenomovil.data.repository.NotificationRepository
+import com.example.proyectofinaldisenomovil.data.repository.UserRepository
 import com.example.proyectofinaldisenomovil.domain.model.AppNotification
 import com.example.proyectofinaldisenomovil.domain.model.NotificationType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -26,6 +29,8 @@ data class NotificationsUiState(
 
 @HiltViewModel
 class NotificationsViewModel @Inject constructor(
+    private val notificationRepository: NotificationRepository,
+    private val userRepository: UserRepository,
     private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
@@ -37,13 +42,28 @@ class NotificationsViewModel @Inject constructor(
 
     init {
         _selectedFilter.value = resourceProvider.getString(R.string.notifications_filter_all)
-        loadNotifications()
+        observeNotifications()
+    }
+
+    private fun observeNotifications() {
+        viewModelScope.launch {
+            val user = userRepository.getLoggedInUser()
+            user?.let { currentUser ->
+                _uiState.value = _uiState.value.copy(isLoading = true)
+                notificationRepository.observeNotifications(currentUser.uid).collectLatest { notifications ->
+                    val unreadCount = notificationRepository.getUnreadCount(currentUser.uid)
+                    _uiState.value = _uiState.value.copy(
+                        notifications = notifications,
+                        unreadCount = unreadCount,
+                        isLoading = false
+                    )
+                }
+            }
+        }
     }
 
     fun loadNotifications() {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-        }
+        observeNotifications()
     }
 
     fun onFilterSelected(filter: String) {
@@ -59,7 +79,8 @@ class NotificationsViewModel @Inject constructor(
                 it.type == NotificationType.VERIFIED ||
                 it.type == NotificationType.REJECTED ||
                 it.type == NotificationType.NEW_EVENT ||
-                it.type == NotificationType.NEW_EVENT_NEARBY
+                it.type == NotificationType.NEW_EVENT_NEARBY ||
+                it.type == NotificationType.EDITED
             }
             resourceProvider.getString(R.string.notifications_filter_comments) -> notifications.filter { it.type == NotificationType.COMMENT }
             else -> notifications
@@ -67,11 +88,18 @@ class NotificationsViewModel @Inject constructor(
     }
 
     fun markAsRead(notificationId: String) {
-        loadNotifications()
+        viewModelScope.launch {
+            notificationRepository.markAsRead(notificationId)
+        }
     }
 
     fun markAllAsRead() {
-        // loadNotifications()
+        viewModelScope.launch {
+            val user = userRepository.getLoggedInUser()
+            user?.let {
+                notificationRepository.markAllAsRead(it.uid)
+            }
+        }
     }
 
     fun getTimeAgo(timestamp: com.google.firebase.Timestamp?): String {
@@ -105,8 +133,9 @@ class NotificationsViewModel @Inject constructor(
         for (notification in filtered) {
             val timeAgo = getTimeAgo(notification.createdAt)
             val section = when {
-                timeAgo.contains(resourceProvider.getString(R.string.time_now).take(3)) || 
-                (timeAgo.contains(resourceProvider.getString(R.string.time_hours_ago).split(" ")[0]) && !timeAgo.contains(resourceProvider.getString(R.string.time_days_ago).split(" ")[0])) -> resourceProvider.getString(R.string.time_today)
+                timeAgo == resourceProvider.getString(R.string.time_now) || 
+                timeAgo.contains(resourceProvider.getString(R.string.time_minutes_ago).split(" ")[0]) ||
+                timeAgo.contains(resourceProvider.getString(R.string.time_hours_ago).split(" ")[0]) -> resourceProvider.getString(R.string.time_today)
                 timeAgo == resourceProvider.getString(R.string.time_yesterday) -> resourceProvider.getString(R.string.time_yesterday)
                 else -> resourceProvider.getString(R.string.time_older)
             }

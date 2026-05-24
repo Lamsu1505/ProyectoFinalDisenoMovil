@@ -7,7 +7,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 import javax.inject.Singleton
 import android.util.Log
+import com.example.proyectofinaldisenomovil.data.repository.NotificationRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
+import com.example.proyectofinaldisenomovil.domain.model.AppNotification
+import com.example.proyectofinaldisenomovil.domain.model.NotificationType
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.tasks.await
@@ -15,7 +18,8 @@ import kotlinx.coroutines.tasks.await
 @Singleton
 class VoteRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val notificationRepository: NotificationRepository
 ): VoteRepository {
 
     override suspend fun castVote(
@@ -61,8 +65,23 @@ class VoteRepositoryImpl @Inject constructor(
                 // Increment total likes RECEIVED for the author
                 val eventDoc = firestore.collection("events").document(eventId).get().await()
                 val event = eventDoc.toObject(Event::class.java)
+                val voter = userRepository.getUserById(uid)
+
                 event?.authorUid?.let { authorId ->
                     userRepository.incrementTotalLikes(authorId, 1)
+
+                    // Send notification to author
+                    if (authorId != uid) {
+                        val notification = AppNotification(
+                            recipientUid = authorId,
+                            type = NotificationType.LIKE,
+                            title = "Nuevo Like",
+                            body = "${voter?.fullName ?: "Alguien"} le dio like a tu evento: ${event.title}",
+                            eventId = eventId,
+                            createdAt = Timestamp.now()
+                        )
+                        notificationRepository.sendNotification(notification)
+                    }
                 }
             }
 

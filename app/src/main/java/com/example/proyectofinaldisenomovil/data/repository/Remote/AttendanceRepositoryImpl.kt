@@ -2,8 +2,12 @@ package com.example.proyectofinaldisenomovil.data.repository.Remote
 
 import android.util.Log
 import com.example.proyectofinaldisenomovil.data.repository.AttendanceRepository
+import com.example.proyectofinaldisenomovil.data.repository.NotificationRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
+import com.example.proyectofinaldisenomovil.domain.model.AppNotification
 import com.example.proyectofinaldisenomovil.domain.model.Attendance
+import com.example.proyectofinaldisenomovil.domain.model.Event.Event
+import com.example.proyectofinaldisenomovil.domain.model.NotificationType
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -18,7 +22,8 @@ import javax.inject.Singleton
 @Singleton
 class AttendanceRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val notificationRepository: NotificationRepository
 ): AttendanceRepository {
 
 
@@ -60,6 +65,23 @@ class AttendanceRepositoryImpl @Inject constructor(
                     .await()
 
                 userRepository.addReputationPoints(uid, 10)
+
+                // Send notification to author
+                val eventDoc = firestore.collection("events").document(eventId).get().await()
+                val event = eventDoc.toObject(Event::class.java)
+                val attendee = userRepository.getUserById(uid)
+
+                if (event != null && event.authorUid != uid) {
+                    val notification = AppNotification(
+                        recipientUid = event.authorUid,
+                        type = NotificationType.SAVE,
+                        title = "Evento Guardado",
+                        body = "${attendee?.fullName ?: "Alguien"} guardó tu evento: ${event.title}",
+                        eventId = eventId,
+                        createdAt = Timestamp.now()
+                    )
+                    notificationRepository.sendNotification(notification)
+                }
             }
         } catch (e: Exception) {
             Log.e(

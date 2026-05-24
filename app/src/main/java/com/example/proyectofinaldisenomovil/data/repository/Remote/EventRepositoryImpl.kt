@@ -2,11 +2,14 @@ package com.example.proyectofinaldisenomovil.data.repository.Remote
 
 import android.util.Log
 import com.example.proyectofinaldisenomovil.data.repository.EventRepository
+import com.example.proyectofinaldisenomovil.data.repository.NotificationRepository
 import com.example.proyectofinaldisenomovil.data.repository.UserRepository
+import com.example.proyectofinaldisenomovil.domain.model.AppNotification
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventCategory
 import com.example.proyectofinaldisenomovil.domain.model.Event.EventStatus
 import com.example.proyectofinaldisenomovil.domain.model.Location
+import com.example.proyectofinaldisenomovil.domain.model.NotificationType
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldPath
@@ -23,7 +26,8 @@ import javax.inject.Singleton
 class EventRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val notificationRepository: NotificationRepository
 ): EventRepository {
     override suspend fun fetchEvents(): List<Event> {
         TODO("Not yet implemented")
@@ -185,6 +189,17 @@ class EventRepositoryImpl @Inject constructor(
                 CoroutineScope(Dispatchers.IO).launch {
                     userRepository.addReputationPoints(event.authorUid, 20)
                     userRepository.incrementVerifiedEvents(event.authorUid)
+                    
+                    // Send notification to author
+                    val notification = AppNotification(
+                        recipientUid = event.authorUid,
+                        type = NotificationType.VERIFIED,
+                        title = "Evento Aceptado",
+                        body = "Tu evento \"${event.title}\" ha sido verificado y ya es visible para todos.",
+                        eventId = event.id,
+                        createdAt = Timestamp.now(),
+                    )
+                    notificationRepository.sendNotification(notification)
                 }
                 Log.i("EVENT_ACCEPT", "Evento aprobado correctamente")
             }
@@ -202,6 +217,17 @@ class EventRepositoryImpl @Inject constructor(
                 "rejectionReason" to reason
             ))
             .addOnSuccessListener {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val notification = AppNotification(
+                        recipientUid = event.authorUid,
+                        type = NotificationType.REJECTED,
+                        title = "Evento Rechazado",
+                        body = "Tu evento \"${event.title}\" ha sido rechazado. Razón: $reason",
+                        eventId = event.id,
+                        createdAt = Timestamp.now()
+                    )
+                    notificationRepository.sendNotification(notification)
+                }
                 Log.i("EVENT_REJECT", "Evento rechazado correctamente")
             }
             .addOnFailureListener { e ->
@@ -213,6 +239,17 @@ class EventRepositoryImpl @Inject constructor(
         firestore.collection("events").document(idEvent)
             .set(newEvent)
             .addOnSuccessListener {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val notification = AppNotification(
+                        recipientUid = newEvent.authorUid,
+                        type = NotificationType.EDITED,
+                        title = "Evento Editado",
+                        body = "Tu evento \"${newEvent.title}\" ha sido actualizado.",
+                        eventId = idEvent,
+                        createdAt = Timestamp.now()
+                    )
+                    notificationRepository.sendNotification(notification)
+                }
                 Log.i("EDIT_EVENT", "Evento editado correctamente")
             }
     }
