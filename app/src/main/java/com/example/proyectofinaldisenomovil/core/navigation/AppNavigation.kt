@@ -1,5 +1,9 @@
 package com.example.proyectofinaldisenomovil.core.navigation
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,6 +37,19 @@ fun AppNavigation(
 ) {
     val sessionState by sessionViewModel.sessionState.collectAsState()
     val navController = rememberNavController()
+
+    // En MainActivity.kt o un Composable de inicio
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        // Manejar el resultado si es necesario
+    }
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     // Lógica para manejar la persistencia de sesión al arrancar la app
     LaunchedEffect(sessionState) {

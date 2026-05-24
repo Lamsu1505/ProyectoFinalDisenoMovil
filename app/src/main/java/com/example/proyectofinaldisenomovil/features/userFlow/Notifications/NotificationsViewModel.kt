@@ -74,7 +74,7 @@ class NotificationsViewModel @Inject constructor(
         val notifications = _uiState.value.notifications
         return when (_selectedFilter.value) {
             resourceProvider.getString(R.string.notifications_filter_all) -> notifications
-            resourceProvider.getString(R.string.notifications_filter_unread) -> notifications.filter { !it.isRead }
+            resourceProvider.getString(R.string.notifications_filter_unread) -> notifications.filter { !it.read }
             resourceProvider.getString(R.string.notifications_filter_events) -> notifications.filter { 
                 it.type == NotificationType.VERIFIED ||
                 it.type == NotificationType.REJECTED ||

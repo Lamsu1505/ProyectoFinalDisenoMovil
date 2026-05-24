@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,10 +52,17 @@ class UserRepositoryImpl @Inject constructor(
         return snapshot.toObject(User::class.java)?.apply { this.uid = snapshot.id }
     }
 
+    suspend fun saveTokenAfterLogin(uid: String) {
+        FirebaseMessaging.getInstance().token.await()?.let { token ->
+            saveFcmToken(uid, token)
+        }
+    }
+
     override suspend fun login(email: String, password: String): User? {
         return try {
             val responseUser = auth.signInWithEmailAndPassword(email, password).await()
             val uid = responseUser.user?.uid ?: throw Exception("Usuario no encontrado")
+            saveTokenAfterLogin(uid)
             getUserById(uid)
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             Log.e("LOGIN", "Contraseña incorrecta")
@@ -107,7 +115,9 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveFcmToken(uid: String, token: String) {
-        collection.document(uid).update("fcmToken", token).await()
+        collection.document(uid)
+            .update("fcmToken", token)
+            .await()
     }
 
     override suspend fun registerUser(user: User): User? {

@@ -21,6 +21,6 @@ data class AppNotification(
     val body: String = "",
     /** Deep-link target — navigates to event detail when tapped. */
     val eventId: String? = null,
-    val isRead: Boolean = false,
+    val read: Boolean = false,
     val createdAt: Timestamp? = null,
 )

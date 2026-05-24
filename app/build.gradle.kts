@@ -90,11 +90,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:34.13.0"))
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
+    implementation(libs.firebase.messaging)
 
     // Cloudinary
     implementation("com.cloudinary:cloudinary-android:3.0.2")

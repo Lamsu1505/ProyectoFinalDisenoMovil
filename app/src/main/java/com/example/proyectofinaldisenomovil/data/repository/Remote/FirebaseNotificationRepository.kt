@@ -42,7 +42,7 @@ class FirebaseNotificationRepository @Inject constructor(
         return try {
             val snapshot = collection
                 .whereEqualTo("recipientUid", uid)
-                .whereEqualTo("isRead", false)
+                .whereEqualTo("read", false)
                 .get()
                 .await()
             snapshot.size()
@@ -54,7 +54,7 @@ class FirebaseNotificationRepository @Inject constructor(
 
     override suspend fun markAsRead(notificationId: String) {
         try {
-            collection.document(notificationId).update("isRead", true).await()
+            collection.document(notificationId).update("read", true).await()
         } catch (e: Exception) {
             Log.e("FirebaseNotifRepo", "Error marking as read", e)
         }
@@ -64,13 +64,13 @@ class FirebaseNotificationRepository @Inject constructor(
         try {
             val unread = collection
                 .whereEqualTo("recipientUid", uid)
-                .whereEqualTo("isRead", false)
+                .whereEqualTo("read", false)
                 .get()
                 .await()
 
             val batch = firestore.batch()
             for (doc in unread.documents) {
-                batch.update(doc.reference, "isRead", true)
+                batch.update(doc.reference, "read", true)
             }
             batch.commit().await()
         } catch (e: Exception) {
