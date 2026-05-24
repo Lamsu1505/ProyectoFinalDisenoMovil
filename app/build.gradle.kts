@@ -124,4 +124,7 @@ dependencies {
     //Mapbox
     implementation(libs.maps.android)
     implementation(libs.maps.compose)
+
+    //IA
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }

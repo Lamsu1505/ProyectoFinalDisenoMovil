@@ -113,7 +113,8 @@
     <string name="create_event_error_desc_short">Description must be at least 20 characters</string>
     <string name="create_event_error_address_short">Address too short</string>
     <string name="create_event_missing_fields">Missing fields: %s</string>
-    <string name="create_event_info">Are you sure you want to leave? Changes will not be saved.</string>
+    <string name="create_event_info">Basic information</string>
+
 
     <!-- Create Event Screen Detailed Labels -->
     <string name="create_event_title_label">Event title</string>

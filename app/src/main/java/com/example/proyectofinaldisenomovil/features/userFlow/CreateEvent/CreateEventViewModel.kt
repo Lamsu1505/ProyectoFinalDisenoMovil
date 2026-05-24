@@ -12,11 +12,14 @@ import com.example.proyectofinaldisenomovil.core.utils.ResourceProvider
 import com.example.proyectofinaldisenomovil.R
 import com.google.firebase.Timestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -46,7 +49,9 @@ data class CreateEventUiState(
     val descriptionError: String = "",
     val addressError: String = "",
     val dateError: String = "",
-    val isFormValid: Boolean = false
+    val isFormValid: Boolean = false,
+    val isSuggestingCategory: Boolean = false,
+    val categoryError: String = ""
 )
 
 @HiltViewModel
@@ -277,5 +282,83 @@ class CreateEventViewModel @Inject constructor(
     fun clearForm() {
         _uiState.value = CreateEventUiState()
         _createResult.value = CreateEventResult.Idle
+    }
+
+
+    fun suggestCategory() {
+        val state = _uiState.value
+        if (state.title.isBlank() || state.description.isBlank()) return
+
+        viewModelScope.launch {
+            updateState { it.copy(isSuggestingCategory = true) }
+
+            try {
+                val responseText = withContext(Dispatchers.IO) {
+                    val client = okhttp3.OkHttpClient()
+
+                    val prompt = """
+                    Dado este evento:
+                    Título: "${state.title}"
+                    Descripción: "${state.description}"
+
+                    Clasifícalo en UNA de estas categorías exactas:
+                    DEPORTES, CULTURA, SOCIAL, VOLUNTARIADO, DIVERSION, OTRO
+
+                    Responde ÚNICAMENTE con una de estas palabras, SIN tildes, SIN puntuación.
+                """.trimIndent()
+
+                    val json = org.json.JSONObject().apply {
+                        put("model", "gpt-4o-mini")
+                        put("messages", org.json.JSONArray().apply {
+                            put(org.json.JSONObject().apply {
+                                put("role", "user")
+                                put("content", prompt)
+                            })
+                        })
+                        put("max_tokens", 10)
+                        put("temperature", 0)
+                    }
+
+                    val request = okhttp3.Request.Builder()
+                        .url("https://api.openai.com/v1/chat/completions")
+                        .addHeader("Authorization", "Bearer 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")
+                        .addHeader("Content-Type", "application/json")
+                        .post(okhttp3.RequestBody.create(
+                            "application/json".toMediaTypeOrNull(),
+                            json.toString()
+                        ))
+                        .build()
+
+                    val response = client.newCall(request).execute()
+                    val body = response.body?.string() ?: ""
+                    Log.d("OpenAIRaw", "Codigo: ${response.code}")
+                    Log.d("OpenAIRaw", "Body: $body")
+                    body
+                }
+
+                val text = org.json.JSONObject(responseText)
+                    .getJSONArray("choices")
+                    .getJSONObject(0)
+                    .getJSONObject("message")
+                    .getString("content")
+                    .trim()
+                    .uppercase()
+                    .replace("\n", "")
+                    .replace(".", "")
+
+                Log.d("OpenAIResponse", "Texto: $text")
+
+                val suggested = EventCategory.entries.find { it.name == text }
+                if (suggested != null) {
+                    updateState { it.copy(category = suggested, isSuggestingCategory = false) }
+                } else {
+                    updateState { it.copy(isSuggestingCategory = false) }
+                }
+
+            } catch (e: Exception) {
+                Log.e("OpenAISuggest", "Error: ${e.message}")
+                updateState { it.copy(isSuggestingCategory = false) }
+            }
+        }
     }
 }

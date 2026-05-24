@@ -257,14 +257,18 @@ fun infoSection(
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1.5f)) {
-                    Text(stringResource(R.string.create_event_category_label), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = colorLabels)
+                    Text(
+                        stringResource(R.string.create_event_category_label),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = colorLabels
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
                     Box {
                         OutlinedTextField(
                             value = uiState.category.label,
                             onValueChange = { },
                             readOnly = true,
-                            placeholder = { Text(stringResource(R.string.create_event_category_placeholder), color = Color.Gray) },
                             trailingIcon = {
                                 IconButton(onClick = { expanded = !expanded }) {
                                     Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
@@ -296,6 +300,31 @@ fun infoSection(
                                     }
                                 )
                             }
+                        }
+                    }
+
+                    // Botón sugerir con IA
+                    val canSuggest = uiState.title.isNotBlank() && uiState.description.isNotBlank()
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Button(
+                        onClick = { viewModel.suggestCategory() },
+                        enabled = canSuggest && !uiState.isSuggestingCategory,
+                        modifier = Modifier.fillMaxWidth().height(36.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = green,
+                            disabledContainerColor = Color.LightGray
+                        )
+                    ) {
+                        if (uiState.isSuggestingCategory) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text("Sugerir categoría", fontSize = 12.sp, color = Color.White)
                         }
                     }
                 }

@@ -1,7 +1,6 @@
 package com.example.proyectofinaldisenomovil.features.userFlow.ViewEvent
 
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -38,35 +37,20 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.component.mapbox.MapBox
 import com.example.proyectofinaldisenomovil.core.utils.RequestResult
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
-import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-// ─────────────────────────────────────────────
-//  DATA CLASS  – Comentario
-// ─────────────────────────────────────────────
-data class Comment(
-    val authorInitials: String,
-    val authorName: String,
-    val timeLabel: String,
-    val text: String
-)
-
-// ─────────────────────────────────────────────
-//  PANTALLA PRINCIPAL
-// ─────────────────────────────────────────────
 @Composable
 fun ViewEventScreen(
     eventId: String,
     onBackClick: () -> Unit,
     viewEventViewModel: ViewEventViewModel = hiltViewModel()
 ) {
-    Log.e("ID", eventId)
-
-    val event        by viewEventViewModel.currentEvent.collectAsState()
+    val event by viewEventViewModel.currentEvent.collectAsState()
     val detailResult by viewEventViewModel.detailResult.collectAsState()
     val isInterested by viewEventViewModel.isInterested.collectAsState()
-    val isConfirmed  by viewEventViewModel.isConfirmed.collectAsState()
+    val isConfirmed by viewEventViewModel.isConfirmed.collectAsState()
+    val comments by viewEventViewModel.comments.collectAsState()
 
     val listState = rememberLazyListState()
 
@@ -99,12 +83,14 @@ fun ViewEventScreen(
                 is RequestResult.Success -> {
                     event?.let { safeEvent ->
                         EventDetailContent(
-                            event        = safeEvent,
+                            event = safeEvent,
                             isInterested = isInterested,
-                            isConfirmed  = isConfirmed,
+                            isConfirmed = isConfirmed,
+                            comments = comments,
                             onInterestedClick = { viewEventViewModel.toggleInterested() },
-                            onConfirmedClick  = {viewEventViewModel.toggleConfirmed()},
-                            listState    = listState
+                            onConfirmedClick = { viewEventViewModel.toggleConfirmed() },
+                            onSendComment = { text -> viewEventViewModel.addComment(text) },
+                            listState = listState
                         )
                     }
                 }
@@ -114,73 +100,49 @@ fun ViewEventScreen(
     }
 }
 
-// ─────────────────────────────────────────────
-//  CONTENIDO PRINCIPAL  (LazyColumn)
-// ─────────────────────────────────────────────
 @Composable
 private fun EventDetailContent(
     event: Event,
     isInterested: Boolean,
     isConfirmed: Boolean,
+    comments: List<CommentUiModel>,
     onInterestedClick: () -> Unit,
     onConfirmedClick: () -> Unit,
+    onSendComment: (String) -> Unit,
     listState: LazyListState
 ) {
-    // Estado local para el campo de nuevo comentario
     var newCommentText by remember { mutableStateOf("") }
-    var comments by remember {
-        mutableStateOf(
-            listOf(
-                Comment("AP", "Andres Perez",      "Ahora",   "Hola quiero saber precio y lugar. Muchas gracias. Nos vemos allí."),
-                Comment("NT", "Natalia Tejada",    "Hace 1h", "Es un evento no apto para mascotas, es muy lamentableeee."),
-                Comment("SL", "Santiago Londoño",  "Hace 2h", "Soy londoño."),
-                Comment("SL", "Santiago Londoño",  "Hace 2h", "Soy londoño."),
-                Comment("SL", "Santiago Londoño",  "Hace 2h", "Soy londoño.")
-            )
-        )
-    }
 
     LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
         item { EventImageHeader(event) }
         item {
             EventInfoSection(
-                event             = event,
-                isInterested      = isInterested,
-                isConfirmed       = isConfirmed,
+                event = event,
+                isInterested = isInterested,
+                isConfirmed = isConfirmed,
                 onInterestedClick = onInterestedClick,
-                onConfirmedClick  = onConfirmedClick
+                onConfirmedClick = onConfirmedClick
             )
         }
         item { EventDescription(event.description) }
-
         item { EventMapPlaceholder(event) }
-
-        // ── SECCIÓN COMENTARIOS ──────────────────
         item { CommentsSection(comments = comments) }
-
-        // ── CAMPO PARA NUEVO COMENTARIO ──────────
         item {
             NewCommentButton(
-                value    = newCommentText,
+                value = newCommentText,
                 onValueChange = { newCommentText = it },
-                onSend   = {
+                onSend = {
                     if (newCommentText.isNotBlank()) {
-                        comments = listOf(
-                            Comment("YO", "Tú", "Ahora", newCommentText)
-                        ) + comments
+                        onSendComment(newCommentText)
                         newCommentText = ""
                     }
                 }
             )
         }
-
         item { Spacer(modifier = Modifier.height(32.dp)) }
     }
 }
 
-// ─────────────────────────────────────────────
-//  CABECERA  – Carrusel de Imagen + badge categoría
-// ─────────────────────────────────────────────
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun EventImageHeader(event: Event) {
@@ -195,31 +157,29 @@ private fun EventImageHeader(event: Event) {
             modifier = Modifier.fillMaxSize()
         ) { page ->
             AsyncImage(
-                model              = event.imageUrls.getOrNull(page),
+                model = event.imageUrls.getOrNull(page),
                 contentDescription = null,
-                modifier           = Modifier.fillMaxSize(),
-                contentScale       = ContentScale.Crop
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
             )
         }
 
-        // Badge categoría
         Surface(
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart),
-            color    = MaterialTheme.colorScheme.secondary,
-            shape    = RoundedCornerShape(50)
+            color = MaterialTheme.colorScheme.secondary,
+            shape = RoundedCornerShape(50)
         ) {
             Text(
-                text     = event.category.label,
+                text = event.category.label,
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                color    = Color.White,
-                style    = MaterialTheme.typography.labelMedium,
+                color = Color.White,
+                style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold
             )
         }
 
-        // Indicadores de puntos (Dots)
         if (event.imageUrls.size > 1) {
             Row(
                 Modifier
@@ -240,27 +200,23 @@ private fun EventImageHeader(event: Event) {
             }
         }
 
-        // Indicador numérico  "1 / 5"
         Surface(
             modifier = Modifier
                 .padding(12.dp)
                 .align(Alignment.BottomEnd),
-            color    = Color.Black.copy(alpha = 0.45f),
-            shape    = RoundedCornerShape(6.dp)
+            color = Color.Black.copy(alpha = 0.45f),
+            shape = RoundedCornerShape(6.dp)
         ) {
             Text(
-                text     = "${pagerState.currentPage + 1} / ${event.imageUrls.size.coerceAtLeast(1)}",
+                text = "${pagerState.currentPage + 1} / ${event.imageUrls.size.coerceAtLeast(1)}",
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                color    = Color.White,
+                color = Color.White,
                 fontSize = 11.sp
             )
         }
     }
 }
 
-// ─────────────────────────────────────────────
-//  SECCIÓN INFO  – tarjeta verde redondeada
-// ─────────────────────────────────────────────
 @Composable
 private fun EventInfoSection(
     event: Event,
@@ -270,18 +226,14 @@ private fun EventInfoSection(
     onConfirmedClick: () -> Unit
 ) {
     val dateFormat = SimpleDateFormat("EEEE d 'de' MMMM", Locale("es", "CO"))
-    val timeFormat = SimpleDateFormat("h:mm a",           Locale("es", "CO"))
+    val timeFormat = SimpleDateFormat("h:mm a", Locale("es", "CO"))
 
-    // Fondo blanco/hueso detrás para que la tarjeta verde se vea bien
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
             .background(MaterialTheme.colorScheme.background)
             .border(1.dp, MaterialTheme.colorScheme.outline)
-
-
-
     ) {
         Column(
             modifier = Modifier
@@ -291,14 +243,13 @@ private fun EventInfoSection(
                 .padding(start = 24.dp, end = 24.dp, top = 20.dp, bottom = 28.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Título centrado
             Text(
-                text       = event.title,
-                style      = MaterialTheme.typography.headlineSmall,
-                color      = Color.Black,
+                text = event.title,
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.Black,
                 fontWeight = FontWeight.Bold,
-                textAlign  = TextAlign.Center,
-                modifier   = Modifier.fillMaxWidth()
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(Modifier.height(16.dp))
@@ -306,14 +257,13 @@ private fun EventInfoSection(
             Spacer(Modifier.height(16.dp))
 
             Row(
-                modifier             = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment    = Alignment.Top
+                verticalAlignment = Alignment.Top
             ) {
-                // ── Columna izquierda: metadatos ──
                 Column(
-                    modifier             = Modifier.weight(1f),
-                    verticalArrangement  = Arrangement.spacedBy(10.dp)
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     IconLabel(Icons.Default.CalendarToday,
                         event.startDate?.let { dateFormat.format(it.toDate()) } ?: "")
@@ -321,58 +271,53 @@ private fun EventInfoSection(
                         event.startDate?.let { timeFormat.format(it.toDate()) } ?: "")
                     IconLabel(Icons.Default.LocationOn, event.address)
                     IconLabel(
-                        icon  = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        icon = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         label = "${event.importantVotes} interesados"
                     )
-                    // Asistentes confirmados  (ícono Personas)
                     IconLabel(
-                        icon  = Icons.Default.Group,
+                        icon = Icons.Default.Group,
                         label = "${event.currentAttendees ?: 0} / ${event.maxAttendees ?: "∞"}"
                     )
                 }
 
                 Spacer(Modifier.width(12.dp))
 
-                // ── Columna derecha: organizado por + botones ──
                 Column(
-                    modifier            = Modifier.width(148.dp),
+                    modifier = Modifier.width(148.dp),
                     horizontalAlignment = Alignment.End
                 ) {
                     Text(
-                        text  = stringResource(R.string.view_event_created_by),
+                        text = stringResource(R.string.view_event_created_by),
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
                         fontSize = 11.sp
                     )
                     Text(
-                        text       = event.authorName,
-                        color      = MaterialTheme.colorScheme.onSurface,
+                        text = event.authorName,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
-                        maxLines   = 1,
-                        overflow   = TextOverflow.Ellipsis,
-                        fontSize   = 13.sp
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 13.sp
                     )
 
                     Spacer(Modifier.height(14.dp))
 
-                    Log.i("Btn antes" , isInterested.toString())
-                    // Botón "Me interesa" / "Interesado"
                     ActionButton(
-                        text       = if (!isInterested) stringResource(R.string.view_event_uninterested)  else stringResource(R.string.view_event_interested),
-                        icon       = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        text = if (!isInterested) stringResource(R.string.view_event_uninterested) else stringResource(R.string.view_event_interested),
+                        icon = if (isInterested) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         isSelected = isInterested,
                         isSecondary = false,
-                        onClick    = onInterestedClick
+                        onClick = onInterestedClick
                     )
 
                     Spacer(Modifier.height(8.dp))
 
-                    // Botón "Confirmar" / "Confirmado"
                     ActionButton(
-                        text       = if (!isConfirmed) stringResource(R.string.view_event_confirm_attendance) else stringResource(R.string.view_event_confirmed_attendance),
-                        icon       = if (isConfirmed) Icons.Default.CheckCircle else Icons.Default.Check,
+                        text = if (!isConfirmed) stringResource(R.string.view_event_confirm_attendance) else stringResource(R.string.view_event_confirmed_attendance),
+                        icon = if (isConfirmed) Icons.Default.CheckCircle else Icons.Default.Check,
                         isSelected = isConfirmed,
                         isSecondary = true,
-                        onClick    = onConfirmedClick
+                        onClick = onConfirmedClick
                     )
                 }
             }
@@ -390,11 +335,9 @@ private fun ActionButton(
     isSecondary: Boolean = false,
     onClick: () -> Unit
 ) {
-
-    Log.i("Boton de like" , isSelected.toString())
     Button(
-        onClick         = onClick,
-        modifier        = Modifier
+        onClick = onClick,
+        modifier = Modifier
             .fillMaxWidth()
             .height(40.dp),
         colors = ButtonDefaults.buttonColors(
@@ -403,11 +346,11 @@ private fun ActionButton(
             } else {
                 if (isSecondary) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
             },
-            contentColor  = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+            contentColor = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
         ),
-        contentPadding  = PaddingValues(horizontal = 10.dp),
-        shape           = RoundedCornerShape(10.dp),
-        elevation       = ButtonDefaults.buttonElevation(0.dp)
+        contentPadding = PaddingValues(horizontal = 10.dp),
+        shape = RoundedCornerShape(10.dp),
+        elevation = ButtonDefaults.buttonElevation(0.dp)
     ) {
         Icon(icon, null, modifier = Modifier.size(15.dp))
         Spacer(Modifier.width(5.dp))
@@ -426,8 +369,8 @@ private fun IconLabel(
         Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(15.dp))
         Spacer(Modifier.width(7.dp))
         Text(
-            text     = label,
-            color    = MaterialTheme.colorScheme.onSurface,
+            text = label,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 12.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -435,31 +378,26 @@ private fun IconLabel(
     }
 }
 
-// ─────────────────────────────────────────────
-//  DESCRIPCIÓN
-// ─────────────────────────────────────────────
 @Composable
 private fun EventDescription(description: String) {
     Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
         Text(
             text = stringResource(R.string.view_event_description_title),
-            style      = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color      = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text      = description,
-            style     = MaterialTheme.typography.bodyMedium,
+            text = description,
+            style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Justify,
-            color     = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
     Spacer(modifier = Modifier.height(20.dp))
 }
 
-// ─────────────────────────────────────────────
-//  MAPA PLACEHOLDER  (sin cambios)
 @Composable
 private fun EventMapPlaceholder(event: Event) {
     MapBox(
@@ -471,36 +409,41 @@ private fun EventMapPlaceholder(event: Event) {
     )
 }
 
-// ─────────────────────────────────────────────
-//  SECCIÓN COMENTARIOS  ← NUEVA
-// ─────────────────────────────────────────────
 @Composable
-private fun CommentsSection(comments: List<Comment>) {
+private fun CommentsSection(comments: List<CommentUiModel>) {
     Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
         Text(
-            text       = stringResource(R.string.view_event_comments),
-            style      = MaterialTheme.typography.titleMedium,
+            text = stringResource(R.string.view_event_comments),
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color      = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(Modifier.height(12.dp))
 
-        // Tarjeta contenedora color surface (hueso claro según tema)
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            shape    = RoundedCornerShape(16.dp),
-            color    = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surface,
             tonalElevation = 2.dp
         ) {
             Column(modifier = Modifier.padding(vertical = 4.dp)) {
-                comments.forEachIndexed { index, comment ->
-                    CommentItem(comment)
-                    if (index < comments.lastIndex) {
-                        HorizontalDivider(
-                            modifier  = Modifier.padding(horizontal = 16.dp),
-                            color     = MaterialTheme.colorScheme.surfaceVariant
-                        )
+                if (comments.isEmpty()) {
+                    Text(
+                        text = "Sé el primero en comentar",
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                } else {
+                    comments.forEachIndexed { index, comment ->
+                        CommentItem(comment)
+                        if (index < comments.lastIndex) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        }
                     }
                 }
             }
@@ -508,30 +451,26 @@ private fun CommentsSection(comments: List<Comment>) {
     }
 }
 
-// ─────────────────────────────────────────────
-//  ITEM COMENTARIO  ← NUEVO
-// ─────────────────────────────────────────────
 @Composable
-private fun CommentItem(comment: Comment) {
+private fun CommentItem(comment: CommentUiModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.Top
     ) {
-        // Avatar circular con iniciales
         Box(
-            modifier         = Modifier
+            modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text       = comment.authorInitials,
+                text = comment.initials,
                 fontWeight = FontWeight.Bold,
-                fontSize   = 14.sp,
-                color      = MaterialTheme.colorScheme.onSurface
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -539,37 +478,34 @@ private fun CommentItem(comment: Comment) {
 
         Column(modifier = Modifier.weight(1f)) {
             Row(
-                verticalAlignment      = Alignment.CenterVertically,
-                horizontalArrangement  = Arrangement.SpaceBetween,
-                modifier               = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text       = comment.authorName,
+                    text = comment.authorName,
                     fontWeight = FontWeight.Bold,
-                    fontSize   = 14.sp,
-                    color      = MaterialTheme.colorScheme.onBackground,
-                    modifier   = Modifier.weight(1f)
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.weight(1f)
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text     = comment.timeLabel,
+                    text = comment.timeAgo,
                     fontSize = 11.sp,
-                    color    = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
                 )
             }
             Spacer(Modifier.height(3.dp))
             Text(
-                text     = comment.text,
+                text = comment.text,
                 fontSize = 13.sp,
-                color    = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
 }
 
-// ─────────────────────────────────────────────
-//  BOTÓN / CAMPO NUEVO COMENTARIO  ← NUEVO
-// ─────────────────────────────────────────────
 @Composable
 private fun NewCommentButton(
     value: String,
@@ -577,36 +513,37 @@ private fun NewCommentButton(
     onSend: () -> Unit
 ) {
     Column(
-        modifier            = Modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Si hay texto mostramos el campo, si no el botón naranja del mockup
         if (value.isEmpty()) {
             Button(
-                onClick  = { onValueChange(" ") }, // abre el campo
+                onClick = { onValueChange(" ") },
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
                     .height(44.dp),
-                colors   = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary, // naranja
-                    contentColor   = Color.White
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = Color.White
                 ),
-                shape    = RoundedCornerShape(50)
+                shape = RoundedCornerShape(50)
             ) {
                 Text("Hacer comentario", fontWeight = FontWeight.Bold)
             }
         } else {
             OutlinedTextField(
-                value           = value.trimStart(),
-                onValueChange   = onValueChange,
-                modifier        = Modifier.fillMaxWidth(),
-                placeholder     = { Text("Escribe tu comentario…") },
-                maxLines        = 4,
-                shape           = RoundedCornerShape(12.dp),
-                trailingIcon    = {
-                    IconButton(onClick = onSend) {
+                value = value.trimStart(),
+                onValueChange = onValueChange,
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Escribe tu comentario…") },
+                maxLines = 4,
+                shape = RoundedCornerShape(12.dp),
+                trailingIcon = {
+                    IconButton(
+                        onClick = onSend
+                    ) {
                         Icon(
                             Icons.Default.Send,
                             contentDescription = "Enviar",
@@ -619,9 +556,6 @@ private fun NewCommentButton(
     }
 }
 
-// ─────────────────────────────────────────────
-//  ESTADO DE ERROR
-// ─────────────────────────────────────────────
 @Composable
 private fun ErrorState(message: String) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -629,9 +563,6 @@ private fun ErrorState(message: String) {
     }
 }
 
-// ─────────────────────────────────────────────
-//  PREVIEW
-// ─────────────────────────────────────────────
 @Preview(showBackground = true)
 @Composable
 fun ViewEventScreenPreview() {

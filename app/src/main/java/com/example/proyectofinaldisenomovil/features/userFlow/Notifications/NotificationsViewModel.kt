@@ -10,9 +10,12 @@ import com.example.proyectofinaldisenomovil.domain.model.AppNotification
 import com.example.proyectofinaldisenomovil.domain.model.NotificationType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -20,6 +23,10 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+
+enum class NotificationFilter {
+    ALL, UNREAD, EVENTS, COMMENTS
+}
 
 data class NotificationsUiState(
     val notifications: List<AppNotification> = emptyList(),
@@ -37,11 +44,10 @@ class NotificationsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(NotificationsUiState())
     val uiState: StateFlow<NotificationsUiState> = _uiState.asStateFlow()
 
-    private val _selectedFilter = MutableStateFlow("")
-    val selectedFilter: StateFlow<String> = _selectedFilter.asStateFlow()
+    private val _selectedFilter = MutableStateFlow(NotificationFilter.ALL)
+    val selectedFilter: StateFlow<NotificationFilter> = _selectedFilter.asStateFlow()
 
     init {
-        _selectedFilter.value = resourceProvider.getString(R.string.notifications_filter_all)
         observeNotifications()
     }
 
@@ -51,10 +57,9 @@ class NotificationsViewModel @Inject constructor(
             user?.let { currentUser ->
                 _uiState.value = _uiState.value.copy(isLoading = true)
                 notificationRepository.observeNotifications(currentUser.uid).collectLatest { notifications ->
-                    val unreadCount = notificationRepository.getUnreadCount(currentUser.uid)
                     _uiState.value = _uiState.value.copy(
                         notifications = notifications,
-                        unreadCount = unreadCount,
+                        unreadCount = notifications.count { !it.read },
                         isLoading = false
                     )
                 }
@@ -62,28 +67,46 @@ class NotificationsViewModel @Inject constructor(
         }
     }
 
-    fun loadNotifications() {
-        observeNotifications()
-    }
-
-    fun onFilterSelected(filter: String) {
+    fun onFilterSelected(filter: NotificationFilter) {
         _selectedFilter.value = filter
     }
 
-    fun getFilteredNotifications(): List<AppNotification> {
-        val notifications = _uiState.value.notifications
-        return when (_selectedFilter.value) {
-            resourceProvider.getString(R.string.notifications_filter_all) -> notifications
-            resourceProvider.getString(R.string.notifications_filter_unread) -> notifications.filter { !it.read }
-            resourceProvider.getString(R.string.notifications_filter_events) -> notifications.filter { 
-                it.type == NotificationType.VERIFIED ||
-                it.type == NotificationType.REJECTED ||
-                it.type == NotificationType.NEW_EVENT ||
-                it.type == NotificationType.NEW_EVENT_NEARBY ||
-                it.type == NotificationType.EDITED
+    val groupedNotifications: StateFlow<Map<String, List<AppNotification>>> =
+        combine(_uiState, _selectedFilter) { state, filter ->
+            val filtered = when (filter) {
+                NotificationFilter.ALL -> state.notifications
+                NotificationFilter.UNREAD -> state.notifications.filter { !it.read }
+                NotificationFilter.EVENTS -> state.notifications.filter {
+                    it.type == NotificationType.VERIFIED ||
+                    it.type == NotificationType.REJECTED ||
+                    it.type == NotificationType.NEW_EVENT ||
+                    it.type == NotificationType.NEW_EVENT_NEARBY ||
+                    it.type == NotificationType.EDITED ||
+                    it.type == NotificationType.SAVE ||
+                    it.type == NotificationType.LIKE ||
+                    it.type == NotificationType.FINALIZED
+                }
+                NotificationFilter.COMMENTS -> state.notifications.filter { it.type == NotificationType.COMMENT }
             }
-            resourceProvider.getString(R.string.notifications_filter_comments) -> notifications.filter { it.type == NotificationType.COMMENT }
-            else -> notifications
+
+            val grouped = linkedMapOf<String, MutableList<AppNotification>>()
+            for (notification in filtered) {
+                val section = getSectionTitle(notification.createdAt)
+                grouped.getOrPut(section) { mutableListOf() }.add(notification)
+            }
+            grouped
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
+
+    private fun getSectionTitle(timestamp: com.google.firebase.Timestamp?): String {
+        if (timestamp == null) return resourceProvider.getString(R.string.time_older)
+
+        val now = Calendar.getInstance()
+        val created = Calendar.getInstance().apply { time = timestamp.toDate() }
+
+        return when {
+            isSameDay(now, created) -> resourceProvider.getString(R.string.time_today)
+            isYesterday(now, created) -> resourceProvider.getString(R.string.time_yesterday)
+            else -> resourceProvider.getString(R.string.time_older)
         }
     }
 
@@ -104,7 +127,7 @@ class NotificationsViewModel @Inject constructor(
 
     fun getTimeAgo(timestamp: com.google.firebase.Timestamp?): String {
         if (timestamp == null) return ""
-        
+
         val now = Calendar.getInstance().timeInMillis
         val then = timestamp.toDate().time
         val diff = now - then
@@ -126,22 +149,16 @@ class NotificationsViewModel @Inject constructor(
         }
     }
 
-    fun getGroupedNotifications(): Map<String, List<AppNotification>> {
-        val filtered = getFilteredNotifications()
-        val grouped = linkedMapOf<String, MutableList<AppNotification>>()
+    private fun isSameDay(cal1: Calendar, cal2: Calendar): Boolean {
+        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
+    }
 
-        for (notification in filtered) {
-            val timeAgo = getTimeAgo(notification.createdAt)
-            val section = when {
-                timeAgo == resourceProvider.getString(R.string.time_now) || 
-                timeAgo.contains(resourceProvider.getString(R.string.time_minutes_ago).split(" ")[0]) ||
-                timeAgo.contains(resourceProvider.getString(R.string.time_hours_ago).split(" ")[0]) -> resourceProvider.getString(R.string.time_today)
-                timeAgo == resourceProvider.getString(R.string.time_yesterday) -> resourceProvider.getString(R.string.time_yesterday)
-                else -> resourceProvider.getString(R.string.time_older)
-            }
-            grouped.getOrPut(section) { mutableListOf() }.add(notification)
+    private fun isYesterday(now: Calendar, created: Calendar): Boolean {
+        val yesterday = Calendar.getInstance().apply {
+            time = now.time
+            add(Calendar.DAY_OF_YEAR, -1)
         }
-
-        return grouped
+        return isSameDay(yesterday, created)
     }
 }

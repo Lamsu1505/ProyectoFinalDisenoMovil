@@ -114,7 +114,7 @@
     <string name="create_event_error_desc_short">La descripción debe tener al menos 20 caracteres</string>
     <string name="create_event_error_address_short">Dirección muy corta</string>
     <string name="create_event_missing_fields">Falta completar: %s</string>
-    <string name="create_event_info">¿Estás seguro de que quieres salir? Los cambios no se guardarán.</string>
+    <string name="create_event_info">Información básica</string>
 
     <string name="create_event_title_label">Título del evento</string>
     <string name="create_event_title_placeholder">Ej: Concierto de Rock</string>
