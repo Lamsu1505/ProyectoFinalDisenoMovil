@@ -95,14 +95,3 @@ fun AppTopBar(
     )
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun AppTopBarPreview() {
-    ProyectoFinalDisenoMovilTheme() {
-        AppTopBar(
-            title = "Preview"
-        )
-
-    }
-}

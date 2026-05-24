@@ -36,6 +36,7 @@ import com.example.proyectofinaldisenomovil.core.component.barReusable.AppBottom
 import com.example.proyectofinaldisenomovil.core.component.barReusable.AppTopBar
 import com.example.proyectofinaldisenomovil.core.component.mapbox.MapBox
 import com.example.proyectofinaldisenomovil.core.utils.RequestResult
+import com.example.proyectofinaldisenomovil.domain.model.AppNotification
 import com.example.proyectofinaldisenomovil.domain.model.Event.Event
 import java.text.SimpleDateFormat
 import java.util.*
@@ -44,7 +45,8 @@ import java.util.*
 fun ViewEventScreen(
     eventId: String,
     onBackClick: () -> Unit,
-    viewEventViewModel: ViewEventViewModel = hiltViewModel()
+    viewEventViewModel: ViewEventViewModel = hiltViewModel(),
+    onNotificationClick: () -> Unit,
 ) {
     val event by viewEventViewModel.currentEvent.collectAsState()
     val detailResult by viewEventViewModel.detailResult.collectAsState()
@@ -62,7 +64,8 @@ fun ViewEventScreen(
         topBar = {
             AppTopBar(
                 title = stringResource(R.string.view_event_title),
-                onBackClick = onBackClick
+                onBackClick = onBackClick,
+                onNotificationsClick = onNotificationClick
             )
         },
         bottomBar = { AppBottomBar(selectedRoute = "") }
@@ -400,13 +403,25 @@ private fun EventDescription(description: String) {
 
 @Composable
 private fun EventMapPlaceholder(event: Event) {
-    MapBox(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(400.dp),
-        event = event,
-        activateClick = false
-    )
+    Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
+        Text(
+            text = stringResource(R.string.view_event_location),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        MapBox(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp),
+            event = event,
+            activateClick = false
+        )
+    }
+
 }
 
 @Composable
@@ -563,8 +578,3 @@ private fun ErrorState(message: String) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ViewEventScreenPreview() {
-    ViewEventScreen(eventId = "event_013", onBackClick = {})
-}

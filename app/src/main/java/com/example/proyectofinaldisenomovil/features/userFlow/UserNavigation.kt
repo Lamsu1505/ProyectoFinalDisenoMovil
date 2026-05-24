@@ -186,7 +186,8 @@ fun UserNavigation(
                 val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
                 ViewEventScreen(
                     eventId = eventId,
-                    onBackClick = { userNavController.popBackStack() }
+                    onBackClick = { userNavController.popBackStack() },
+                    onNotificationClick = { userNavController.navigate(UserRoutes.NOTIFICATIONS) }
                 )
             }
 
