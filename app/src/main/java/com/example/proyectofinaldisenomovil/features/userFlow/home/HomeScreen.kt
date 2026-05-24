@@ -387,6 +387,7 @@ fun EventCard(
                         .padding(horizontal = 12.dp, vertical = 4.dp)
                 ) {
                     Text(
+                        //a
                         text = categoryLabel,
                         color = Color.White,
                         fontSize = 13.sp,
